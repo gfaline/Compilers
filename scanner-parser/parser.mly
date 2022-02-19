@@ -3,7 +3,7 @@
 %{ open Ast %}
 
 %token EOF
-%token <string> TKN
+%token <string> ID
 
 
 %start program
@@ -16,4 +16,4 @@ program:
 
 decls:
   /* nothing */ { [] }
-  | decls TKN   {$2 :: $1 }
+  | decls ID   {$2 :: $1 }
