@@ -4,7 +4,12 @@
 
 rule token = parse
     (* [' ' '\t' '\r' '\n'] { token lexbuf } *)
+    "//" { comment lexbuf }
+  | ['a' - 'z']* as tkn { TKN(tkn) }
   | eof { EOF }
   | '~' { EOF }
-  | ['a' - 'z']* as tkn { TKN(tkn) }
   | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
+
+  and comment = parse
+      '\n' { token lexbuf }
+    | _    { comment lexbuf }
