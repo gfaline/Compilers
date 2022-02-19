@@ -3,8 +3,8 @@
 { open Parser }
 
 rule token = parse
-    (* [' ' '\t' '\r' '\n'] { token lexbuf } *)
-    "//" { comment lexbuf }
+    [' ' '\t' '\r' '\n'] { token lexbuf }
+  | "//" { comment lexbuf }
   | ['a' - 'z']* as tkn { TKN(tkn) }
   | eof { EOF }
   | '~' { EOF }

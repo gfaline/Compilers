@@ -1,1 +1,1 @@
-type program = Prog of string
+type program = string list

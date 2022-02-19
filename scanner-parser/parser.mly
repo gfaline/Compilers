@@ -12,4 +12,8 @@
 %%
 
 program:
-    TKN { Prog($1) }
+    decls EOF { $1 }
+
+decls:
+  /* nothing */ { [] }
+  | decls TKN   {$2 :: $1 }
