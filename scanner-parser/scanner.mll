@@ -1,8 +1,11 @@
 (* scanner for Propeller language *)
 
 { open Parser }
+
 let letter = ['a'-'z' 'A'-'Z']
 let digit  = ['0'-'9']
+let digits = digit+
+(* valid and invalid names *)
 let valid_name   = letter (letter | digit | '_')* (letter | digit | '?')
 let valid_sym    = (letter | digit | '_' | '?')
 let invalid_name =
@@ -11,7 +14,7 @@ let invalid_name =
   | valid_sym* '_'
   | valid_sym* "_?"
   | valid_sym* "__" valid_sym*
-  | valid_sym* "??" valid_sym*
+  | valid_sym* "?" valid_sym+
 
 rule token = parse
     [' ' '\t' '\r' '\n'] { token lexbuf }
