@@ -43,6 +43,9 @@ rule token = parse
   | digits '.' digit+ as x { FLIT(float_of_string x) }
   | "true"  { BLIT(true) }
   | "false" { BLIT(false) }
+  (* | '\'' { strlit lexbuf } *)
+  (* | '\'' _* '\'' as s {SLIT(s) } *)
+  | ''' [^''']*''' as s { SLIT(s) }
   (* names *)
   | invalid_name as id { raise (Failure("illegal name " ^ id)) }
   | valid_name   as id { ID(id) }
@@ -53,3 +56,7 @@ rule token = parse
       '\n' { token lexbuf }
     | eof  { token lexbuf }
     | _    { comment lexbuf }
+
+  (* and strlit = parse
+      '\''  as s { SLIT(s) }
+    |  _ { strlit lexbuf } *)

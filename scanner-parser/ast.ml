@@ -6,6 +6,7 @@ type expr =
     Iliteral of int
   | Fliteral of float
   | Bliteral of bool
+  | Sliteral of string
   | Id of string
 
 type stmt =
@@ -31,6 +32,7 @@ let rec string_of_expr = function
     Iliteral(x) -> string_of_int x
   | Fliteral(x) -> string_of_float x
   | Bliteral(b) -> string_of_bool b
+  | Sliteral(s) -> s
   | Id(id) -> id
 
 let rec string_of_stmt = function

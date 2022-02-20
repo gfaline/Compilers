@@ -7,6 +7,7 @@
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
+%token <string> SLIT
 %token <string> ID
 %token EOF
 
@@ -70,4 +71,5 @@ expr:
     ILIT { Iliteral($1) }
   | FLIT { Fliteral($1) }
   | BLIT { Bliteral($1) }
+  | SLIT { Sliteral($1) }
   | ID { Id($1) }
