@@ -21,11 +21,12 @@ decls:
   | decls fdecl   { (fst $1, ($2 :: snd $1)) }
 
 fdecl:
-  FN ID LPAREN formals_opt RPAREN ARROW ftyp LBRACE vdecl_list RBRACE
+  FN ID LPAREN formals_opt RPAREN ARROW ftyp LBRACE vdecl_list stmt_list RBRACE
     { { typ     = $7;
         fname   = $2;
         formals = List.rev $4;
-        locals    = List.rev $9 } }
+        locals  = List.rev $9;
+        body    = List.rev $10 } }
 
 formals_opt:
     /* nothing */ { [] }
@@ -52,6 +53,15 @@ vdecl_list:
     /* nothing */ { [] }
   | vdecl_list vdecl { $2 :: $1 }
   
-
 vdecl:
     vtyp ID SEMI { ($1, $2) }
+
+stmt_list:
+    /* nothing */ { [] }
+  | stmt_list stmt { $2 :: $1 }
+
+stmt:
+    expr SEMI { Expr $1 }
+
+expr:
+    ID { Id($1) }
