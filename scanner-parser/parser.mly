@@ -76,3 +76,4 @@ expr:
   | SLIT { Sliteral($1) }
   | ID { Id($1) }
   | ID ASSIGN expr { Assign($1, $3) }
+  | LPAREN expr RPAREN { $2 }

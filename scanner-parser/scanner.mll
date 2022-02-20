@@ -42,11 +42,9 @@ rule token = parse
   (* literals *)
   | digits as x            { ILIT(int_of_string x)   } 
   | digits '.' digit+ as x { FLIT(float_of_string x) }
-  | "true"  { BLIT(true) }
-  | "false" { BLIT(false) }
-  (* | '\'' { strlit lexbuf } *)
-  (* | '\'' _* '\'' as s {SLIT(s) } *)
-  | ''' [^''']*''' as s { SLIT(s) }
+  | "true"                 { BLIT(true) }
+  | "false"                { BLIT(false) }
+  | ''' [^''']*'''    as s { SLIT(s) }
   (* names *)
   | invalid_name as id { raise (Failure("illegal name " ^ id)) }
   | valid_name   as id { ID(id) }
