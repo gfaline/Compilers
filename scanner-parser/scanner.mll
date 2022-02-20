@@ -8,6 +8,7 @@ let digits = digit+
 
 (* valid and invalid names *)
 let valid_name   = letter (letter | digit | '_')* (letter | digit | '?')
+                 | letter
 let valid_sym    = (letter | digit | '_' | '?')
 let invalid_name =
     '?' valid_sym*  (* starts with ? *)
@@ -23,7 +24,14 @@ rule token = parse
     [' ' '\t' '\r' '\n'] { token lexbuf }
   | '#' { comment lexbuf }
   (* syntactical characters *)
-  | ';' { SEMI }
+  | '('      { LPAREN }
+  | ')'      { RPAREN }
+  | '{'      { LBRACE }
+  | '}'      { RBRACE }
+  | ';'      { SEMI }
+  | ','      { COMMA }
+  | "fn"     { FN }
+  | "->"     { ARROW }
   (* primitive types *)
   | "int"    { INT }
   | "bool"   { BOOL }
