@@ -2,8 +2,11 @@
 
 %{ open Ast %}
 
-%token EOF
+%token SEMI
+%token INT
 %token <string> ID
+%token EOF
+
 
 
 %start program
@@ -16,4 +19,10 @@ program:
 
 decls:
   /* nothing */ { [] }
-  | decls ID   {$2 :: $1 }
+  | decls vdecl { $2 :: $1}
+
+typ:
+    INT { Int }
+
+vdecl:
+    typ ID SEMI { ($1, $2) }

@@ -19,8 +19,15 @@ let invalid_name =
 
 (* parse input *)
 rule token = parse
+  (* whitespace/comments *)
     [' ' '\t' '\r' '\n'] { token lexbuf }
   | "//" { comment lexbuf }
+  (* syntactical characters *)
+  | ';' { SEMI }
+  (* primitive types *)
+  | "int" { INT }
+
+  (* | digits       as d  { LITERAL(int_of_string d) } *)
   | invalid_name as id { raise (Failure("illegal name " ^ id)) }
   | valid_name   as id { ID(id) }
   | eof { EOF }
