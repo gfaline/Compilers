@@ -23,7 +23,7 @@ rule token = parse
   (* whitespace/comments *)
     [' ' '\t' '\r' '\n'] { token lexbuf }
   | '#' { comment lexbuf }
-  (* syntactical characters *)
+  (* syntactical symbols *)
   | '('      { LPAREN }
   | ')'      { RPAREN }
   | '{'      { LBRACE }
@@ -38,7 +38,8 @@ rule token = parse
   | "float"  { FLOAT }
   | "str"    { STR }
   | "void"   { VOID }
-  (* | digits       as d  { LITERAL(int_of_string d) } *)
+  (* literals *)
+  | digits as x { ILIT(int_of_string x) }
   | invalid_name as id { raise (Failure("illegal name " ^ id)) }
   | valid_name   as id { ID(id) }
   | eof { EOF }

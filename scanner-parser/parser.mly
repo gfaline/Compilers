@@ -4,6 +4,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW
 %token INT BOOL FLOAT STR VOID
+%token <int> ILIT
 %token <string> ID
 %token EOF
 
@@ -64,4 +65,5 @@ stmt:
     expr SEMI { Expr $1 }
 
 expr:
-    ID { Id($1) }
+    ILIT { Iliteral($1) }
+  | ID { Id($1) }

@@ -3,7 +3,8 @@ type typ = Int | Bool | Float | Str | Void
 type bind = typ * string
 
 type expr =
-    Id of string
+    Iliteral of int
+  | Id of string
 
 type stmt =
     Expr of expr
@@ -26,7 +27,8 @@ let string_of_typ = function
 
 
 let rec string_of_expr = function
-    Id(id) -> id
+    Iliteral(x) -> string_of_int x
+  | Id(id) -> id
 
 let rec string_of_stmt = function
     Expr(e) -> string_of_expr e ^ ";\n"
