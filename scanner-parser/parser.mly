@@ -5,6 +5,7 @@
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW
 %token INT BOOL FLOAT STR VOID
 %token <int> ILIT
+%token <float> FLIT
 %token <string> ID
 %token EOF
 
@@ -62,8 +63,9 @@ stmt_list:
   | stmt_list stmt { $2 :: $1 }
 
 stmt:
-    expr SEMI { Expr $1 }
+    expr SEMI { Expr($1) }
 
 expr:
     ILIT { Iliteral($1) }
+  | FLIT { Fliteral($1) }
   | ID { Id($1) }

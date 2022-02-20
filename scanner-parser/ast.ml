@@ -4,6 +4,7 @@ type bind = typ * string
 
 type expr =
     Iliteral of int
+  | Fliteral of float
   | Id of string
 
 type stmt =
@@ -28,6 +29,7 @@ let string_of_typ = function
 
 let rec string_of_expr = function
     Iliteral(x) -> string_of_int x
+  | Fliteral(x) -> string_of_float x
   | Id(id) -> id
 
 let rec string_of_stmt = function

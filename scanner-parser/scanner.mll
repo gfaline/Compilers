@@ -39,7 +39,9 @@ rule token = parse
   | "str"    { STR }
   | "void"   { VOID }
   (* literals *)
-  | digits as x { ILIT(int_of_string x) }
+  | digits as x            { ILIT(int_of_string x)   } 
+  | digits '.' digit+ as x { FLIT(float_of_string x) }
+  (* names *)
   | invalid_name as id { raise (Failure("illegal name " ^ id)) }
   | valid_name   as id { ID(id) }
   | eof { EOF }
