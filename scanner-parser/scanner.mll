@@ -47,7 +47,7 @@ rule token = parse
   | ">"      { GT }
   | ">="     { GEQ }
   (* logical operators *)
-  (* | "not"    { NOT } *)
+  | "not"    { NOT }
   | "xor"    { XOR }
   | "and"    { AND }
   | "or"     { OR  }

@@ -3,7 +3,7 @@
 %{ open Ast %}
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
-%token EQ NEQ LT LEQ GT GEQ XOR AND OR
+%token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
 %token INT BOOL FLOAT STR VOID
 %token <int> ILIT
 %token <float> FLIT
@@ -23,6 +23,7 @@
 %left LT GT LEQ GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE MODULO
+%right NOT
 
 %%
 
@@ -97,5 +98,6 @@ expr:
   | expr AND    expr { Binop($1, And, $3) }
   | expr XOR    expr { Binop($1, Xor, $3) }
   | expr OR     expr { Binop($1, Or,  $3) }
+  | NOT  expr        { Unop(Not, $2)      }
   | ID ASSIGN expr { Assign($1, $3) }
   | LPAREN expr RPAREN { $2 }

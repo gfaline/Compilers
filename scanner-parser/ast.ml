@@ -14,6 +14,8 @@ type binop =
   | And
   | Or
 
+type unop = Not
+
 type typ =
     Int
   | Bool
@@ -31,6 +33,7 @@ type expr =
   | Id of string
   | Assign of string * expr
   | Binop of expr * binop * expr
+  | Unop of unop * expr
 
 type stmt =
     Expr of expr
@@ -60,6 +63,8 @@ let string_of_binop = function
   | And -> "and"
   | Or  -> "or"
 
+let string_of_unop = function
+    Not -> "not"
 
 let string_of_typ = function
     Int   -> "int"
@@ -76,7 +81,9 @@ let rec string_of_expr = function
   | Id(id) -> id
   | Assign(id, e) -> id ^ " = " ^ string_of_expr e
   | Binop(e1, op, e2) -> string_of_expr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_expr e2
-
+  | Unop(op, e) -> match op with
+      Not -> string_of_unop op ^ " " ^ string_of_expr e
+      
 let rec string_of_stmt = function
     Expr(e) -> string_of_expr e ^ ";\n"
 
