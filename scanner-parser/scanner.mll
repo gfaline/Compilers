@@ -29,6 +29,7 @@ rule token = parse
   | "bool"   { BOOL }
   | "float"  { FLOAT }
   | "str"    { STR }
+  | "void"   { VOID }
   (* | digits       as d  { LITERAL(int_of_string d) } *)
   | invalid_name as id { raise (Failure("illegal name " ^ id)) }
   | valid_name   as id { ID(id) }

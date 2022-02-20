@@ -3,7 +3,7 @@
 %{ open Ast %}
 
 %token SEMI
-%token INT BOOL FLOAT STR
+%token INT BOOL FLOAT STR VOID
 %token <string> ID
 %token EOF
 
@@ -21,11 +21,19 @@ decls:
   /* nothing */ { [] }
   | decls vdecl { $2 :: $1}
 
-typ:
+vtyp:
     INT   { Int }
   | BOOL  { Bool }
   | FLOAT { Float}
   | STR   { Str }
 
+ftyp:
+    INT   { Int }
+  | BOOL  { Bool }
+  | FLOAT { Float}
+  | STR   { Str }
+  | VOID  { Void }
+
+
 vdecl:
-    typ ID SEMI { ($1, $2) }
+    vtyp ID SEMI { ($1, $2) }

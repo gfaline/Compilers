@@ -1,4 +1,4 @@
-type typ = Int | Bool | Float | Str
+type typ = Int | Bool | Float | Str | Void
 
 type bind = typ * string
 
@@ -9,6 +9,7 @@ let string_of_typ = function
   | Bool  -> "bool"
   | Float -> "float"
   | Str   -> "str"
+  | Void  -> "void"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
