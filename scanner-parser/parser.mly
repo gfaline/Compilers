@@ -7,8 +7,6 @@
 %token <string> ID
 %token EOF
 
-
-
 %start program
 %type <Ast.program> program
 
@@ -23,10 +21,11 @@ decls:
   | decls fdecl   { (fst $1, ($2 :: snd $1)) }
 
 fdecl:
-  FN ID LPAREN formals_opt RPAREN ARROW ftyp LBRACE RBRACE
-    { { typ = $7;
-        fname = $2;
-        formals = List.rev $4 } }
+  FN ID LPAREN formals_opt RPAREN ARROW ftyp LBRACE vdecl_list RBRACE
+    { { typ     = $7;
+        fname   = $2;
+        formals = List.rev $4;
+        locals    = List.rev $9 } }
 
 formals_opt:
     /* nothing */ { [] }
@@ -48,6 +47,11 @@ ftyp:
   | FLOAT { Float}
   | STR   { Str }
   | VOID  { Void }
+
+vdecl_list:
+    /* nothing */ { [] }
+  | vdecl_list vdecl { $2 :: $1 }
+  
 
 vdecl:
     vtyp ID SEMI { ($1, $2) }
