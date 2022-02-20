@@ -21,7 +21,7 @@ let invalid_name =
 rule token = parse
   (* whitespace/comments *)
     [' ' '\t' '\r' '\n'] { token lexbuf }
-  | '#'' { comment lexbuf }
+  | '#' { comment lexbuf }
   (* syntactical characters *)
   | ';' { SEMI }
   (* primitive types *)
@@ -33,7 +33,6 @@ rule token = parse
   | invalid_name as id { raise (Failure("illegal name " ^ id)) }
   | valid_name   as id { ID(id) }
   | eof { EOF }
-  | '~' { EOF }
   | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 
   and comment = parse
