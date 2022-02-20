@@ -10,8 +10,16 @@ type binop =
   | Leq
   | Gt
   | Geq
+  | Xor
+  | And
+  | Or
 
-type typ = Int | Bool | Float | Str | Void
+type typ =
+    Int
+  | Bool
+  | Float
+  | Str
+  | Void
 
 type bind = typ * string
 
@@ -48,6 +56,10 @@ let string_of_binop = function
   | Leq -> "<="
   | Gt  -> ">"
   | Geq -> ">="
+  | Xor -> "xor"
+  | And -> "and"
+  | Or  -> "or"
+
 
 let string_of_typ = function
     Int   -> "int"

@@ -46,6 +46,11 @@ rule token = parse
   | "<="     { LEQ }
   | ">"      { GT }
   | ">="     { GEQ }
+  (* logical operators *)
+  (* | "not"    { NOT } *)
+  | "xor"    { XOR }
+  | "and"    { AND }
+  | "or"     { OR  }
   (* primitive types *)
   | "int"    { INT }
   | "bool"   { BOOL }
