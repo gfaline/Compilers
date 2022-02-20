@@ -1,3 +1,10 @@
+type binop =
+    Add
+  | Sub
+  | Mlt
+  | Div
+  | Mod
+
 type typ = Int | Bool | Float | Str | Void
 
 type bind = typ * string
@@ -9,6 +16,7 @@ type expr =
   | Sliteral of string
   | Id of string
   | Assign of string * expr
+  | Binop of expr * binop * expr
 
 type stmt =
     Expr of expr
@@ -21,6 +29,13 @@ type func_decl = {
     body : stmt list }
 
 type program = bind list * func_decl list
+
+let string_of_binop = function
+    Add -> "+"
+  | Sub -> "-"
+  | Mlt -> "*"
+  | Div -> "/"
+  | Mod -> "%"
 
 let string_of_typ = function
     Int   -> "int"
@@ -36,6 +51,7 @@ let rec string_of_expr = function
   | Sliteral(s) -> s
   | Id(id) -> id
   | Assign(id, e) -> id ^ " = " ^ string_of_expr e
+  | Binop(e1, op, e2) -> string_of_expr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_expr e2
 
 let rec string_of_stmt = function
     Expr(e) -> string_of_expr e ^ ";\n"

@@ -33,6 +33,12 @@ rule token = parse
   | "fn"     { FN }
   | "->"     { ARROW }
   | '='      { ASSIGN }
+  (* arithemtic operators *)
+  | '+'      { PLUS }
+  | '-'      { MINUS }
+  | '*'      { TIMES }
+  | '/'      { DIVIDE }
+  | '%'      { MODULO }
   (* primitive types *)
   | "int"    { INT }
   | "bool"   { BOOL }
