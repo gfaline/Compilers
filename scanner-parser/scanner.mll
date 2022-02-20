@@ -32,13 +32,20 @@ rule token = parse
   | ','      { COMMA }
   | "fn"     { FN }
   | "->"     { ARROW }
-  | '='      { ASSIGN }
   (* arithemtic operators *)
   | '+'      { PLUS }
   | '-'      { MINUS }
   | '*'      { TIMES }
   | '/'      { DIVIDE }
   | '%'      { MODULO }
+  | '='      { ASSIGN }
+  (* comparison operators *)
+  | "=="     { EQ }
+  | "!="     { NEQ }
+  | '<'      { LT }
+  | "<="     { LEQ }
+  | ">"      { GT }
+  | ">="     { GEQ }
   (* primitive types *)
   | "int"    { INT }
   | "bool"   { BOOL }

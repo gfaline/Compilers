@@ -4,6 +4,12 @@ type binop =
   | Mlt
   | Div
   | Mod
+  | Eq
+  | Neq
+  | Lt
+  | Leq
+  | Gt
+  | Geq
 
 type typ = Int | Bool | Float | Str | Void
 
@@ -36,6 +42,12 @@ let string_of_binop = function
   | Mlt -> "*"
   | Div -> "/"
   | Mod -> "%"
+  | Eq  -> "=="
+  | Neq -> "!="
+  | Lt  -> "<"
+  | Leq -> "<="
+  | Gt  -> ">"
+  | Geq -> ">="
 
 let string_of_typ = function
     Int   -> "int"
