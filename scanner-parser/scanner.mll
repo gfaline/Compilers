@@ -21,7 +21,7 @@ let invalid_name =
 rule token = parse
   (* whitespace/comments *)
     [' ' '\t' '\r' '\n'] { token lexbuf }
-  | "//" { comment lexbuf }
+  | '#'' { comment lexbuf }
   (* syntactical characters *)
   | ';' { SEMI }
   (* primitive types *)
