@@ -32,6 +32,7 @@ rule token = parse
   | ','      { COMMA }
   | "fn"     { FN }
   | "->"     { ARROW }
+  | '='      { ASSIGN }
   (* primitive types *)
   | "int"    { INT }
   | "bool"   { BOOL }

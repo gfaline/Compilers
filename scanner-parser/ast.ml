@@ -8,6 +8,7 @@ type expr =
   | Bliteral of bool
   | Sliteral of string
   | Id of string
+  | Assign of string * expr
 
 type stmt =
     Expr of expr
@@ -34,6 +35,7 @@ let rec string_of_expr = function
   | Bliteral(b) -> string_of_bool b
   | Sliteral(s) -> s
   | Id(id) -> id
+  | Assign(id, e) -> id ^ " = " ^ string_of_expr e
 
 let rec string_of_stmt = function
     Expr(e) -> string_of_expr e ^ ";\n"

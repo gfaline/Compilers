@@ -2,7 +2,7 @@
 
 %{ open Ast %}
 
-%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW
+%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW ASSIGN
 %token INT BOOL FLOAT STR VOID
 %token <int> ILIT
 %token <float> FLIT
@@ -13,6 +13,8 @@
 
 %start program
 %type <Ast.program> program
+
+%right ASSIGN
 
 %%
 
@@ -73,3 +75,4 @@ expr:
   | BLIT { Bliteral($1) }
   | SLIT { Sliteral($1) }
   | ID { Id($1) }
+  | ID ASSIGN expr { Assign($1, $3) }
