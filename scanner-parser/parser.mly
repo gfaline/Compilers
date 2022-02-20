@@ -100,4 +100,13 @@ expr:
   | expr OR     expr { Binop($1, Or,  $3) }
   | NOT  expr        { Unop(Not, $2)      }
   | ID ASSIGN expr { Assign($1, $3) }
+  | ID LPAREN args_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
+
+args_opt:
+    /* nothing */ { [] }
+  | args_list     { List.rev $1 }
+
+args_list:
+    expr                 { [$1]     }
+  | args_list COMMA expr { $3 :: $1 }
