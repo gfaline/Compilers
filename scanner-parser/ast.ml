@@ -5,6 +5,7 @@ type bind = typ * string
 type expr =
     Iliteral of int
   | Fliteral of float
+  | Bliteral of bool
   | Id of string
 
 type stmt =
@@ -26,10 +27,10 @@ let string_of_typ = function
   | Str   -> "str"
   | Void  -> "void"
 
-
 let rec string_of_expr = function
     Iliteral(x) -> string_of_int x
   | Fliteral(x) -> string_of_float x
+  | Bliteral(b) -> string_of_bool b
   | Id(id) -> id
 
 let rec string_of_stmt = function
