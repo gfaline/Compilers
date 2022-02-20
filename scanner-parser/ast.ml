@@ -14,7 +14,9 @@ type binop =
   | And
   | Or
 
-type unop = Not
+type unop =
+    Not
+  | Neg
 
 type typ =
     Int
@@ -66,6 +68,7 @@ let string_of_binop = function
 
 let string_of_unop = function
     Not -> "not"
+  | Neg -> "-"
 
 let string_of_typ = function
     Int   -> "int"
@@ -83,7 +86,8 @@ let rec string_of_expr = function
   | Assign(id, e) -> id ^ " = " ^ string_of_expr e
   | Binop(e1, op, e2) -> string_of_expr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_expr e2
   | Unop(op, e) -> (match op with
-      Not -> string_of_unop op ^ " " ^ string_of_expr e)
+      Not -> string_of_unop op ^ " (" ^ string_of_expr e ^ ")"
+    | Neg -> string_of_unop op ^ "(" ^ string_of_expr e ^ ")")
   | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
 
 let rec string_of_stmt = function
