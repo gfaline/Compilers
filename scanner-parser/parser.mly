@@ -3,7 +3,7 @@
 %{ open Ast %}
 
 %token SEMI
-%token INT
+%token INT BOOL FLOAT STR
 %token <string> ID
 %token EOF
 
@@ -22,7 +22,10 @@ decls:
   | decls vdecl { $2 :: $1}
 
 typ:
-    INT { Int }
+    INT   { Int }
+  | BOOL  { Bool }
+  | FLOAT { Float}
+  | STR   { Str }
 
 vdecl:
     typ ID SEMI { ($1, $2) }

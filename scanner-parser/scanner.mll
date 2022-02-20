@@ -25,8 +25,10 @@ rule token = parse
   (* syntactical characters *)
   | ';' { SEMI }
   (* primitive types *)
-  | "int" { INT }
-
+  | "int"    { INT }
+  | "bool"   { BOOL }
+  | "float"  { FLOAT }
+  | "str"    { STR }
   (* | digits       as d  { LITERAL(int_of_string d) } *)
   | invalid_name as id { raise (Failure("illegal name " ^ id)) }
   | valid_name   as id { ID(id) }
