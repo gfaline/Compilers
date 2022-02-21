@@ -4,7 +4,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
-%token RETURN IF ELSE FOR FROM TO WHILE INT BOOL FLOAT STR VOID
+%token RETURN IF ELIF ELSE FOR FROM TO WHILE INT BOOL FLOAT STR VOID
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
@@ -17,6 +17,7 @@
 
 %nonassoc NOELSE
 %nonassoc ELSE
+%nonassoc ELIF
 %right ASSIGN
 %left OR
 %left AND
@@ -81,10 +82,26 @@ stmt:
     expr SEMI            { Expr($1) }
   | RETURN expr_opt SEMI { Return($2) }
   | LBRACE stmt_list RBRACE { Block (List.rev $2) }
-  | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
-  | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7)        }
+  | if_stmt { $1 }
   | FOR LPAREN ID FROM expr TO expr RPAREN stmt { For($3, $5, $7, $9) }
   | WHILE LPAREN expr RPAREN stmt  { While($3, $5) }
+
+if_stmt:
+    IF LPAREN expr RPAREN stmt elif_stmts else_stmt { If($3, $5, $6, $7) }
+
+else_stmt:
+    %prec NOELSE { Block([]) }
+  | ELSE stmt    { $2 }
+
+elif_stmts:
+    /* nothing */ { [] }
+  | elif_stmts elif_stmt { $2 :: $1 }
+
+elif_stmt:
+  ELIF LPAREN expr RPAREN stmt { ($3, $5)}
+
+// simple_stmt:
+//     expr SEMI { Expr($1) }
 
 expr_opt:
     /* nothing */ { Noexpr }

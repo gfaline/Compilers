@@ -56,6 +56,7 @@ rule token = parse
   | "from"   { FROM }
   | "to"     { TO }
   | "if"     { IF }
+  | "elif"   { ELIF }
   | "else"   { ELSE }
   | "while"  { WHILE }
   | "return" { RETURN }
