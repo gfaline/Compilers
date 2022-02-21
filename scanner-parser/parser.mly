@@ -76,12 +76,21 @@ stmt_list:
   | stmt_list stmt { $2 :: $1 }
 
 stmt:
-    expr SEMI            { Expr($1) }
+    expr_stmt   { $1 }
+  | return_stmt { $1 }
+  | block_stmt  { $1 }
+  | if_stmt     { $1 }
+  | for_stmt    { $1 }
+  | while_stmt  { $1 }
+
+expr_stmt:
+    expr SEMI { Expr($1) }
+
+return_stmt:
   | RETURN expr_opt SEMI { Return($2) }
+
+block_stmt:
   | LBRACE stmt_list RBRACE { Block (List.rev $2) }
-  | if_stmt    { $1 }
-  | for_stmt   { $1 }
-  | while_stmt { $1 }
   
 if_stmt:
     IF LPAREN expr RPAREN stmt elif_stmts else_stmt { If($3, $5, $6, $7) }
