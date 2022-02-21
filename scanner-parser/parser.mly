@@ -61,11 +61,8 @@ vtyp:
   | STR   { Str }
 
 ftyp:
-    INT   { Int }
-  | BOOL  { Bool }
-  | FLOAT { Float}
-  | STR   { Str }
-  | VOID  { Void }
+    vtyp { $1 }
+  | VOID { Void }
 
 vdecl_list:
     /* nothing */ { [] }
