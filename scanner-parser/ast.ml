@@ -43,7 +43,7 @@ type stmt =
     Expr of expr
   | Return of expr
   | Block of stmt list
-  | If of expr * stmt
+  | If of expr * stmt * stmt
   | For of string * expr * expr * stmt
   | While of expr * stmt
 
@@ -106,9 +106,14 @@ let rec string_of_stmt = function
       "{\n" ^
        String.concat "" (List.map string_of_stmt stmts) ^
       "}\n"
-  | If (e, s) ->
+  | If (e, s, Block([])) ->
       "if (" ^ string_of_expr e ^ ")\n" ^
       string_of_stmt s
+  | If (e, s1, s2) ->
+      "if (" ^ string_of_expr e ^ ")\n" ^
+      string_of_stmt s1 ^
+      "else\n" ^
+      string_of_stmt s2
   | While(e, s) ->
       "while (" ^ string_of_expr e ^ ")\n" ^
       string_of_stmt s

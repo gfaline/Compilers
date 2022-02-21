@@ -4,7 +4,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
-%token RETURN IF FOR FROM TO WHILE INT BOOL FLOAT STR VOID
+%token RETURN IF ELSE FOR FROM TO WHILE INT BOOL FLOAT STR VOID
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
@@ -15,6 +15,8 @@
 %start program
 %type <Ast.program> program
 
+%nonassoc NOELSE
+%nonassoc ELSE
 %right ASSIGN
 %left OR
 %left AND
@@ -79,7 +81,8 @@ stmt:
     expr SEMI            { Expr($1) }
   | RETURN expr_opt SEMI { Return($2) }
   | LBRACE stmt_list RBRACE { Block (List.rev $2) }
-  | IF LPAREN expr RPAREN stmt { If($3, $5) }
+  | IF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5, Block([])) }
+  | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7)        }
   | FOR LPAREN ID FROM expr TO expr RPAREN stmt { For($3, $5, $7, $9) }
   | WHILE LPAREN expr RPAREN stmt  { While($3, $5) }
 
