@@ -42,6 +42,7 @@ type expr =
 type stmt =
     Expr of expr
   | Return of expr
+  | Block of stmt list
 
 type func_decl = {
     typ : typ;
@@ -98,6 +99,7 @@ let rec string_of_stmt = function
   | Return(e) -> (match e with
       Noexpr -> "return;\n"
     | expr -> "return " ^ string_of_expr e ^ ";\n")
+  | Block(stmts) -> "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
