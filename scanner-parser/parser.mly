@@ -82,10 +82,10 @@ stmt:
     expr SEMI            { Expr($1) }
   | RETURN expr_opt SEMI { Return($2) }
   | LBRACE stmt_list RBRACE { Block (List.rev $2) }
-  | if_stmt { $1 }
-  | FOR LPAREN ID FROM expr TO expr RPAREN stmt { For($3, $5, $7, $9) }
-  | WHILE LPAREN expr RPAREN stmt  { While($3, $5) }
-
+  | if_stmt    { $1 }
+  | for_stmt   { $1 }
+  | while_stmt { $1 }
+  
 if_stmt:
     IF LPAREN expr RPAREN stmt elif_stmts else_stmt { If($3, $5, $6, $7) }
 
@@ -100,8 +100,11 @@ elif_stmts:
 elif_stmt:
   ELIF LPAREN expr RPAREN stmt { ($3, $5)}
 
-// simple_stmt:
-//     expr SEMI { Expr($1) }
+for_stmt:
+    FOR LPAREN ID FROM expr TO expr RPAREN stmt { For($3, $5, $7, $9) }
+
+while_stmt:
+    WHILE LPAREN expr RPAREN stmt  { While($3, $5) }
 
 expr_opt:
     /* nothing */ { Noexpr }
