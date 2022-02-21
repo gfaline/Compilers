@@ -46,6 +46,8 @@ type stmt =
   | If of expr * stmt list * (expr * stmt list) list * stmt list
   | For of string * expr * expr * stmt list
   | While of expr * stmt list
+  | Break
+  | Continue
 
 type func_decl = {
     typ : typ;
@@ -153,7 +155,10 @@ let rec string_of_stmt_list = function
         "for " ^ id ^ " from " ^ string_of_expr e1 ^ " to " ^ string_of_expr e2 ^ "\n" ^
         "{\n" ^
         string_of_stmt_list s ^
-        "}") ^ "\n" ^ string_of_stmt_list sts
+        "}"
+    | Break -> "break;"
+    | Continue -> "continue;")
+    ^ "\n" ^ string_of_stmt_list sts
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
 
@@ -162,7 +167,6 @@ let string_of_fdecl fdecl =
   "{\n" ^
   String.concat "" (List.map append_nl (List.map string_of_vdecl fdecl.locals)) ^
   (string_of_stmt_list fdecl.body) ^
-  (* String.concat "" (List.map append_nl (List.map string_of_stmt fdecl.body)) ^ *)
   "}"
 
 let string_of_program (vdecls, fdecls) =

@@ -59,6 +59,8 @@ rule token = parse
   | "elif"   { ELIF }
   | "else"   { ELSE }
   | "while"  { WHILE }
+  | "break"  { BREAK }
+  | "continue" { CONTINUE }
   | "return" { RETURN }
   (* primitive types *)
   | "int"    { INT }

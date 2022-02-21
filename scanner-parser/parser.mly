@@ -4,7 +4,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
-%token RETURN IF ELIF ELSE FOR FROM TO WHILE INT BOOL FLOAT STR VOID
+%token BREAK CONTINUE RETURN IF ELIF ELSE FOR FROM TO WHILE INT BOOL FLOAT STR VOID
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
@@ -82,6 +82,8 @@ stmt:
   | if_stmt     { $1 }
   | for_stmt    { $1 }
   | while_stmt  { $1 }
+  | BREAK SEMI    { Break }
+  | CONTINUE SEMI { Continue }
 
 expr_stmt:
     expr SEMI { Expr($1) }
