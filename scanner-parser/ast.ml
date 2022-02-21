@@ -37,9 +37,11 @@ type expr =
   | Binop of expr * binop * expr
   | Unop of unop * expr
   | Call of string * expr list
+  | Noexpr
 
 type stmt =
     Expr of expr
+  | Return of expr
 
 type func_decl = {
     typ : typ;
@@ -89,9 +91,13 @@ let rec string_of_expr = function
       Not -> string_of_unop op ^ " (" ^ string_of_expr e ^ ")"
     | Neg -> string_of_unop op ^ "(" ^ string_of_expr e ^ ")")
   | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
+  | Noexpr -> ""
 
 let rec string_of_stmt = function
     Expr(e) -> string_of_expr e ^ ";\n"
+  | Return(e) -> (match e with
+      Noexpr -> "return;\n"
+    | expr -> "return " ^ string_of_expr e ^ ";\n")
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

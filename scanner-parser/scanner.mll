@@ -51,6 +51,8 @@ rule token = parse
   | "xor"    { XOR }
   | "and"    { AND }
   | "or"     { OR  }
+  (* control flow *)
+  | "return" { RETURN }
   (* primitive types *)
   | "int"    { INT }
   | "bool"   { BOOL }

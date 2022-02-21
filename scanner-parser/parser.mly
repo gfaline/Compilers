@@ -4,7 +4,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
-%token INT BOOL FLOAT STR VOID
+%token RETURN INT BOOL FLOAT STR VOID
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
@@ -76,7 +76,12 @@ stmt_list:
   | stmt_list stmt { $2 :: $1 }
 
 stmt:
-    expr SEMI { Expr($1) }
+    expr SEMI            { Expr($1) }
+  | RETURN expr_opt SEMI { Return($2) }
+
+expr_opt:
+    /* nothing */ { Noexpr }
+  | expr          { $1     }
 
 expr:
     ILIT { Iliteral($1) }
