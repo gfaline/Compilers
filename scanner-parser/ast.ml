@@ -42,10 +42,10 @@ type expr =
 type stmt =
     Expr of expr
   | Return of expr
-  | Block of stmt list
-  | If of expr * stmt * (expr * stmt) list * stmt
-  | For of string * expr * expr * stmt
-  | While of expr * stmt
+  (* | Block of stmt list *)
+  | If of expr * stmt list * (expr * stmt list) list * stmt list
+  | For of string * expr * expr * stmt list
+  | While of expr * stmt list
 
 type func_decl = {
     typ : typ;
@@ -98,42 +98,62 @@ let rec string_of_expr = function
   | Noexpr -> ""
 
 let append_nl s = s ^ "\n"
+let rec join_strings d = function
+    [] -> ""
+  | [str] -> str
+  | str::strs -> str ^ d ^ (join_strings d strs)
 
-let rec string_of_stmt = function
-    Expr(e) -> string_of_expr e ^ ";"
-  | Return(e) -> (match e with
-      Noexpr -> "return;"
-    | expr   -> "return " ^ string_of_expr e ^ ";")
-  | Block(stmts) ->
+let rec string_of_stmt_list = function
+    [] -> ""
+  | st::sts -> (match st with
+      Expr(e) -> string_of_expr e ^ ";"
+    | Return(e) -> (match e with
+        Noexpr -> "return;"
+      | expr   -> "return " ^ string_of_expr e ^ ";")
+    | If(e, s, [], []) ->
+      "if (" ^ string_of_expr e ^ ")\n" ^
       "{\n" ^
-       String.concat "" (List.map append_nl (List.map string_of_stmt stmts)) ^
+      string_of_stmt_list s ^
       "}"
-  | If(e, s, [], Block([])) ->
-    "if (" ^ string_of_expr e ^ ")\n" ^
-      string_of_stmt s
-  | If(e, s1, [], s2) ->
-    "if (" ^ string_of_expr e ^ ")\n" ^
-      string_of_stmt s1 ^ "\n" ^
+    | If(e, s1, [], s2) ->
+      "if (" ^ string_of_expr e ^ ")\n" ^
+      "{\n" ^
+      string_of_stmt_list s1 ^ "\n" ^
+      "}\n" ^
       "else\n" ^
-      string_of_stmt s2
-  | If (e, s, elifs, Block([])) -> 
-    "if (" ^ string_of_expr e ^ ")\n" ^
-    string_of_stmt s ^
-    String.concat "" (List.map (fun elif -> "\nelif (" ^ string_of_expr (fst elif) ^ ")\n" ^
-                                            string_of_stmt (snd elif)) elifs)
-  | If (e, s1, elifs, s2) -> 
-    "if (" ^ string_of_expr e ^ ")\n" ^
-    string_of_stmt s1 ^
-    String.concat "" (List.map (fun elif -> "\nelif (" ^ string_of_expr (fst elif) ^ ")\n" ^
-                                             string_of_stmt (snd elif)) elifs) ^ "\n" ^
-                     string_of_stmt s2
-  | While(e, s) ->
-      "while (" ^ string_of_expr e ^ ")\n" ^
-      string_of_stmt s
-  | For(id, e1, e2, s) ->
-      "for (" ^ id ^ " from " ^ string_of_expr e1 ^ " to" ^ string_of_expr e2 ^ ")\n" ^
-      string_of_stmt s
-                      
+      string_of_stmt_list s2
+    | If (e, s, elifs, []) -> 
+      "if (" ^ string_of_expr e ^ ")\n" ^
+      "{\n" ^
+      string_of_stmt_list s ^
+      "}\n" ^
+      join_strings "\n" (List.map (fun elif -> "elif (" ^ string_of_expr (fst elif) ^ ")\n" ^
+                                              "{\n" ^
+                                              string_of_stmt_list (snd elif) ^
+                                              "}") elifs)
+    | If (e, s1, elifs, s2) -> 
+      "if (" ^ string_of_expr e ^ ")\n" ^
+      "{\n" ^
+      string_of_stmt_list s1 ^
+      "}\n" ^
+      (join_strings "\n" (List.map (fun elif -> "elif (" ^ string_of_expr (fst elif) ^ ")\n" ^
+                                              "{\n" ^
+                                              string_of_stmt_list (snd elif) ^
+                                              "}") elifs)) ^ "\n" ^
+                                              "else\n" ^
+                                              "{\n" ^
+                                              string_of_stmt_list s2 ^
+                                              "}"
+    | While(e, s) ->
+        "while (" ^ string_of_expr e ^ ")\n" ^
+        "{\n" ^
+        string_of_stmt_list s ^
+        "}"
+    | For(id, e1, e2, s) ->
+        "for (" ^ id ^ " from " ^ string_of_expr e1 ^ " to" ^ string_of_expr e2 ^ ")\n" ^
+        "{\n" ^
+        string_of_stmt_list s ^
+        "}") ^ "\n" ^ string_of_stmt_list sts
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
 
@@ -141,7 +161,8 @@ let string_of_fdecl fdecl =
   "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map snd fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
   "{\n" ^
   String.concat "" (List.map append_nl (List.map string_of_vdecl fdecl.locals)) ^
-  String.concat "" (List.map append_nl (List.map string_of_stmt fdecl.body)) ^
+  (string_of_stmt_list fdecl.body) ^
+  (* String.concat "" (List.map append_nl (List.map string_of_stmt fdecl.body)) ^ *)
   "}"
 
 let string_of_program (vdecls, fdecls) =

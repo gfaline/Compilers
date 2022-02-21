@@ -72,13 +72,13 @@ vdecl:
     vtyp ID SEMI { ($1, $2) }
 
 stmt_list:
-    /* nothing */ { [] }
+    // /* nothing */ { [] }
+    stmt { [$1] }
   | stmt_list stmt { $2 :: $1 }
 
 stmt:
     expr_stmt   { $1 }
   | return_stmt { $1 }
-  | block_stmt  { $1 }
   | if_stmt     { $1 }
   | for_stmt    { $1 }
   | while_stmt  { $1 }
@@ -88,29 +88,26 @@ expr_stmt:
 
 return_stmt:
   | RETURN expr_opt SEMI { Return($2) }
-
-block_stmt:
-  | LBRACE stmt_list RBRACE { Block (List.rev $2) }
   
 if_stmt:
-    IF LPAREN expr RPAREN stmt elif_stmts else_stmt { If($3, $5, $6, $7) }
+    IF LPAREN expr RPAREN LBRACE stmt_list RBRACE elif_stmts else_stmt { If($3, List.rev $6, $8, $9) }
 
 else_stmt:
-    %prec NOELSE { Block([]) }
-  | ELSE stmt    { $2 }
+    %prec NOELSE { [] }
+  | ELSE LBRACE stmt_list RBRACE    { List.rev $3 }
 
 elif_stmts:
     /* nothing */ { [] }
   | elif_stmts elif_stmt { $2 :: $1 }
 
 elif_stmt:
-  ELIF LPAREN expr RPAREN stmt { ($3, $5)}
+  ELIF LPAREN expr RPAREN LBRACE stmt_list RBRACE { ($3, List.rev $6) }
 
 for_stmt:
-    FOR LPAREN ID FROM expr TO expr RPAREN stmt { For($3, $5, $7, $9) }
+    FOR LPAREN ID FROM expr TO expr RPAREN LBRACE stmt_list RBRACE { For($3, $5, $7, List.rev $10) }
 
 while_stmt:
-    WHILE LPAREN expr RPAREN stmt  { While($3, $5) }
+    WHILE LPAREN expr RPAREN LBRACE stmt_list RBRACE  { While($3, List.rev $6) }
 
 expr_opt:
     /* nothing */ { Noexpr }

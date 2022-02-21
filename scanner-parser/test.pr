@@ -1,1 +1,39 @@
-asdf
+fn foo(int a, str f) -> void
+{
+  int b;
+  if (true)
+  {
+    a = 4 + 2;
+    return;
+    if (a)
+    {
+      a;
+    }
+    elif (b)
+    {
+      fjidao;
+    }
+    # elif (0)
+    # {
+      # kodaf;
+    # }
+    else
+    {
+      sjfaiod;
+    }
+  }
+  
+  for (i from 3 to 8)
+  {
+    do;
+  }
+  while (true)
+  {
+    asjdf;
+    while (false)
+    {
+      jkl;sdaf;
+    }
+  }
+  
+}
