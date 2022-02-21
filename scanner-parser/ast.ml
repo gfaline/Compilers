@@ -43,6 +43,7 @@ type stmt =
     Expr of expr
   | Return of expr
   | Block of stmt list
+  | While of expr * stmt
 
 type func_decl = {
     typ : typ;
@@ -100,6 +101,7 @@ let rec string_of_stmt = function
       Noexpr -> "return;\n"
     | expr -> "return " ^ string_of_expr e ^ ";\n")
   | Block(stmts) -> "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
+  | While(e, s) -> "while (" ^ string_of_expr e ^ ")\n" ^ "{\n" ^ string_of_stmt s ^ "\n}\n" 
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

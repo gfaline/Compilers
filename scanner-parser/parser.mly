@@ -4,7 +4,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
-%token RETURN INT BOOL FLOAT STR VOID
+%token RETURN WHILE INT BOOL FLOAT STR VOID
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
@@ -79,6 +79,7 @@ stmt:
     expr SEMI            { Expr($1) }
   | RETURN expr_opt SEMI { Return($2) }
   | LBRACE stmt_list RBRACE { Block (List.rev $2) }
+  | WHILE LPAREN expr RPAREN stmt  { While($3, $5)         }
 
 expr_opt:
     /* nothing */ { Noexpr }

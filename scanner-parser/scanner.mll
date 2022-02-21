@@ -52,6 +52,7 @@ rule token = parse
   | "and"    { AND }
   | "or"     { OR  }
   (* control flow *)
+  | "while"  { WHILE }
   | "return" { RETURN }
   (* primitive types *)
   | "int"    { INT }
