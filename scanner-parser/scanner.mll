@@ -52,6 +52,10 @@ rule token = parse
   | "and"    { AND }
   | "or"     { OR  }
   (* control flow *)
+  | "for"    { FOR }
+  | "from"   { FROM }
+  | "to"     { TO }
+  | "if"     { IF }
   | "while"  { WHILE }
   | "return" { RETURN }
   (* primitive types *)
