@@ -111,32 +111,32 @@ let rec string_of_stmt_list = function
         Noexpr -> "return;"
       | expr   -> "return " ^ string_of_expr e ^ ";")
     | If(e, s, [], []) ->
-      "if (" ^ string_of_expr e ^ ")\n" ^
+      "if " ^ string_of_expr e ^ "\n" ^
       "{\n" ^
       string_of_stmt_list s ^
       "}"
     | If(e, s1, [], s2) ->
-      "if (" ^ string_of_expr e ^ ")\n" ^
+      "if " ^ string_of_expr e ^ "\n" ^
       "{\n" ^
       string_of_stmt_list s1 ^ "\n" ^
       "}\n" ^
       "else\n" ^
       string_of_stmt_list s2
     | If (e, s, elifs, []) -> 
-      "if (" ^ string_of_expr e ^ ")\n" ^
+      "if " ^ string_of_expr e ^ "\n" ^
       "{\n" ^
       string_of_stmt_list s ^
       "}\n" ^
-      join_strings "\n" (List.map (fun elif -> "elif (" ^ string_of_expr (fst elif) ^ ")\n" ^
+      join_strings "\n" (List.map (fun elif -> "elif " ^ string_of_expr (fst elif) ^ "\n" ^
                                               "{\n" ^
                                               string_of_stmt_list (snd elif) ^
                                               "}") elifs)
     | If (e, s1, elifs, s2) -> 
-      "if (" ^ string_of_expr e ^ ")\n" ^
+      "if " ^ string_of_expr e ^ "\n" ^
       "{\n" ^
       string_of_stmt_list s1 ^
       "}\n" ^
-      (join_strings "\n" (List.map (fun elif -> "elif (" ^ string_of_expr (fst elif) ^ ")\n" ^
+      (join_strings "\n" (List.map (fun elif -> "elif " ^ string_of_expr (fst elif) ^ "\n" ^
                                               "{\n" ^
                                               string_of_stmt_list (snd elif) ^
                                               "}") elifs)) ^ "\n" ^
@@ -145,12 +145,12 @@ let rec string_of_stmt_list = function
                                               string_of_stmt_list s2 ^
                                               "}"
     | While(e, s) ->
-        "while (" ^ string_of_expr e ^ ")\n" ^
+        "while " ^ string_of_expr e ^ "\n" ^
         "{\n" ^
         string_of_stmt_list s ^
         "}"
     | For(id, e1, e2, s) ->
-        "for (" ^ id ^ " from " ^ string_of_expr e1 ^ " to" ^ string_of_expr e2 ^ ")\n" ^
+        "for " ^ id ^ " from " ^ string_of_expr e1 ^ " to " ^ string_of_expr e2 ^ "\n" ^
         "{\n" ^
         string_of_stmt_list s ^
         "}") ^ "\n" ^ string_of_stmt_list sts

@@ -90,7 +90,7 @@ return_stmt:
   | RETURN expr_opt SEMI { Return($2) }
   
 if_stmt:
-    IF LPAREN expr RPAREN LBRACE stmt_list RBRACE elif_stmts else_stmt { If($3, List.rev $6, $8, $9) }
+    IF expr LBRACE stmt_list RBRACE elif_stmts else_stmt { If($2, List.rev $4, $6, $7) }
 
 else_stmt:
     %prec NOELSE { [] }
@@ -101,13 +101,13 @@ elif_stmts:
   | elif_stmts elif_stmt { $2 :: $1 }
 
 elif_stmt:
-  ELIF LPAREN expr RPAREN LBRACE stmt_list RBRACE { ($3, List.rev $6) }
+  ELIF expr LBRACE stmt_list RBRACE { ($2, List.rev $4) }
 
 for_stmt:
-    FOR LPAREN ID FROM expr TO expr RPAREN LBRACE stmt_list RBRACE { For($3, $5, $7, List.rev $10) }
+    FOR ID FROM expr TO expr LBRACE stmt_list RBRACE { For($2, $4, $6, List.rev $8) }
 
 while_stmt:
-    WHILE LPAREN expr RPAREN LBRACE stmt_list RBRACE  { While($3, List.rev $6) }
+    WHILE expr LBRACE stmt_list RBRACE  { While($2, List.rev $4) }
 
 expr_opt:
     /* nothing */ { Noexpr }
