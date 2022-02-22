@@ -32,6 +32,7 @@ rule token = parse
   | ','      { COMMA }
   | "fn"     { FN }
   | "->"     { ARROW }
+  | '.'      { PERIOD }
   (* arithemtic operators *)
   | '+'      { PLUS }
   | '-'      { MINUS }

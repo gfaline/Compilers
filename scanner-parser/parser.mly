@@ -5,6 +5,7 @@
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA OBJDEF FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
 %token BIND UNBIND BREAK CONTINUE RETURN IF ELIF ELSE FOR FROM TO WHILE OBJ INT BOOL FLOAT STR VOID
+%token PERIOD
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
@@ -151,6 +152,7 @@ expr:
   | ID ASSIGN expr { Assign($1, $3) }
   | ID LPAREN args_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
+  | ID PERIOD ID { Getprop($1, $3) }
 
 args_opt:
     /* nothing */ { [] }
