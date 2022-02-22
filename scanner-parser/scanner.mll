@@ -74,6 +74,7 @@ rule token = parse
   | "float"  { FLOAT }
   | "str"    { STR }
   | "void"   { VOID }
+  | "list"   { LIST }
   (* literals *)
   | digits as x            { ILIT(int_of_string x)   } 
   | digits '.' digit+ as x { FLIT(float_of_string x) }

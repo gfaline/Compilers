@@ -29,6 +29,7 @@ type typ =
   | Str
   | Void
   | Obj
+  | List of typ
 
 type bind = typ * string
 
@@ -90,13 +91,14 @@ let string_of_unop = function
     Not -> "not"
   | Neg -> "-"
 
-let string_of_typ = function
+let rec string_of_typ = function
     Int   -> "int"
   | Bool  -> "bool"
   | Float -> "float"
   | Str   -> "str"
   | Void  -> "void"
   | Obj   -> "obj"
+  | List(t) -> string_of_typ t ^ " list"
 
 let rec string_of_expr = function
     Iliteral(x) -> string_of_int x
