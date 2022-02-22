@@ -28,6 +28,8 @@ rule token = parse
   | ')'      { RPAREN }
   | '{'      { LBRACE }
   | '}'      { RBRACE }
+  | '['      { LBRCKT }
+  | ']'      { RBRCKT }
   | ';'      { SEMI }
   | ','      { COMMA }
   | "fn"     { FN }

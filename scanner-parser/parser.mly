@@ -6,6 +6,7 @@
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
 %token BIND UNBIND BREAK CONTINUE RETURN IF ELIF ELSE FOR FROM TO WHILE OBJ INT BOOL FLOAT STR VOID LIST
 %token PERIOD
+%token LBRCKT RBRCKT
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
@@ -134,6 +135,7 @@ expr:
   | BLIT { Bliteral($1) }
   | SLIT { Sliteral($1) }
   | ID   { Id($1) }
+  | LBRCKT args_list RBRCKT { Lliteral($2) }
   | expr PLUS   expr { Binop($1, Add, $3) }
   | expr MINUS  expr { Binop($1, Sub, $3) }
   | expr TIMES  expr { Binop($1, Mlt, $3) }
