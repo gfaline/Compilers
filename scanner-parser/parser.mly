@@ -39,9 +39,6 @@ decls:
   | decls odecl   { (fst_trpl $1, ($2 :: snd_trpl $1), trd_trpl $1) }
   | decls fdecl   { (fst_trpl $1, snd_trpl $1, ($2 :: trd_trpl $1)) }
 
-
-
-
 odecl:
   OBJDEF ID LBRACE vdecl_list RBRACE
     { { oname = $2;
