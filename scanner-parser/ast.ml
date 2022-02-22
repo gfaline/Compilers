@@ -106,7 +106,6 @@ let rec string_of_expr = function
   | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
   | Noexpr -> ""
 
-let append_nl s = s ^ "\n"
 let rec join_strings d = function
     [] -> ""
   | [str] -> str
@@ -178,11 +177,11 @@ let string_of_odecl odecl =
 let string_of_fdecl fdecl =
   "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map snd fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
   "{\n" ^
-  String.concat "" (List.map append_nl (List.map string_of_vdecl fdecl.locals)) ^
-  (string_of_stmt_list fdecl.body) ^
+  join_strings "\n" (List.map string_of_vdecl fdecl.locals) ^ "\n" ^
+  string_of_stmt_list fdecl.body ^
   "}"
 
 let string_of_program (vdecls, odecls, fdecls) =
-  String.concat "" (List.map append_nl (List.map string_of_vdecl vdecls)) ^
-  String.concat "" (List.map append_nl (List.map string_of_odecl odecls)) ^
-  String.concat "" (List.map append_nl (List.map string_of_fdecl fdecls))
+  join_strings "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n" ^
+  join_strings "\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
+  join_strings "\n" (List.rev (List.map string_of_fdecl fdecls))
