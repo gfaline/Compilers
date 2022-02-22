@@ -175,8 +175,10 @@ let string_of_odecl odecl =
   String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
   "}"
 
+let string_of_formal (t, id) = string_of_typ t ^ " " ^ id
+
 let string_of_fdecl fdecl =
-  "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map snd fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
+  "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map string_of_formal fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
   "{\n" ^
   String.concat "\n" (List.map string_of_vdecl fdecl.locals) ^ "\n" ^
   string_of_stmt_list fdecl.body ^
