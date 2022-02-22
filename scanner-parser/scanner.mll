@@ -62,6 +62,8 @@ rule token = parse
   | "break"  { BREAK }
   | "continue" { CONTINUE }
   | "return" { RETURN }
+  (* Propeller stuff *)
+  | "obj"    { OBJ }
   (* primitive types *)
   | "int"    { INT }
   | "bool"   { BOOL }
