@@ -152,7 +152,8 @@ expr:
   | ID ASSIGN expr { Assign($1, $3) }
   | ID LPAREN args_opt RPAREN { Call($1, $3) }
   | LPAREN expr RPAREN { $2 }
-  | ID PERIOD ID { Getprop($1, $3) }
+  | ID PERIOD ID %prec NOT { Getprop($1, $3) }
+  | ID PERIOD ID ASSIGN expr { Setprop($1, $3, $5) }
 
 args_opt:
     /* nothing */ { [] }

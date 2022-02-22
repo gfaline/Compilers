@@ -47,6 +47,7 @@ type expr =
   | Unop of unop * expr
   | Call of string * expr list
   | Getprop of string * string
+  | Setprop of string * string * expr
   | Noexpr
 
 type stmt =
@@ -110,6 +111,7 @@ let rec string_of_expr = function
     | Neg -> string_of_unop op ^ "(" ^ string_of_expr e ^ ")")
   | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
   | Getprop(o, p) -> o ^ "." ^ p
+  | Setprop(o, p, e) -> o ^ "." ^ p ^ " = " ^ string_of_expr e
   | Noexpr -> ""
 
 let rec string_of_stmt_list = function
