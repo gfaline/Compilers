@@ -42,7 +42,6 @@ type expr =
 type stmt =
     Expr of expr
   | Return of expr
-  (* | Block of stmt list *)
   | If of expr * stmt list * (expr * stmt list) list * stmt list
   | For of string * expr * expr * stmt list
   | While of expr * stmt list
