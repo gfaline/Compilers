@@ -56,6 +56,8 @@ type stmt =
   | While of expr * stmt list
   | Break
   | Continue
+  | Bind of string * string
+  | Unbind of string * string
 
 type func_decl = {
   typ : typ;
@@ -165,8 +167,10 @@ let rec string_of_stmt_list = function
         string_of_stmt_list s ^
         "}"
     | Break -> "break;"
-    | Continue -> "continue;")
-    ^ "\n" ^ string_of_stmt_list sts
+    | Continue -> "continue;"
+    | Bind(o, f) -> "bind( " ^ o ^ ", " ^ f ^ ");"
+    | Unbind(o, f) -> "unbind( " ^ o ^ ", " ^ f ^ ");") ^
+    "\n" ^ string_of_stmt_list sts
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
 

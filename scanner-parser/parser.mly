@@ -4,7 +4,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA OBJDEF FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
-%token BREAK CONTINUE RETURN IF ELIF ELSE FOR FROM TO WHILE OBJ INT BOOL FLOAT STR VOID
+%token BIND UNBIND BREAK CONTINUE RETURN IF ELIF ELSE FOR FROM TO WHILE OBJ INT BOOL FLOAT STR VOID
 %token <int> ILIT
 %token <float> FLIT
 %token <bool> BLIT
@@ -38,6 +38,9 @@ decls:
   | decls vdecl   { (($2 :: fst_trpl $1), snd_trpl $1, trd_trpl $1) }
   | decls odecl   { (fst_trpl $1, ($2 :: snd_trpl $1), trd_trpl $1) }
   | decls fdecl   { (fst_trpl $1, snd_trpl $1, ($2 :: trd_trpl $1)) }
+
+
+
 
 odecl:
   OBJDEF ID LBRACE vdecl_list RBRACE
@@ -88,6 +91,13 @@ stmt:
   | while_stmt  { $1 }
   | BREAK SEMI    { Break }
   | CONTINUE SEMI { Continue }
+  | bind_stmt   { $1 }
+  | unbind_stmt { $1 }
+
+bind_stmt:
+  BIND LPAREN ID COMMA ID RPAREN SEMI { Bind ($3, $5) }
+unbind_stmt:
+  UNBIND LPAREN ID COMMA ID RPAREN SEMI { Bind ($3, $5) }
 
 expr_stmt:
     expr SEMI { Expr($1) }
