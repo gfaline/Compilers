@@ -34,9 +34,15 @@ program:
     decls EOF { $1 }
 
 decls:
-    /* nothing */ { ([], [])               }
-  | decls vdecl   { (($2 :: fst $1), snd $1) }
-  | decls fdecl   { (fst $1, ($2 :: snd $1)) }
+    /* nothing */ { ([], [], []) }
+  | decls vdecl   { (($2 :: fst_trpl $1), snd_trpl $1, trd_trpl $1) }
+  | decls odecl   { (fst_trpl $1, ($2 :: snd_trpl $1), trd_trpl $1) }
+  | decls fdecl   { (fst_trpl $1, snd_trpl $1, ($2 :: trd_trpl $1)) }
+
+odecl:
+  OBJ ID LBRACE vdecl_list RBRACE
+    { { oname = $2;
+        props = List.rev $4 } }
 
 fdecl:
   FN ID LPAREN formals_opt RPAREN ARROW ftyp LBRACE vdecl_list stmt_list RBRACE

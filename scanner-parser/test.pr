@@ -1,7 +1,13 @@
+obj sadf
+{
+  int a;
+}
+
 fn foo(int a, str f) -> void
 {
   int b;
-  if (true)
+  asdf;
+  if true
   {
     a = 4 + 2;
     return;
@@ -13,24 +19,20 @@ fn foo(int a, str f) -> void
     {
       fjidao;
     }
-    # elif (0)
-    # {
-      # kodaf;
-    # }
     else
     {
       sjfaiod;
     }
   }
   
-  for (i from 3 to 8)
+  for i from 3 to 8
   {
     do;
   }
-  while (true)
+  while true
   {
     asjdf;
-    while (false)
+    while false
     {
       jkl;sdaf;
     }

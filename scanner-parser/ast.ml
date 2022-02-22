@@ -1,3 +1,7 @@
+let fst_trpl (a, _, _) = a
+let snd_trpl (_, b, _) = b
+let trd_trpl (_, _, c) = c
+
 type binop =
     Add
   | Sub
@@ -27,6 +31,10 @@ type typ =
 
 type bind = typ * string
 
+type obj_decl = {
+  oname : string;
+  props : bind list }
+
 type expr =
     Iliteral of int
   | Fliteral of float
@@ -49,13 +57,13 @@ type stmt =
   | Continue
 
 type func_decl = {
-    typ : typ;
-    fname : string;
-    formals : bind list; 
-    locals : bind list;
-    body : stmt list }
+  typ : typ;
+  fname : string;
+  formals : bind list; 
+  locals : bind list;
+  body : stmt list }
 
-type program = bind list * func_decl list
+type program = bind list * obj_decl list * func_decl list
 
 let string_of_binop = function
     Add -> "+"
@@ -161,6 +169,12 @@ let rec string_of_stmt_list = function
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
 
+let string_of_odecl odecl =
+  "obj " ^ odecl.oname ^ "\n" ^
+  "{\n" ^
+  join_strings "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
+  "}"
+
 let string_of_fdecl fdecl =
   "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map snd fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
   "{\n" ^
@@ -168,6 +182,7 @@ let string_of_fdecl fdecl =
   (string_of_stmt_list fdecl.body) ^
   "}"
 
-let string_of_program (vdecls, fdecls) =
+let string_of_program (vdecls, odecls, fdecls) =
   String.concat "" (List.map append_nl (List.map string_of_vdecl vdecls)) ^
+  String.concat "" (List.map append_nl (List.map string_of_odecl odecls)) ^
   String.concat "" (List.map append_nl (List.map string_of_fdecl fdecls))
