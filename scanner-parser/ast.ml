@@ -110,11 +110,6 @@ let rec string_of_expr = function
   | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
   | Noexpr -> ""
 
-let rec join_strings d = function
-    [] -> ""
-  | [str] -> str
-  | str::strs -> str ^ d ^ (join_strings d strs)
-
 let rec string_of_stmt_list = function
     [] -> ""
   | st::sts -> (match st with
@@ -139,7 +134,7 @@ let rec string_of_stmt_list = function
       "{\n" ^
       string_of_stmt_list s ^
       "}\n" ^
-      join_strings "\n" (List.map (fun elif -> "elif " ^ string_of_expr (fst elif) ^ "\n" ^
+      String.concat "\n" (List.map (fun elif -> "elif " ^ string_of_expr (fst elif) ^ "\n" ^
                                               "{\n" ^
                                               string_of_stmt_list (snd elif) ^
                                               "}") elifs)
@@ -148,7 +143,7 @@ let rec string_of_stmt_list = function
       "{\n" ^
       string_of_stmt_list s1 ^
       "}\n" ^
-      (join_strings "\n" (List.map (fun elif -> "elif " ^ string_of_expr (fst elif) ^ "\n" ^
+      (String.concat "\n" (List.map (fun elif -> "elif " ^ string_of_expr (fst elif) ^ "\n" ^
                                               "{\n" ^
                                               string_of_stmt_list (snd elif) ^
                                               "}") elifs)) ^ "\n" ^
@@ -177,17 +172,17 @@ let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
 let string_of_odecl odecl =
   "objdef " ^ odecl.oname ^ "\n" ^
   "{\n" ^
-  join_strings "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
+  String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
   "}"
 
 let string_of_fdecl fdecl =
   "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map snd fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
   "{\n" ^
-  join_strings "\n" (List.map string_of_vdecl fdecl.locals) ^ "\n" ^
+  String.concat "\n" (List.map string_of_vdecl fdecl.locals) ^ "\n" ^
   string_of_stmt_list fdecl.body ^
   "}"
 
 let string_of_program (vdecls, odecls, fdecls) =
-  join_strings "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n" ^
-  join_strings "\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
-  join_strings "\n" (List.rev (List.map string_of_fdecl fdecls))
+  String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n" ^
+  String.concat "\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
+  String.concat "\n" (List.rev (List.map string_of_fdecl fdecls))
