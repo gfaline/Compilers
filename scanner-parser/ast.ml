@@ -28,6 +28,7 @@ type typ =
   | Float
   | Str
   | Void
+  | Obj
 
 type bind = typ * string
 
@@ -91,6 +92,7 @@ let string_of_typ = function
   | Float -> "float"
   | Str   -> "str"
   | Void  -> "void"
+  | Obj   -> "obj"
 
 let rec string_of_expr = function
     Iliteral(x) -> string_of_int x
@@ -169,7 +171,7 @@ let rec string_of_stmt_list = function
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
 
 let string_of_odecl odecl =
-  "obj " ^ odecl.oname ^ "\n" ^
+  "objdef " ^ odecl.oname ^ "\n" ^
   "{\n" ^
   join_strings "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
   "}"

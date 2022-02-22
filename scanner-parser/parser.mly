@@ -2,7 +2,7 @@
 
 %{ open Ast %}
 
-%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
+%token SEMI LPAREN RPAREN LBRACE RBRACE COMMA OBJDEF FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
 %token BREAK CONTINUE RETURN IF ELIF ELSE FOR FROM TO WHILE OBJ INT BOOL FLOAT STR VOID
 %token <int> ILIT
@@ -40,12 +40,12 @@ decls:
   | decls fdecl   { (fst_trpl $1, snd_trpl $1, ($2 :: trd_trpl $1)) }
 
 odecl:
-  OBJ ID LBRACE vdecl_list RBRACE
+  OBJDEF ID LBRACE vdecl_list RBRACE
     { { oname = $2;
         props = List.rev $4 } }
 
 fdecl:
-  FN ID LPAREN formals_opt RPAREN ARROW ftyp LBRACE vdecl_list stmt_list RBRACE
+  FN ID LPAREN formals_opt RPAREN ARROW typ LBRACE vdecl_list stmt_list RBRACE
     { { typ     = $7;
         fname   = $2;
         formals = List.rev $4;
@@ -57,25 +57,23 @@ formals_opt:
   | formal_list   { $1 }
 
 formal_list:
-    vtyp ID                   { [($1, $2)] }
-  | formal_list COMMA vtyp ID { ($3, $4) :: $1 }
+    typ ID                   { [($1, $2)] }
+  | formal_list COMMA typ ID { ($3, $4) :: $1 }
 
-vtyp:
+typ:
     INT   { Int }
   | BOOL  { Bool }
   | FLOAT { Float}
   | STR   { Str }
-
-ftyp:
-    vtyp { $1 }
-  | VOID { Void }
+  | VOID  { Void }
+  | OBJ   { Obj }
 
 vdecl_list:
     /* nothing */ { [] }
   | vdecl_list vdecl { $2 :: $1 }
   
 vdecl:
-    vtyp ID SEMI { ($1, $2) }
+    typ ID SEMI { ($1, $2) }
 
 stmt_list:
     // /* nothing */ { [] }
