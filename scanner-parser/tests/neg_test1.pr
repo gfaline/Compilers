@@ -1,0 +1,6 @@
+fn foo(int a, str f) 
+{
+  int b = 1;
+  return b;
+ 
+}
