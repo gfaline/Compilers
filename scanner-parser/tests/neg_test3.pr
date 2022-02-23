@@ -1,12 +1,1 @@
-fn foo(int a, int c) -> int
-{
-  int b;
-  b = a - c;
-  for (i from b to a)
-  {
-    a = a + 1;
-      
-  }
-  return b;
- 
-}
+
