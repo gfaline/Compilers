@@ -1,6 +1,1 @@
-fn foo() -> void
-{
-  string foo;
-  foo = false;
- 
-}
+
