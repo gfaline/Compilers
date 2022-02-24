@@ -64,7 +64,7 @@ do
 	    ./toplevel.native $file >> "${file}.out"
 	    ;;
 	*fail-*)
-	    echo $file 2>> $globallog
+	    echo $file >> "${file}.out"
 	    ;;
 	*)
     esac

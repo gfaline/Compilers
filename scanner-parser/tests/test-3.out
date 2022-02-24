@@ -1,1 +1,1 @@
-2
+objdef our_first { int a; }
