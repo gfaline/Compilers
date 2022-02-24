@@ -1,0 +1,8 @@
+fn foo() -> int {
+
+    int list alist;
+    alist = [3, 6, 4, 1];
+    a[0]; # -> 3
+    a[3]; # -> 1
+    return a[2];
+}

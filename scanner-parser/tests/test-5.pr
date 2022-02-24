@@ -1,0 +1,11 @@
+fn check(int a)-> void
+{
+
+  if a >= 15 and a < 22
+  {
+    print('a a a');
+  }
+}
+
+
+
