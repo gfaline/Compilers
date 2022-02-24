@@ -1,0 +1,20 @@
+
+objdef Student
+{
+  int id;
+  str name;
+}
+
+
+Student stu;
+stu.id = 25111;
+stu.name = 'John';
+fn celebrate(obj o)
+{
+  if o.name == 'John'
+ {
+     print('Time to buy my own insurance...')
+  }
+}
+
+bind(stu.name, celebrate(stu));
