@@ -1,7 +1,7 @@
 # Compilers
 Spring 2022 Compilers project
 
-To run our code for the Scanner Parser assignment, enter the scanner-parser folder.
+To run our code for the Scanner Parser assignment, enter the scanner-parser folder. It can be run with the same required downloads as MicroC.
 
 To compile, run "ocamlbuild toplevel.native"
 
