@@ -10,3 +10,5 @@ To run tests run "./testall.sh" after compiling
   Randy Price: edward.price@tufts.edu
   Chris Xiong: lxiong01@tufts.edu
 
+  testall.sh is very similar to the MicroC testing code. We thank you for the framework.
+
