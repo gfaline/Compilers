@@ -1,0 +1,6 @@
+fn foo() -> void
+{
+  string foo_;
+  foo_ = false;
+ 
+}
