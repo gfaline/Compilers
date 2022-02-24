@@ -1,0 +1,10 @@
+fn foo() -> void{
+
+    bool a;
+    if ( b > a )
+    {
+        break b;
+    }
+    return a;
+    a = z - 1;    
+}
