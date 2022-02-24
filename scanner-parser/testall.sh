@@ -100,7 +100,7 @@ CheckFail() {
     fi
 }
 
-files="tests/test-*.pr tests/fail-*.pr"
+files="tests/test-* tests/fail-*"
 
 for file in $files
 do
