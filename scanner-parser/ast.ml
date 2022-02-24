@@ -69,8 +69,8 @@ type stmt =
   | While of expr * stmt list
   | Break
   | Continue
-  | Bind of string * string
-  | Unbind of string * string
+  | Bind of string * string * string
+  | Unbind of string * string * string
 
 type func_decl = {
   typ : typ;
@@ -189,11 +189,14 @@ let rec string_of_stmt_list = function
         "}"
     | Break -> "break;"
     | Continue -> "continue;"
-    | Bind(o, f) -> "bind( " ^ o ^ ", " ^ f ^ ");"
-    | Unbind(o, f) -> "unbind( " ^ o ^ ", " ^ f ^ ");") ^
+    | Bind(o, p, f) -> "bind( " ^ o ^ "." ^ p ^ ", " ^ f ^ ");"
+    | Unbind(o, p, f) -> "unbind( " ^ o ^ "." ^ p ^", " ^ f ^ ");") ^
     "\n" ^ string_of_stmt_list sts
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
+let string_of_vdecls = function
+    [] -> ""
+  | vdecls -> String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n"
 
 let string_of_odecl odecl =
   "objdef " ^ odecl.oname ^ "\n" ^
@@ -206,11 +209,11 @@ let string_of_formal (t, id) = string_of_typ t ^ " " ^ id
 let string_of_fdecl fdecl =
   "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map string_of_formal fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
   "{\n" ^
-  String.concat "\n" (List.map string_of_vdecl fdecl.locals) ^ "\n" ^
+  string_of_vdecls fdecl.locals ^
   string_of_stmt_list fdecl.body ^
   "}"
 
 let string_of_program (vdecls, odecls, fdecls) =
-  String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n" ^
+  string_of_vdecls vdecls ^
   String.concat "\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
   String.concat "\n" (List.rev (List.map string_of_fdecl fdecls))

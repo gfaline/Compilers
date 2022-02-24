@@ -95,9 +95,10 @@ stmt:
   | unbind_stmt { $1 }
 
 bind_stmt:
-  BIND LPAREN ID COMMA ID RPAREN SEMI { Bind ($3, $5) }
+  BIND LPAREN ID PERIOD ID COMMA ID RPAREN SEMI { Bind ($3, $5, $7) }
+
 unbind_stmt:
-  UNBIND LPAREN ID COMMA ID RPAREN SEMI { Bind ($3, $5) }
+  UNBIND LPAREN ID PERIOD ID COMMA ID RPAREN SEMI { Bind ($3, $5, $7) }
 
 expr_stmt:
     expr SEMI { Expr($1) }
@@ -167,8 +168,6 @@ expr:
   | NOT  expr                 { Unop(Not, $2)      }
   // other
   | LPAREN expr RPAREN        { Parentheses($2) }
-  
-  
 
 args_opt:
     /* nothing */ { [] }
