@@ -1,0 +1,153 @@
+# a global variable
+int a; # built-in types: int, float, bool, str, or <type> list
+
+# variables must start with a letter, and may contain additional letters,
+# numbers, and underscores. consecutive underscores are not allowed.
+# additionally, variable names may not end with an underscore, but are allowed
+# to be terminated with a single question mark.
+
+# an ugly but legal variable name
+str fj4_fds_j4_r_owe_?;
+
+# literals
+23123     # int
+3.141     # float
+true      # bool
+false     # bool
+'hey'     # str
+[a, b, c] # 'a list
+
+# arithmetic
+1 + 2;     # -> 3
+2.1 - 2.4; # -> -0.3
+-3 * 15;   # -> -45
+20 / 5;    # -> 4
+
+# comparison
+!
+==
+!=
+>
+<
+>=
+<=
+
+# logic
+not
+and
+or
+xor
+
+# functions may take 0 or more arguments and return any built-in type, including
+# a special void type for functions that return nothing
+
+# a function that takes no arguments and returns nothing
+fn do_nothing() -> void
+{
+  print('Nothing was done.');
+  return;
+}
+
+# a function with multiple arguments
+fn max(int a, int b) -> int
+{
+  if a >= b
+  {
+    return a;
+  }
+  else
+  {
+    return b;
+  }
+}
+
+# local variables in a function
+fn foo() -> void
+{
+  int a;
+  str s;
+  
+  a = 5;
+  str = 'howdy';
+  
+  return;
+}
+
+# curly braces are always requires for the bodies of control flow/looping
+# statments. parentheses are not required to be placed aroundt the expressions
+
+# if/elif/else
+if expr1
+{
+  do_something();
+}
+elif expr1
+{
+  do_something_else();
+}
+else
+{
+  give_up();
+}
+
+# while
+while expr
+{
+  if expr
+  {
+    continue;
+  }
+  else
+  {
+    break;
+  }
+}
+
+# for loops are really for-each loops, intended to execute a given number of
+# times. the looping variable is declared and defined internally as an int
+for ii from x to y
+{
+  if jj == 100
+  {
+    break;
+  }
+  jj = ii * 2;
+}
+
+# (right now) lists are immutable. their contents can be accessed via []
+int list alist;
+alist = [3, 6, 4, 1];
+a[0]; # -> 3
+a[3]; # -> 1
+
+# a user-defined type (object)
+objdef Person
+{
+  int age;
+  str name;
+}
+
+# initializing properties of an object
+Person randy;
+randy.age = 25;
+randy.name = 'Randy';
+
+# defining a function to be bound to an object's property
+fn celebrate(obj o)
+{
+  if o.age == 26
+  {
+    print('Time to buy my own insurance...')
+  }
+}
+
+# binding a function to an object's property
+bind(randy.age, celebrate);
+
+# changing randy's age to 26 will invoke the bound function
+randy.age = 26; # message from celebrate function is printed
+
+# unbinding a fuction
+unbind(randy.age, celebrate);
+
+

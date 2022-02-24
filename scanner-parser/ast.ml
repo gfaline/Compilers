@@ -38,18 +38,27 @@ type obj_decl = {
   props : bind list }
 
 type expr =
+  (* literals *)
     Iliteral of int
   | Fliteral of float
   | Bliteral of bool
   | Sliteral of string
   | Lliteral of expr list
-  | Id of string
+  (* function call *)
+  | Call of string * expr list
+  (* assignment *)
   | Assign of string * expr
+  | Setprop of string * string * expr
+  (* ID evaluation*)
+  | Id of string
+  | Getprop of string * string
+  (* list indexing *)
+  | Index of string * expr
+  (* operators *)
   | Binop of expr * binop * expr
   | Unop of unop * expr
-  | Call of string * expr list
-  | Getprop of string * string
-  | Setprop of string * string * expr
+  (* other *)
+  | Parentheses of expr
   | Noexpr
 
 type stmt =
@@ -60,8 +69,8 @@ type stmt =
   | While of expr * stmt list
   | Break
   | Continue
-  | Bind of string * string
-  | Unbind of string * string
+  | Bind of string * string * string
+  | Unbind of string * string * string
 
 type func_decl = {
   typ : typ;
@@ -102,20 +111,29 @@ let rec string_of_typ = function
   | List(t) -> string_of_typ t ^ " list"
 
 let rec string_of_expr = function
+  (* literals *)
     Iliteral(x) -> string_of_int x
   | Fliteral(x) -> string_of_float x
   | Bliteral(b) -> string_of_bool b
   | Sliteral(s) -> s
   | Lliteral(es) -> "[" ^ String.concat ", " (List.map string_of_expr es) ^ "]"
-  | Id(id) -> id
+  (* function call *)
+  | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
+  (* assignment *)
   | Assign(id, e) -> id ^ " = " ^ string_of_expr e
+  | Setprop(o, p, e) -> o ^ "." ^ p ^ " = " ^ string_of_expr e
+  (* ID evaluation *)
+  | Id(id) -> id
+  | Getprop(o, p) -> o ^ "." ^ p
+  (* list indexing *)
+  | Index(id, e) -> id ^ "[" ^ string_of_expr e ^ "]"
+  (* operators*)
   | Binop(e1, op, e2) -> string_of_expr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_expr e2
   | Unop(op, e) -> (match op with
       Not -> string_of_unop op ^ " (" ^ string_of_expr e ^ ")"
     | Neg -> string_of_unop op ^ "(" ^ string_of_expr e ^ ")")
-  | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
-  | Getprop(o, p) -> o ^ "." ^ p
-  | Setprop(o, p, e) -> o ^ "." ^ p ^ " = " ^ string_of_expr e
+  (* other *)
+  | Parentheses(e) -> "(" ^ string_of_expr e ^ ")"
   | Noexpr -> ""
 
 let rec string_of_stmt_list = function
@@ -171,11 +189,14 @@ let rec string_of_stmt_list = function
         "}"
     | Break -> "break;"
     | Continue -> "continue;"
-    | Bind(o, f) -> "bind( " ^ o ^ ", " ^ f ^ ");"
-    | Unbind(o, f) -> "unbind( " ^ o ^ ", " ^ f ^ ");") ^
+    | Bind(o, p, f) -> "bind( " ^ o ^ "." ^ p ^ ", " ^ f ^ ");"
+    | Unbind(o, p, f) -> "unbind( " ^ o ^ "." ^ p ^", " ^ f ^ ");") ^
     "\n" ^ string_of_stmt_list sts
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
+let string_of_vdecls = function
+    [] -> ""
+  | vdecls -> String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n"
 
 let string_of_odecl odecl =
   "objdef " ^ odecl.oname ^ "\n" ^
@@ -188,11 +209,11 @@ let string_of_formal (t, id) = string_of_typ t ^ " " ^ id
 let string_of_fdecl fdecl =
   "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map string_of_formal fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
   "{\n" ^
-  String.concat "\n" (List.map string_of_vdecl fdecl.locals) ^ "\n" ^
+  string_of_vdecls fdecl.locals ^
   string_of_stmt_list fdecl.body ^
   "}"
 
 let string_of_program (vdecls, odecls, fdecls) =
-  String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n" ^
+  string_of_vdecls vdecls ^
   String.concat "\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
   String.concat "\n" (List.rev (List.map string_of_fdecl fdecls))
