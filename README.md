@@ -2,7 +2,9 @@
 Spring 2022 Compilers project
 
 To run our code for the Scanner Parser assignment, enter the scanner-parser folder.
+
 To compile, run "ocamlbuild toplevel.native"
+
 To run tests run "./testall.sh" after compiling
 
 Isra Ali
