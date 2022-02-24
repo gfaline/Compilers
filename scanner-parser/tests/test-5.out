@@ -1,1 +1,16 @@
-2
+fn foo() -> void
+{
+int b;
+int a;
+b = 1;
+a = 3;
+for i from 1 to 7
+{
+print(a);
+b = b + 1;
+if b > a
+{
+break;
+}
+}
+}

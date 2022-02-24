@@ -1,1 +1,11 @@
-objdef our_first { int a; }
+fn while_function(str Success) -> str
+{
+if correct == true
+{
+return Success;
+
+}
+else
+return Fail;
+
+}
