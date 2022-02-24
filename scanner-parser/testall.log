@@ -1,0 +1,75 @@
+
+###### Testing test-1.pr
+./toplevel.native test-1.pr.pr
+Fatal error: exception Sys_error("test-1.pr.pr: No such file or directory")
+./testall.sh: line 26: SignalError: command not found
+###### SUCCESS
+
+###### Testing test-2.pr
+./toplevel.native test-2.pr.pr
+Fatal error: exception Sys_error("test-2.pr.pr: No such file or directory")
+./testall.sh: line 26: SignalError: command not found
+###### SUCCESS
+
+###### Testing test-3.pr
+./toplevel.native test-3.pr.pr
+Fatal error: exception Sys_error("test-3.pr.pr: No such file or directory")
+./testall.sh: line 26: SignalError: command not found
+###### SUCCESS
+
+###### Testing test-4.pr
+./toplevel.native test-4.pr.pr
+Fatal error: exception Sys_error("test-4.pr.pr: No such file or directory")
+./testall.sh: line 26: SignalError: command not found
+###### SUCCESS
+
+###### Testing test-5.pr
+./toplevel.native test-5.pr.pr
+Fatal error: exception Sys_error("test-5.pr.pr: No such file or directory")
+./testall.sh: line 26: SignalError: command not found
+###### SUCCESS
+
+###### Testing fail-test1.pr
+./toplevel.native fail-test1.pr.pr
+Fatal error: exception Sys_error("fail-test1.pr.pr: No such file or directory")
+diff -b fail-test1.pr.err testss/tests/fail-test1.pr.err > fail-test1.pr.diff
+./testall.sh: line 16: SignalError: command not found
+FAILED fail-test1.pr.err differs from testss/tests/fail-test1.pr.err
+./testall.sh: line 92: [: -eq: unary operator expected
+###### SUCCESS
+
+###### Testing fail-test2.pr
+./toplevel.native fail-test2.pr.pr
+Fatal error: exception Sys_error("fail-test2.pr.pr: No such file or directory")
+diff -b fail-test2.pr.err testss/tests/fail-test2.pr.err > fail-test2.pr.diff
+./testall.sh: line 16: SignalError: command not found
+FAILED fail-test2.pr.err differs from testss/tests/fail-test2.pr.err
+./testall.sh: line 92: [: -eq: unary operator expected
+###### SUCCESS
+
+###### Testing fail-test3.pr
+./toplevel.native fail-test3.pr.pr
+Fatal error: exception Sys_error("fail-test3.pr.pr: No such file or directory")
+diff -b fail-test3.pr.err testss/tests/fail-test3.pr.err > fail-test3.pr.diff
+./testall.sh: line 16: SignalError: command not found
+FAILED fail-test3.pr.err differs from testss/tests/fail-test3.pr.err
+./testall.sh: line 92: [: -eq: unary operator expected
+###### SUCCESS
+
+###### Testing fail-test4.pr
+./toplevel.native fail-test4.pr.pr
+Fatal error: exception Sys_error("fail-test4.pr.pr: No such file or directory")
+diff -b fail-test4.pr.err testss/tests/fail-test4.pr.err > fail-test4.pr.diff
+./testall.sh: line 16: SignalError: command not found
+FAILED fail-test4.pr.err differs from testss/tests/fail-test4.pr.err
+./testall.sh: line 92: [: -eq: unary operator expected
+###### SUCCESS
+
+###### Testing fail-test5.pr
+./toplevel.native fail-test5.pr.pr
+Fatal error: exception Sys_error("fail-test5.pr.pr: No such file or directory")
+diff -b fail-test5.pr.err testss/tests/fail-test5.pr.err > fail-test5.pr.diff
+./testall.sh: line 16: SignalError: command not found
+FAILED fail-test5.pr.err differs from testss/tests/fail-test5.pr.err
+./testall.sh: line 92: [: -eq: unary operator expected
+###### SUCCESS
