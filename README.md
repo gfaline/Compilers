@@ -1,6 +1,10 @@
 # Compilers
 Spring 2022 Compilers project
 
+To run our code for the Scanner Parser assignment, enter the scanner-parser folder.
+To compile, run "ocamlbuild toplevel.native"
+To run tests run "./testall.sh" after compiling
+
 Isra Ali
 isra.hamid_ali@tufts.edu
 
@@ -49,3 +53,6 @@ to Propeller, and to assume everything else was inspired by MicroC (unless other
     - different ID-naming convention (the scanner will let you know when
       an ID is invalid!)
     - several revised/tidied printing functions for vdecls, odecls, and fdecls
+- TESTING
+  - followed basic infrastructure
+  - used Run, RunFail, Check, CheckFail, and Compare with minor modifications
