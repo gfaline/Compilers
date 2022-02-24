@@ -43,6 +43,7 @@ type expr =
   | Bliteral of bool
   | Sliteral of string
   | Lliteral of expr list
+  | Index of string * expr
   | Id of string
   | Assign of string * expr
   | Binop of expr * binop * expr
@@ -107,6 +108,7 @@ let rec string_of_expr = function
   | Bliteral(b) -> string_of_bool b
   | Sliteral(s) -> s
   | Lliteral(es) -> "[" ^ String.concat ", " (List.map string_of_expr es) ^ "]"
+  | Index(id, e) -> id ^ "[" ^ string_of_expr e ^ "]"
   | Id(id) -> id
   | Assign(id, e) -> id ^ " = " ^ string_of_expr e
   | Binop(e1, op, e2) -> string_of_expr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_expr e2
