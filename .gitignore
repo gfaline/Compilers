@@ -11,6 +11,7 @@
 *.err.out
 *.pr.diff
 *.err.diff
+*.test
 
 # ocamlbuild working directory
 _build/
