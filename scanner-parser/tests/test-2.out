@@ -1,3 +1,4 @@
+
 fn first_function() -> str
 {
 str a;

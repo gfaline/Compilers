@@ -1,3 +1,4 @@
+
 fn while_function(str Success) -> str
 {
 if correct == true
