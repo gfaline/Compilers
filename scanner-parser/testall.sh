@@ -13,6 +13,8 @@ Check() {
 
     ./toplevel.native $runfile > $reffile
     #Compare ${basename}.out ${reffile}.out ${basename}.diff
+    tr -d '\015' < $reffile > "tmp"
+    mv "tmp" $reffile
 
     # Report the status and clean up the generated files
 
@@ -34,6 +36,9 @@ CheckFail() {
     echo "###### Testing  $runfile" 
 
     ./toplevel.native $runfile 2> $reffile
+    
+    tr -d '\015' < $reffile > "tmp"
+    mv "tmp" $reffile
     #Compare ${basename}.out ${reffile}.out ${basename}.diff
 
     # Report the status and clean up the generated files
