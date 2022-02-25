@@ -45,7 +45,7 @@ CheckFail() {
     fi
 }
 
-files="tests/test-* tests/fail-*"
+files="tests/test-*.pr tests/fail-*.pr"
 
 for file in $files
 do
