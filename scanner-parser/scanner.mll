@@ -69,6 +69,7 @@ rule token = parse
   | "objdef" { OBJDEF }
   | "bind"   { BIND }
   | "unbond" { UNBIND }
+  | "external" { EXTERNAL }
   (* primitive types *)
   | "obj"    { OBJ }
   | "int"    { INT }

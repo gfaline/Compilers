@@ -36,7 +36,8 @@ type bind = typ * string
 
 type obj_decl = {
   oname : string;
-  props : bind list }
+  props : bind list;
+  extern: bool}
 
 type expr =
   (* literals *)
@@ -201,10 +202,16 @@ let string_of_vdecls = function
   | vdecls -> String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n"
 
 let string_of_odecl odecl =
-  "objdef " ^ odecl.oname ^ "\n" ^
-  "{\n" ^
-  String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
-  "}"
+  if odecl.extern then
+    "external objdef " ^ odecl.oname ^ "\n" ^
+    "{\n" ^
+    String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
+    "}"
+  else
+    "objdef " ^ odecl.oname ^ "\n" ^
+    "{\n" ^
+    String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
+    "}"
 
 let string_of_formal (t, id) = string_of_typ t ^ " " ^ id
 
