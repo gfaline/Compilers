@@ -1,0 +1,59 @@
+\section{Examples}
+\subsection{Minimal test driving program}
+This is a basic text mode program. It should print 3 and then terminate.
+It uses the basic text mode runtime.
+
+\vspace{-0.5cm}
+\begin{mylisting}
+# a simple custom type containing one int property
+objdef A
+{
+  int prop;
+}
+
+A a;
+
+fn print_prop(int oldval, int val, obj o) -> void
+{
+  # built-in function
+  print_int(val + 2);
+  # function in standard library to terminate execution
+  exit(0);
+}
+
+fn init() -> void
+{
+  a.prop = 0;
+  bind(a.prop, print_prop)
+  # now that a.prop has been modified, print_prop will be called.
+  a.prop = 1;
+}
+\end{mylisting}
+
+\subsection{Temperature Monitor}
+A simple temperature monitor that prints a message when the reading exceeds a threshold.
+This program will require a correct runtime.
+
+\vspace{-0.5cm}
+\begin{mylisting}
+external objdef Sensor
+{
+  float temperature;
+}
+
+Sensor sensor;
+
+fn print_warning(float t) -> void
+{
+  if (t > 100)
+  {
+    print_str('Boiling!');
+  }
+}
+
+fn init() -> void
+{
+  bind(sensor.temperature, print_warning);
+}
+\end{mylisting}
+% vim: tw=100 spell spelllang=en_us

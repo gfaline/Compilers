@@ -1,0 +1,106 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}[cm]
+% \usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{newclude}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{upquote}
+\tcbuselibrary{listings}
+
+\definecolor{backgroundcolor}{HTML}{293134}
+\definecolor{foregroundcolor}{HTML}{E0E2E4}
+\definecolor{keywordcolor}{HTML}{93C763}
+\definecolor{typecolor}{HTML}{A082BD}
+\definecolor{commentcolor}{HTML}{7D8C93}
+\definecolor{stringcolor}{HTML}{EC7600}
+\definecolor{numbercolor}{HTML}{FFCD22}
+\definecolor{boolcolor}{HTML}{678CB1}
+\definecolor{builtincolor}{HTML}{678CB1}
+\definecolor{operatorcolor}{HTML}{E8E2B7}
+
+\lstdefinestyle{mystyle}{
+    %backgroundcolor=\color{backgroundcolor},   
+    commentstyle=\color{commentcolor},
+    % keywords
+    keywords={from, to, fn, if, else, elif, while, for, type, return, external, and, or, not, xor},
+    % types
+    morekeywords=[2]{int, float, bool, str, obj, list, void},
+    % boolean literals
+    morekeywords=[3]{true, false},
+    % operators
+    morekeywords=[4]{+, -, /, *, \%, (, )},
+    % build-in functions
+    morekeywords=[5]{print, exit, bind, unbind},
+    % colors
+    keywordstyle=\color{keywordcolor},
+    keywordstyle=[2]{\color{typecolor}},
+    keywordstyle=[3]{\color{boolcolor}},
+    keywordstyle=[4]{\color{operatorcolor}},
+    keywordstyle=[5]{\color{builtincolor}},
+    %comments
+    comment=[l]{\#},
+    % numbers
+    numberstyle=\color{backgroundcolor},
+    %strings
+    stringstyle=\color{stringcolor},
+    string=[b]{'},
+    basicstyle=\color{foregroundcolor}\ttfamily\scriptsize,
+    breakatwhitespace=false,         
+    breaklines=false,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\newtcblisting{mylisting}{
+      arc=0pt,
+      top=0mm,
+      bottom=0mm,
+      left=0mm,
+      right=0mm,
+      boxrule=0pt,
+      colback=backgroundcolor,
+      listing only,
+      listing options={style=mystyle},
+      enlarge top by=5mm
+      hbox
+}
+
+\title{Language Reference Manual for Propeller\\\Large A Property Manipulation Language}
+\author{
+  Isra Ali\\
+  \textit{Tester}\\
+  \texttt{isra.hamid\_ali@tufts.edu}
+  \and
+  Gwendolyn Edgar\\
+  \textit{Manager}\\
+  \texttt{gwendolynedgar@tufts.edu}
+  \and
+  Randy Price\\
+  \textit{Language Guru}\\
+  \texttt{edward.price@tufts.edu}
+  \and
+  Chris Xiong\\
+  \textit{System Architect}\\
+  \texttt{lxiong01@tufts.edu}
+}
+
+\begin{document}
+\maketitle
+
+\include*{overview}
+\include{syntax}
+\include*{semantics}
+\include*{builtins}
+\include{example}
+\end{document}
+% vim: tw=100 spell spelllang=en_us

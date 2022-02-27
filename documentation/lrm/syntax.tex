@@ -1,0 +1,152 @@
+\section{Syntax}
+
+\subsection{Comment}
+Anything following a hash (\verb|#|) that is not part of a string literal will be treated as a
+comment.
+
+\subsection{Literals}
+\begin{verbatim}
+            <digit> ::= "0"-"9"
+      <int-literal> ::= {<digit>}
+    <float-literal> ::= {<digit>} "." {<digit>}
+     <bool-literal> ::= "true" | "false"
+<string-characters> ::= character or escape sequence
+   <string-literal> ::= "'" {<string-characters>} "'"
+\end{verbatim}
+
+For strings, escape sequences are interpreted the same way OCaml interprets them (as in
+\verb|Scanf.unescaped|).
+
+\subsection{Identifiers}
+\begin{verbatim}
+    <letter> ::= "A"-"Z" | "a"-"z"
+<identifier> ::= <letter>
+               | <letter> {<letter> | <digit> | "_"} (<letter> | <digit> | "?")
+\end{verbatim}
+
+In addition to the rules listed above, identifiers cannot contain two consecutive underscores,
+or end with \verb|_?|.
+
+\subsection{Expressions}
+\begin{verbatim}
+<binary-operators> ::= "+" | "-" | "*" | "/" | "%"
+                     | "==" | "!=" | "<" | "<=" | ">" | ">="
+                     | "and" | "xor" | "or"
+ <unary-operators> ::= "-" | "not"
+       <expr-list> ::= <expression> | <expr-list> "," <expression>
+        <arg-list> ::= "" | <expr-list>
+      <expression> ::= <int-literal>
+                     | <float-literal>
+                     | <bool-literal>
+                     | <string-literal>
+                     | <list>
+                     | <expression> <binary-operators> <expression>
+                     | <unary-operators> <expression>
+                     | <identifier> "=" <expression>
+                     | "(" <expression> ")"
+                     | <identifier> "(" <arg-list> ")"
+                     | <identifier> "." <identifier>
+                     | <identifier> "." <identifier> = <expression>
+\end{verbatim}
+
+Operator precedence follows normal conventions.
+
+\subsection{Lists}
+\begin{verbatim}
+ <list> ::= "[" arg-list "]"
+\end{verbatim}
+
+\subsection{Declarations}
+
+\subsubsection{Variable Declaration}
+
+\begin{verbatim}
+     <primitive-type> ::= "int" | "float" | "bool" | "str" | "void"
+      <compound-type> ::= "obj" | <primitive-type> "list"
+      <variable-decl> ::= <compound-type> <identifier> ";"
+ <variable-decl-list> ::= "" | <variable-decl-list> <variable-decl>
+\end{verbatim}
+
+\subsubsection{Function Declaration}
+
+\begin{verbatim}
+     <formal-list> ::= <compound-type> <identifier>
+                     | <formal-list> "," <compound-type> <identifier>
+ <formal-list-opt> ::= "" | <formal-list>
+   <function-decl> ::= "fn" <identifier> "(" <formal-list-opt> ")" "->"
+                       <compound-type> "{" <variable-decl-list>
+                       <statement-list> "}"
+\end{verbatim}
+
+\subsubsection{Object Type Declaration}
+
+\begin{verbatim}
+          <obj-def> ::= "objdef" <identifier> "{" <variable-decl-list> "}"
+ <external-obj-def> ::= "external" "objdef" <identifier> "{" <variable-decl-list> "}"
+\end{verbatim}
+
+\subsection{Statements}
+
+\subsubsection{Sequencing}
+
+\begin{verbatim}
+ <statement-list>  ::= "" | <statement-list> <statement>
+ <statememt-block> ::= "{" <statement-list> "}"
+\end{verbatim}
+
+\subsubsection{Control Flow}
+
+\begin{itemize}
+\item Branching
+\begin{verbatim}
+    <if-statement> ::= "if" <expression> <statement-block>
+                       <elif-statements> <else-clause>
+ <elif-statements> ::= {"elif" <expression> <statement-block>}
+     <else-clause> ::= "" | "else" <statement-block>
+\end{verbatim}
+Else clauses are attached to the closest unmatched if clause before it.
+
+\item Loops
+\begin{verbatim}
+   <for-statement> ::= "for" <identifier> "from" <expression>
+                       "to" <expression> <statement-block>
+ <while-statement> ::= "while" <expression> <statement-block>
+\end{verbatim}
+
+\item Jumps
+\begin{verbatim}
+    <break-statement> ::= "break" ";"
+ <continue-statement> ::= "continue" ";"
+   <return-statement> ::= "return" ("" | <expression>) ";"
+\end{verbatim}
+\end{itemize}
+
+\subsubsection{Special Statements}
+
+Bind and unbind has special syntactical rules. These rules exist only to simplify the
+implementation. For users of Propeller they can be treated as if they are normal
+built-in functions.
+
+\begin{verbatim}
+   <bind-statement> ::= "bind" "(" <identifier> "." <identifier> ","
+                        <identifier> ")" ";"
+ <unbind-statement> ::= "unbind" "(" <identifier> "." <identifier> ","
+                        <identifier> ")" ";"
+\end{verbatim}
+
+\subsubsection{All Statements}
+
+\begin{verbatim}
+ <statement> ::= <expression> ";"
+               | <if-statement>
+               | <for-statement>
+               | <while-statement>
+               | <break-statement>
+               | <continue-statement>
+               | <return-statement>
+               | <bind-statement>
+               | <unbind-statement>
+\end{verbatim}
+
+
+% vim: tw=100 spell spelllang=en_us
