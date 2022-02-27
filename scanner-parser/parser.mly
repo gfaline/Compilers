@@ -77,6 +77,7 @@ vdecl_list:
   
 vdecl:
     typ ID SEMI { ($1, $2) }
+  | ID ID SEMI { (Custom($1), $2) }
 
 stmt_list:
     // /* nothing */ { [] }

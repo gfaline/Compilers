@@ -30,6 +30,7 @@ type typ =
   | Void
   | Obj
   | List of typ
+  | Custom of string
 
 type bind = typ * string
 
@@ -109,6 +110,7 @@ let rec string_of_typ = function
   | Void  -> "void"
   | Obj   -> "obj"
   | List(t) -> string_of_typ t ^ " list"
+  | Custom(t) -> t
 
 let rec string_of_expr = function
   (* literals *)
@@ -216,4 +218,4 @@ let string_of_fdecl fdecl =
 let string_of_program (vdecls, odecls, fdecls) =
   string_of_vdecls vdecls ^
   String.concat "\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
-  String.concat "\n" (List.rev (List.map string_of_fdecl fdecls))
+  String.concat "\n" (List.rev (List.map string_of_fdecl fdecls)) ^ "\n"
