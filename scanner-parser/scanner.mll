@@ -68,7 +68,7 @@ rule token = parse
   (* Propeller stuff *)
   | "objdef" { OBJDEF }
   | "bind"   { BIND }
-  | "unbond" { UNBIND }
+  | "unbind" { UNBIND }
   | "external" { EXTERNAL }
   (* primitive types *)
   | "obj"    { OBJ }
