@@ -20,12 +20,16 @@ For strings, escape sequences are interpreted the same way OCaml interprets them
 \subsection{Identifiers}
 \begin{verbatim}
     <letter> ::= "A"-"Z" | "a"-"z"
-<identifier> ::= <letter>
-               | <letter> {<letter> | <digit> | "_"} (<letter> | <digit> | "?")
+<identifier> ::= <letter> ("?" | "")
+               | <letter> ("_" | "")
+                 {(<letter> | <digit>) | ((<letter> | <digit>) "_")}
+                 (<letter> | <digit>) ("?" | "")
 \end{verbatim}
 
-In addition to the rules listed above, identifiers cannot contain two consecutive underscores,
-or end with \verb|_?|.
+To put this rather cryptic identifier rule in plain English: only letters, digits, underscores and
+question mark are allowed in identifier names. They must start with a letter, and must not end with
+an underscore. The question mark can only appear at the end, and two punctuation marks cannot appear
+consecutively.
 
 \subsection{Expressions}
 \begin{verbatim}
