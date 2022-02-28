@@ -5,8 +5,6 @@
 let letter = ['a'-'z' 'A'-'Z']
 let digit  = ['0'-'9']
 let alphnum = letter | digit
-
-(* valid and invalid names *)
 let identifier = letter '?'?
          | letter '_'? ( alphnum | alphnum '_')* alphnum '?'?
 
@@ -85,7 +83,3 @@ rule token = parse
       '\n' { token lexbuf }
     | eof  { token lexbuf }
     | _    { comment lexbuf }
-
-  (* and strlit = parse
-      '\''  as s { SLIT(s) }
-    |  _ { strlit lexbuf } *)
