@@ -30,12 +30,14 @@ type typ =
   | Void
   | Obj
   | List of typ
+  | Custom of string
 
 type bind = typ * string
 
 type obj_decl = {
   oname : string;
-  props : bind list }
+  props : bind list;
+  extern: bool}
 
 type expr =
   (* literals *)
@@ -109,6 +111,7 @@ let rec string_of_typ = function
   | Void  -> "void"
   | Obj   -> "obj"
   | List(t) -> string_of_typ t ^ " list"
+  | Custom(t) -> t
 
 let rec string_of_expr = function
   (* literals *)
@@ -199,10 +202,16 @@ let string_of_vdecls = function
   | vdecls -> String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n"
 
 let string_of_odecl odecl =
-  "objdef " ^ odecl.oname ^ "\n" ^
-  "{\n" ^
-  String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
-  "}"
+  if odecl.extern then
+    "external objdef " ^ odecl.oname ^ "\n" ^
+    "{\n" ^
+    String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
+    "}"
+  else
+    "objdef " ^ odecl.oname ^ "\n" ^
+    "{\n" ^
+    String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
+    "}"
 
 let string_of_formal (t, id) = string_of_typ t ^ " " ^ id
 
@@ -216,4 +225,4 @@ let string_of_fdecl fdecl =
 let string_of_program (vdecls, odecls, fdecls) =
   string_of_vdecls vdecls ^
   String.concat "\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
-  String.concat "\n" (List.rev (List.map string_of_fdecl fdecls))
+  String.concat "\n" (List.rev (List.map string_of_fdecl fdecls)) ^ "\n"

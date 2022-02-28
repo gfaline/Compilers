@@ -1,6 +1,9 @@
 # macOS stuff
 **/.DS_Store
 
+# vim swap file
+*.swp
+
 *.annot
 *.cmo
 *.cma
@@ -35,3 +38,8 @@ setup.log
 
 # Local OPAM switch
 _opam/
+
+# tex stuff
+documentation/**/*.log
+documentation/**/*.aux
+documentation/**/*.listing

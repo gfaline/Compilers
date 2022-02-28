@@ -4,7 +4,7 @@
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA OBJDEF FN ARROW ASSIGN PLUS MINUS TIMES DIVIDE MODULO
 %token NOT EQ NEQ LT LEQ GT GEQ XOR AND OR
-%token BIND UNBIND BREAK CONTINUE RETURN IF ELIF ELSE FOR FROM TO WHILE OBJ INT BOOL FLOAT STR VOID LIST
+%token EXTERNAL BIND UNBIND BREAK CONTINUE RETURN IF ELIF ELSE FOR FROM TO WHILE OBJ INT BOOL FLOAT STR VOID LIST
 %token PERIOD
 %token LBRCKT RBRCKT
 %token <int> ILIT
@@ -42,9 +42,14 @@ decls:
   | decls fdecl   { (fst_trpl $1, snd_trpl $1, ($2 :: trd_trpl $1)) }
 
 odecl:
-  OBJDEF ID LBRACE vdecl_list RBRACE
-    { { oname = $2;
-        props = List.rev $4 } }
+    OBJDEF ID LBRACE vdecl_list RBRACE
+      { { oname = $2;
+          props = List.rev $4;
+          extern = false; } }
+  | EXTERNAL OBJDEF ID LBRACE vdecl_list RBRACE
+      { { oname = $3;
+          props = List.rev $5;
+          extern = true; } }
 
 fdecl:
   FN ID LPAREN formals_opt RPAREN ARROW typ LBRACE vdecl_list stmt_list RBRACE
@@ -77,6 +82,7 @@ vdecl_list:
   
 vdecl:
     typ ID SEMI { ($1, $2) }
+  | ID ID SEMI { (Custom($1), $2) }
 
 stmt_list:
     // /* nothing */ { [] }

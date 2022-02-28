@@ -1,0 +1,82 @@
+\section{Semantics}
+
+Propeller is heavily inspired by languages in the C family, including its semantics. For the sake of
+brevity, semantics that are commonly found in other widely-adopted languages will be omitted.
+
+\subsection{Data Types}
+
+Propeller has 5 primitive types: \verb|int| is a signed 32-bit integer type; \verb|float| is a
+64-bit IEEE 754 floating point type; \verb|bool| is a boolean type, stored in a single byte;
+\verb|str| is a syntactic sugar for integer lists, which stores UTF-8 encoded characters of a
+string; and finally a \verb|void| type.
+
+Propeller has a list type. Lists are immutable. All items in one list must be of the same type. Only
+values of primitive types are allowed in lists.
+
+Custom types can be defined. They can have a number of properties in them. A runtime can have
+several predefined custom types, which still must be declared in the program before use, but
+prefixed by a \verb|external| keyword.
+
+\subsection{Binding}
+
+Property of objects can be bound to functions, so that whenever the value of this property
+changes, functions bound to that property are called.
+
+Let $\beta$ be the bindings that are currently established during execution of the program. $\beta$
+is one of the environment metavariable of Propeller's operational semantics.
+$\beta(o, p)$ is a set of functions bound to property $p$ of object $o$. Note that this way objects
+of the same custom type don't share bindings.
+
+Function bound to a property must accept 3 parameters: two values of the same type as the property
+itself, passing the old value of the property and new value of the property, and one of the object's
+type, which will be set to the object whose property value has changed.
+
+When multiple functions are bound to the same property of an object, their order of execution is not
+defined.
+
+Semi-formal operational semantics of syntactical forms related to binding will be given below.
+$\rho(o, p)$ retrieves the location where property $p$ of object $o$ is stored, and $\sigma(l)$ is
+the value at location $l$.
+
+$$
+\dfrac{\begin{gathered}
+\langle e,\rho,\sigma,\beta,\cdots \rangle \Downarrow
+\langle v,\rho,\sigma_0,\beta,\cdots \rangle\\
+\textrm{for each } f_i\in\beta(o, p), i=1\dots n\\
+\langle f_i(\sigma_0(\rho(o,p),v,o),\rho,\sigma_{i-1},\beta,\cdots \rangle \Downarrow
+\langle void,\rho,\sigma_i,\beta,\cdots \rangle
+\end{gathered}
+}
+{\langle \textsc{PropertyAssign}(o,p,e),\rho,\sigma,\beta,\cdots \rangle
+\Downarrow
+\langle v,\rho,\sigma_n\{\rho(o,p)\mapsto v\},\beta,\cdots \rangle
+} \qquad \textsc{PropertyAssign}
+$$
+
+$$
+\dfrac{}
+{\langle \textsc{bind}(o,p,f),\rho,\sigma,\beta,\cdots \rangle
+\Downarrow
+\langle void,\rho,\sigma,\beta\{(o,p)\mapsto \beta(o,p)\cup \{f\}\},\cdots \rangle
+} \qquad \textsc{Bind}
+$$
+
+$$
+\dfrac{}
+{\langle \textsc{unbind}(o,p,f),\rho,\sigma,\beta,\cdots \rangle
+\Downarrow
+\langle void,\rho,\sigma,\beta\{(o,p)\mapsto \beta(o,p)\setminus \{f\}\},\cdots \rangle
+} \qquad \textsc{Unbind}
+$$
+
+(Note: If the object is of an external type in \textsc{PropertyAssign}, the actual behavior will
+differ a little, but that is the case only due to technical reasons and has no difference
+semantically.)
+
+\subsection{Program Execution}
+
+When a program written in Propeller is executed, it will start from a function called \verb|init()|.
+After \verb|init()| returns, it enters an event loop defined by the runtime library. For the
+most basic text-mode only runtime, the event loop simply terminates the program.
+
+% vim: tw=100 spell spelllang=en_us
