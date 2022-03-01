@@ -2,21 +2,30 @@
 
 Propeller is a language designed to write programs using the reactive programming paradigm. Programs
 written in Propeller usually act upon external events such as user inputs and environmental changes.
-It has a binding system: functions can be bound to properties of objects (akin to members or fields
-in other languages), so that they get called whenever the value of these properties change.
+% REWORD
+% It has a binding system: functions can be bound to properties of objects (akin to members or fields
+% in other languages), so that they get called whenever the value of these properties change.
+% - rewrote first phrase to emphasize Propeller's definiing feature
+% - rewrote last sense to flow better
+Most prominently, it features a binding system: functions can be bound to properties (akin to members
+or fields in other languages) of objects (akin to records or structs in other languages) such that a
+change in the value of a property results in a call to each of its bound functions.
 
 Propeller has several possible runtime environments: a simple runtime with a fixed entry point, one
 with GUI capabilities, and one that monitors certain local parameters of the computer (e.g. CPU
 temperature sensor readings, files creation and deletion, load average and so on).
 
-As of now, the syntax and semantics described in this document is tentative. The final version may
+% REWORD
+% As of now, the syntax and semantics described in this document is tentative.
+% - Opening phrase is redundant
+The syntax and semantics described in this document are tentative.
 contain revisions to address unforeseen design flaws.
 
 \subsection{Notation used in this document}
 
 This document uses a variation of Backus-Naur form to describe the syntax of the language. The most
 significant additions are the character range notation (\verb|"a"-"d"| rather than
-\verb:"a"|"b"|"c"|"d":), and items repeated zero or more times (\verb|{<characters>}| means
+\verb:"a"|"b"|"c"|"d":), and the notation for items repeated zero or more times (\verb|{<characters>}| means
 \verb|<characters>| repeated zero or more times).
 
 % vim: tw=100 spell spelllang=en_us
