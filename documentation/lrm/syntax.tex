@@ -165,14 +165,9 @@ Else clauses are attached to the closest unmatched if clause before it.
 
 \subsubsection{Special Statements}
 
-% REWORD
-% Bind and unbind has special syntactical rules. These rules exist only to simplify the
-% implementation. For users of Propeller they can be treated as if they are normal
-% built-in functions.
-% - grammatical fixes
-% - general reword
-\texttt{bind} and \texttt{unbind} have special syntactical rules and semantics,
-but can be viewed by the user as regular built-in functions.
+Bind and unbind has special syntactical rules. These rules exist only to simplify the
+implementation. For users of Propeller they can be treated as if they are normal
+built-in functions.
 
 \begin{verbatim}
    <bind-statement> ::= "bind" "(" <identifier> "." <identifier> ","
@@ -195,13 +190,13 @@ but can be viewed by the user as regular built-in functions.
                | <unbind-statement>
 \end{verbatim}
 
-\begin{mylisting}
+\begin{mylistingn}
 # example for statements
-if x > 0
+if (x > 0)
 {
   print_str('Positive');
 }
-elif x == 0
+elif (x == 0)
 {
   print_str('Zero');
 }
@@ -220,7 +215,7 @@ sum = 0;
 for ii from 1 to 1000000
 {
   sum = sum + ii;
-  if sum < 0
+  if (sum < 0)
   {
     break;
   }

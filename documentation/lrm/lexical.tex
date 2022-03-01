@@ -1,8 +1,8 @@
 \section{Lexical Conventions}
 
-\subsection{Comments}
-Propeller supports single-line comments. Any sequence of characters following a hash (\verb|#|) that is not part of a
-string literal will be treated as a comment. Comments automatically terminate at the end of a line.
+\subsection{Comment}
+Propeller supports single-line comments. Anything following a hash (\verb|#|) that is not part of a
+string literal will be treated as a comment. Comments automatically terminate at the end of line.
 
 \begin{wrapfigure}{r}{0.25\textwidth}
 \vspace{-4.5cm}
@@ -25,37 +25,20 @@ huh_?
 \end{mylistingn}
 \end{wrapfigure}
 
-% RESTRUCTURED
-% - <digit> was undefined
-% - <alphnum> makes the expression much easier to read
 \subsection{Identifiers}
-% \begin{verbatim}
-%     <letter> ::= "A"-"Z" | "a"-"z"
-% <identifier> ::= <letter> ("?" | "")
-%               | <letter> ("_" | "")
-%                {(<letter> | <digit>) |
-%                 ((<letter> | <digit>) "_")}
-%               (<letter> | <digit>) ("?" | "")
-% \end{verbatim}
 \begin{verbatim}
     <letter> ::= "A"-"Z" | "a"-"z"
-    <digit>  ::= "0"-"9"
-  <alphnum>  ::= <letter> | <digit>
 <identifier> ::= <letter> ("?" | "")
-               | <letter> ("_" | "") {<alphnum> | <alphnum> "_"}
-                 <alphnum> ("?" | "")
+               | <letter> ("_" | "")
+                 {(<letter> | <digit>) |
+                  ((<letter> | <digit>) "_")}
+                 (<letter> | <digit>) ("?" | "")
 \end{verbatim}
 
-% REWORDED
-% To put this rather cryptic identifier rule in plain English: only letters, digits, underscores and
-% question mark are allowed in identifier names. They must start with a letter, and must not end with
-% an underscore. The question mark can only appear at the end, and two punctuation marks cannot appear
-% consecutively.
-% - while this explanation is technically correct, I think the following is more straightforward:
-An identifier in Propeller is a character sequence consisting of letters, digits, underscores, and one
-optional question mark. Identifiers must begin with letters, cannot contain consecutive underscores,
-and cannot end with an underscore. Additionally, identifiers may end with a single question mark,
-but may not end with an underscore followed by a question mark.
+To put this rather cryptic identifier rule in plain English: only letters, digits, underscores and
+question mark are allowed in identifier names. They must start with a letter, and must not end with
+an underscore. The question mark can only appear at the end, and two punctuation marks cannot appear
+consecutively.
 
 \subsection{Keywords}
 Propeller has 25 reserved keywords:
@@ -90,17 +73,8 @@ Propeller has 15 operators for comparison, logic, and arithmetic.
 \end{mylistingn}
 
 \subsection{Literals}
-% SMALL CHANGE
-% \begin{verbatim}
-%             <digit> ::= "0"-"9"
-%       <int-literal> ::= {<digit>}
-%     <float-literal> ::= {<digit>} "." {<digit>}
-%      <bool-literal> ::= "true" | "false"
-% <string-characters> ::= character or escape sequence
-%    <string-literal> ::= "'" {<string-characters>} "'"
-% \end{verbatim}
-% - removed redefinition of <digit>
 \begin{verbatim}
+            <digit> ::= "0"-"9"
       <int-literal> ::= {<digit>}
     <float-literal> ::= {<digit>} "." {<digit>}
      <bool-literal> ::= "true" | "false"
@@ -108,8 +82,8 @@ Propeller has 15 operators for comparison, logic, and arithmetic.
    <string-literal> ::= "'" {<string-characters>} "'"
 \end{verbatim}
 
-\noindent Escape sequences in string literals are interpreted the same way OCaml
-interprets them (as in \verb|Scanf.unescaped|).
+For strings, escape sequences are interpreted the same way OCaml interprets them (as in
+\verb|Scanf.unescaped|).
 
 \begin{mylistingn}
 # int literals     float literals     boolean literals       string literals
