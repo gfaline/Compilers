@@ -44,9 +44,11 @@ consecutively.
                      | <bool-literal>
                      | <string-literal>
                      | <list>
+                     | <identifier>
                      | <expression> <binary-operators> <expression>
                      | <unary-operators> <expression>
                      | <identifier> "=" <expression>
+                     | "[" <identifier> "]"
                      | "(" <expression> ")"
                      | <identifier> "(" <arg-list> ")"
                      | <identifier> "." <identifier>
@@ -55,7 +57,7 @@ consecutively.
 
 Operator precedence follows normal conventions.
 
-\subsection{Lists}
+\subsection{List Literals}
 \begin{verbatim}
  <list> ::= "[" arg-list "]"
 \end{verbatim}
@@ -65,20 +67,19 @@ Operator precedence follows normal conventions.
 \subsubsection{Variable Declaration}
 
 \begin{verbatim}
-     <primitive-type> ::= "int" | "float" | "bool" | "str" | "void"
-      <compound-type> ::= "obj" | <primitive-type> "list"
-      <variable-decl> ::= <compound-type> <identifier> ";"
+              <types> ::= "int" | "float" | "bool" | "str" | "void" | <identifier> | <types> "list"
+      <variable-decl> ::= <types> <identifier> ";"
  <variable-decl-list> ::= "" | <variable-decl-list> <variable-decl>
 \end{verbatim}
 
 \subsubsection{Function Declaration}
 
 \begin{verbatim}
-     <formal-list> ::= <compound-type> <identifier>
-                     | <formal-list> "," <compound-type> <identifier>
+     <formal-list> ::= <types> <identifier>
+                     | <formal-list> "," <types> <identifier>
  <formal-list-opt> ::= "" | <formal-list>
    <function-decl> ::= "fn" <identifier> "(" <formal-list-opt> ")" "->"
-                       <compound-type> "{" <variable-decl-list>
+                       <types> "{" <variable-decl-list>
                        <statement-list> "}"
 \end{verbatim}
 
