@@ -5,16 +5,81 @@ brevity, semantics that are commonly found in other widely-adopted languages wil
 
 \subsection{Data Types}
 
-Propeller has 5 primitive types: \verb|int| is a signed 32-bit integer type; \verb|float| is a
-64-bit IEEE 754 floating point type; \verb|bool| is a boolean type, stored in a single byte;
-\verb|str| is a syntactic sugar for integer lists, which stores UTF-8 encoded characters of a
-string; and finally a \verb|void| type.
+Primitive types use the following internal representations:
+\begin{center}
+\begin{tabular}{| c | c | p{8cm} | }
+\hline
+ \textbf{Type} & \textbf{Size (bytes)} & \textbf{Description} \\
+ \hline
+ \texttt{int} & 4 & Integer \\
+ \hline
+ \texttt{float} & 8 & IEEE 754 floating point \\
+ \hline
+ \texttt{bool} & 1 & Boolean \\
+ \hline
+ \texttt{str} & varies & Syntactic sugar for integer lists; stores UTF-8 encoded characters of a
+ string \\
+\hline
+\end{tabular}
+\end{center}
 
 Propeller has a list type. Lists are immutable. All items in one list must be of the same type.
+List members are stored sequentially in memory.
 
 Custom types can be defined. They can have a number of properties in them. A runtime can have
 several predefined custom types, which still must be declared in the program before use, but
-prefixed by a \verb|external| keyword.
+prefixed by the \verb|external| keyword.
+
+\subsection{Operations}
+
+In binary operations of numbers, if one of the numbers is a float and the other is an integer, the
+integer will be automatically promoted to float. Division between integers gives the integer portion
+of the quotient. The modulo operation doesn't support float operands.
+
+Lists can be indexed using the \verb|[]| operator.
+
+\begin{mylistingn}
+# comparison
+2.3 == 1;   # false
+4 != 5;     # true
+8.34 > 3;   # true
+9 < 10;     # true
+5.5 >= 5.6; # false
+100 <= 100; # true
+
+# arithmetic
+4 + 3;    # 7
+2.0 - 1;  # 1.0
+-3.3 * 3; # -9.9
+5 / 2;    # 2
+5.0 / 2;  # 2.5
+6 % 4;    # 2
+
+# boolean comparison
+true != false; # true
+false == true; # false
+
+# boolean operations
+not false;      # true
+true and false; # false
+true or false;  # true
+true xor true;  # false
+\end{mylistingn}
+
+\begin{mylistingn}
+# list indexing
+int list l = [1, 2, 3];
+l[1];           # 2
+\end{mylistingn}
+
+\subsection{Statements}
+
+Most of the control flow in Propeller works like their C counterpart.
+
+For loops use a different syntax and semantics in Propeller. The loop variable is initialized to the
+value the first expression evaluates to, is incremented by 1 after the body of the loop is executed
+each time, and terminates when the loop variable is greater than the value the second expression
+evaluates to. The second expression is reevaluated every time in this process.
 
 \subsection{Binding}
 
@@ -31,7 +96,7 @@ itself, passing the old value of the property and new value of the property, and
 type, which will be set to the object whose property value has changed.
 
 When multiple functions are bound to the same property of an object, their order of execution is not
-defined.
+defined and depends on the implementation.
 
 Semi-formal operational semantics of syntactical forms related to binding will be given below.
 $\rho(o, p)$ retrieves the location where property $p$ of object $o$ is stored, and $\sigma(l)$ is

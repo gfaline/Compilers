@@ -8,6 +8,9 @@
 \usepackage{listings}
 \usepackage{tcolorbox}
 \usepackage{upquote}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usepackage{lipsum}
 \tcbuselibrary{listings}
 
 \definecolor{backgroundcolor}{HTML}{293134}
@@ -72,7 +75,18 @@
       listing only,
       listing options={style=mystyle},
       enlarge top by=5mm
-      hbox
+}
+
+\newtcblisting{mylistingn}{
+      arc=0pt,
+      top=0mm,
+      bottom=0mm,
+      left=0mm,
+      right=0mm,
+      boxrule=0pt,
+      colback=backgroundcolor,
+      listing only,
+      listing options={style=mystyle,numbers=none},
 }
 
 \title{Language Reference Manual for Propeller\\\Large A Property Manipulation Language}
@@ -98,6 +112,7 @@
 \maketitle
 
 \include*{overview}
+\include{lexical}
 \include{syntax}
 \include*{semantics}
 \include*{builtins}

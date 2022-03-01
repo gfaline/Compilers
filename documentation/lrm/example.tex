@@ -43,7 +43,7 @@ external objdef Sensor
 
 Sensor sensor;
 
-fn print_warning(float t) -> void
+fn print_warning(float oldt, float t, Sensor s) -> void
 {
   if (t > 100)
   {

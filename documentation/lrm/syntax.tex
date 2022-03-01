@@ -1,36 +1,5 @@
 \section{Syntax}
 
-\subsection{Comment}
-Anything following a hash (\verb|#|) that is not part of a string literal will be treated as a
-comment.
-
-\subsection{Literals}
-\begin{verbatim}
-            <digit> ::= "0"-"9"
-      <int-literal> ::= {<digit>}
-    <float-literal> ::= {<digit>} "." {<digit>}
-     <bool-literal> ::= "true" | "false"
-<string-characters> ::= character or escape sequence
-   <string-literal> ::= "'" {<string-characters>} "'"
-\end{verbatim}
-
-For strings, escape sequences are interpreted the same way OCaml interprets them (as in
-\verb|Scanf.unescaped|).
-
-\subsection{Identifiers}
-\begin{verbatim}
-    <letter> ::= "A"-"Z" | "a"-"z"
-<identifier> ::= <letter> ("?" | "")
-               | <letter> ("_" | "")
-                 {(<letter> | <digit>) | ((<letter> | <digit>) "_")}
-                 (<letter> | <digit>) ("?" | "")
-\end{verbatim}
-
-To put this rather cryptic identifier rule in plain English: only letters, digits, underscores and
-question mark are allowed in identifier names. They must start with a letter, and must not end with
-an underscore. The question mark can only appear at the end, and two punctuation marks cannot appear
-consecutively.
-
 \subsection{Expressions}
 \begin{verbatim}
 <binary-operators> ::= "+" | "-" | "*" | "/" | "%"
@@ -48,26 +17,62 @@ consecutively.
                      | <expression> <binary-operators> <expression>
                      | <unary-operators> <expression>
                      | <identifier> "=" <expression>
-                     | "[" <identifier> "]"
+                     | <identifier> "[" <expression> "]"
                      | "(" <expression> ")"
                      | <identifier> "(" <arg-list> ")"
                      | <identifier> "." <identifier>
                      | <identifier> "." <identifier> = <expression>
 \end{verbatim}
 
-Operator precedence follows normal conventions.
+\noindent
+Operator precedence follows standard conventions (e.g. C-style precedence).
+
+\begin{mylistingn}
+# the following are all syntactically correct expressions
+1
+abc
+abc + def
+alist[6]
+zzz = true
+(1 + 2) * 3
+o.k = 'ok'
+not false
+zebra % horse
+[true, false]
+\end{mylistingn}
 
 \subsection{List Literals}
 \begin{verbatim}
  <list> ::= "[" arg-list "]"
 \end{verbatim}
 
+\begin{mylistingn}
+# int list
+[1, 2, 3, 4]
+
+# float list
+[1.2, 3.4, 5.6]
+
+# bool list
+[true, false, true]
+
+# str list
+['joyce', 'cummings', 'center']
+
+# int list list
+[[5], [6]]
+
+# empty list
+[]
+\end{mylistingn}
+
 \subsection{Declarations}
 
 \subsubsection{Variable Declaration}
 
 \begin{verbatim}
-              <types> ::= "int" | "float" | "bool" | "str" | "void" | <identifier> | <types> "list"
+              <types> ::= "int" | "float" | "bool" | "str" | "void" |
+                          <identifier> | <types> "list"
       <variable-decl> ::= <types> <identifier> ";"
  <variable-decl-list> ::= "" | <variable-decl-list> <variable-decl>
 \end{verbatim}
@@ -87,8 +92,40 @@ Operator precedence follows normal conventions.
 
 \begin{verbatim}
           <obj-def> ::= "objdef" <identifier> "{" <variable-decl-list> "}"
- <external-obj-def> ::= "external" "objdef" <identifier> "{" <variable-decl-list> "}"
+ <external-obj-def> ::= "external" <obj-def>
 \end{verbatim}
+
+\begin{mylistingn}
+# defining an object type "Patient"
+objdef Patient
+{
+  str   name;
+  int   age;
+  float height;
+  float weight;
+}
+# an external object type
+external objdef ExternObj
+{
+  str name;
+  int value;
+}
+# declaring a variable of type Patient
+Patient p;
+
+# declaring variables of other types
+int x;
+str name;
+float pi;
+bool is_ready?;
+float list color;
+
+# a minimal function that does nothing
+fn do_nothing() -> void
+{
+  return;
+}
+\end{mylistingn}
 
 \subsection{Statements}
 
@@ -152,6 +189,38 @@ built-in functions.
                | <bind-statement>
                | <unbind-statement>
 \end{verbatim}
+
+\begin{mylistingn}
+# example for statements
+if (x > 0)
+{
+  print_str('Positive');
+}
+elif (x == 0)
+{
+  print_str('Zero');
+}
+else
+{
+  print_str('Negative');
+}
+
+while x < 10
+{
+  print_str('Less than 10')
+  x = x + 1;
+}
+
+sum = 0;
+for ii from 1 to 1000000
+{
+  sum = sum + ii;
+  if (sum < 0)
+  {
+    break;
+  }
+}
+\end{mylistingn}
 
 
 % vim: tw=100 spell spelllang=en_us

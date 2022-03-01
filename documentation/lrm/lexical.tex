@@ -1,0 +1,96 @@
+\section{Lexical Conventions}
+
+\subsection{Comment}
+Propeller supports single-line comments. Anything following a hash (\verb|#|) that is not part of a
+string literal will be treated as a comment. Comments automatically terminate at the end of line.
+
+\begin{wrapfigure}{r}{0.25\textwidth}
+\vspace{-4.5cm}
+\begin{mylistingn}
+# This is a comment.
+
+# valid identifiers
+x
+ready?
+aBc123
+o_o
+AsDfG_1234_5?
+
+# invalid identifiers
+8eight
+two__underscores
+propeller_
+too?early
+huh_?
+\end{mylistingn}
+\end{wrapfigure}
+
+\subsection{Identifiers}
+\begin{verbatim}
+    <letter> ::= "A"-"Z" | "a"-"z"
+<identifier> ::= <letter> ("?" | "")
+               | <letter> ("_" | "")
+                 {(<letter> | <digit>) |
+                  ((<letter> | <digit>) "_")}
+                 (<letter> | <digit>) ("?" | "")
+\end{verbatim}
+
+To put this rather cryptic identifier rule in plain English: only letters, digits, underscores and
+question mark are allowed in identifier names. They must start with a letter, and must not end with
+an underscore. The question mark can only appear at the end, and two punctuation marks cannot appear
+consecutively.
+
+\subsection{Keywords}
+Propeller has 25 reserved keywords:
+\begin{mylistingn}
+and  bind     break continue elif
+else external float fn       for
+from if       int   list     not
+obj  objdef   or    return   str
+to   unbind   void  while    xor                     
+\end{mylistingn}
+
+\subsection{Separators}
+Propeller has 10 separators used to construct literals, define functions, separate statements, and
+more:
+\begin{mylistingn}
+( ) [ ] { }
+, . ;   ->
+\end{mylistingn}
+
+\clearpage
+
+\subsection{Operators}
+Propeller has 15 operators for comparison, logic, and arithmetic.
+\begin{mylistingn}
+# comparison  logic  arithmetic
+  =           and    +
+  !=          or     -
+  >           not    *
+  <           xor    /
+  >=                 %
+  <=
+\end{mylistingn}
+
+\subsection{Literals}
+\begin{verbatim}
+            <digit> ::= "0"-"9"
+      <int-literal> ::= {<digit>}
+    <float-literal> ::= {<digit>} "." {<digit>}
+     <bool-literal> ::= "true" | "false"
+<string-characters> ::= character or escape sequence
+   <string-literal> ::= "'" {<string-characters>} "'"
+\end{verbatim}
+
+For strings, escape sequences are interpreted the same way OCaml interprets them (as in
+\verb|Scanf.unescaped|).
+
+\begin{mylistingn}
+# int literals     float literals     boolean literals       string literals
+1                  3.14               true                   'hello'
+23                 0.78               false                  'h0wdy!'
+0                  12.345                                    '\twhat\'s up?\n'
+5839407430         0.999
+\end{mylistingn}
+
+% vim: tw=100 spell spelllang=en_us
