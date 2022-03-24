@@ -2,7 +2,7 @@
 
 LLC="llc"
 CC="cc"
-PROPC="./toplevel.native"
+PROPC="./propeller.native"
 UNAME=$(uname -s)
 
 Usage() {
