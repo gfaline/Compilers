@@ -9,7 +9,7 @@ let translate (globals, objects, functions) =
 
   let i32_t      = L.i32_type context
   and i8_t       = L.i8_type  context
-  and the_module = L.create_module context "MicroC" in
+  and the_module = L.create_module context "Propeller" in
 
   let ltype_of_typ = function
       _ -> i32_t
