@@ -66,6 +66,7 @@ let check (globals, objects, functions) =
         Iliteral x -> (Int,   SIliteral x)
       | Fliteral x -> (Float, SFliteral x)
       | Bliteral x -> (Bool,  SBliteral x)
+      | Sliteral x -> (Str,   SSliteral x)
       | Call (f, es) ->
           let fdecl = find_func f in
           let n_args = List.length fdecl.formals in

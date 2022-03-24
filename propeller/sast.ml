@@ -5,6 +5,7 @@ and sx =
     SIliteral of int
   | SFliteral of float
   | SBliteral of bool
+  | SSliteral of string
   | SCall of string * sexpr list
 
 type sstmt = SExpr of sexpr
@@ -22,6 +23,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
     SIliteral x -> string_of_int x
   | SFliteral x -> string_of_float x
   | SBliteral x -> string_of_bool x
+  | SSliteral x -> x
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")" 
   | _ -> "NONE") ^ ")"
 
