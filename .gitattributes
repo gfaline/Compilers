@@ -1,0 +1,7 @@
+*.ml       text=auto
+*.mll      text=auto
+*.mly      text=auto
+*.pr       text=auto
+*.sh       text=auto
+Makefile   text=auto
+
