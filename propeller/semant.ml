@@ -64,6 +64,7 @@ let check (globals, objects, functions) =
 
     let rec expr = function
         Iliteral x -> (Int, SIliteral x)
+      | Fliteral x -> (Float, SFliteral x)
       | Call (f, es) ->
           let fdecl = find_func f in
           let n_args = List.length fdecl.formals in
