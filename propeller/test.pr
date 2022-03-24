@@ -1,0 +1,36 @@
+int a;
+int list l;
+
+fn foo () -> void
+{
+  123;
+  -9.324;
+  true;
+  false;
+  'hello';
+  1 + 2;
+  -5.2 - 4.5;
+  6 * 9;
+  8 / -5;
+  5 % 2;
+
+  true and false;
+  true or false;
+  true xor true;
+  not true;
+
+  a;
+  a = 5;
+
+  foo();
+
+  [1, 2, 3];
+  [true, false];
+  [[1], [2]];
+
+  l = [1, 2, 3];
+  a[2];
+
+  (5);
+
+}
