@@ -43,3 +43,6 @@ _opam/
 documentation/**/*.log
 documentation/**/*.aux
 documentation/**/*.listing
+
+# randy's test file
+test.pr
