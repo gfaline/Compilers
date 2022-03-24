@@ -145,7 +145,7 @@ let rec string_of_stmt_list = function
       Expr(e) -> string_of_expr e ^ ";"
     | Return(e) -> (match e with
         Noexpr -> "return;"
-      | expr   -> "return " ^ string_of_expr e ^ ";")
+      | _   -> "return " ^ string_of_expr e ^ ";")
     | If(e, s, [], []) ->
       "if " ^ string_of_expr e ^ "\n" ^
       "{\n" ^

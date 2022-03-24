@@ -4,7 +4,7 @@ open Sast
 module StringMap = Map.Make(String)
 
 let check (globals, objects, functions) =
-  let check_binds kind to_check =
+  let check_binds (*kind*) _ to_check =
     let name_compare (_, n1) (_, n2) =
       compare n1 n2
     in
@@ -55,12 +55,12 @@ let check (globals, objects, functions) =
       else raise (Failure msg)
     in
 
-    let symbols = List.fold_left (fun map (t, name) -> StringMap.add name t map) StringMap.empty (globals' @ formals' @ locals') in
+    (*let symbols = List.fold_left (fun map (t, name) -> StringMap.add name t map) StringMap.empty (globals' @ formals' @ locals') in
 
     let type_of_identifier s =
       try StringMap.find s symbols
       with Not_found -> raise (Failure "undef")
-    in
+    in*)
 
     let rec expr = function
         Iliteral x -> (Int,   SIliteral x)
@@ -82,7 +82,7 @@ let check (globals, objects, functions) =
       | _ -> (Int, SIliteral 0)
     in
 
-    let rec check_stmt = function
+    let (*rec*) check_stmt = function (* not yet recursive *)
         Expr e -> SExpr (expr e)
       | _ -> SExpr (expr (Iliteral 0))
     in

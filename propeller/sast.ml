@@ -7,8 +7,11 @@ and sx =
   | SBliteral of bool
   | SSliteral of string
   | SCall of string * sexpr list
+  | SAssign of string * expr
 
-type sstmt = SExpr of sexpr
+type sstmt =
+    SExpr of sexpr
+  | Return of expr
 
 type sfunc_decl = {
   styp : typ;
@@ -27,7 +30,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")" 
   | _ -> "NONE") ^ ")"
 
-let string_of_sodecl odecl = "NONE"
+let string_of_sodecl _ = "NONE"
 
 let rec string_of_sstmt_list = function
     [] -> ""

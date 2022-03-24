@@ -4,7 +4,7 @@ open Sast
 
 module StringMap = Map.Make(String)
 
-let translate (globals, objects, functions) =
+let translate ( (*globals, objects*) _, _, functions) =
   let context = L.global_context () in
 
   let i32_t      = L.i32_type context
@@ -15,7 +15,7 @@ let translate (globals, objects, functions) =
       _ -> i32_t
   in
 
-  let global_vars : L.llvalue StringMap.t = StringMap.empty in
+  (*let global_vars : L.llvalue StringMap.t = StringMap.empty in*)
 
   let print_t : L.lltype = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let print_func : L.llvalue = L.declare_function "print" print_t the_module in
@@ -35,12 +35,12 @@ let translate (globals, objects, functions) =
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
 
-    let local_vars = StringMap.empty in
+    (*let local_vars = StringMap.empty in
 
     let lookup n =
       try StringMap.find n local_vars
       with Not_found -> StringMap.find n global_vars
-    in
+    in*)
 
     let rec expr builder ((_, e) : sexpr) = match e with
         SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
@@ -52,7 +52,7 @@ let translate (globals, objects, functions) =
       | None -> ignore (instr builder)
     in
 
-    let rec stmt builder = function
+    let (*rec*) stmt builder = function (* not yet recursive -- causes warnings *)
         SExpr e -> let _ = expr builder e in builder
       | _ -> builder
     in
