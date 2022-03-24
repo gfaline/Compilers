@@ -4,6 +4,10 @@
 # vim swap file
 *.swp
 
+# intermediate files used by the compiler
+*.ll
+*.s
+
 *.annot
 *.cmo
 *.cma
