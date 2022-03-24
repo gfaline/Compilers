@@ -11,7 +11,8 @@ let () =
   let speclist = [
     ("-a", Arg.Unit (set_action Ast), "Print the AST");
     ("-s", Arg.Unit (set_action Sast), "Print the SAST");
-    ("-l", Arg.Unit (set_action LLVM_IR), "Print the generated LLVM IR")] in
+    ("-l", Arg.Unit (set_action LLVM_IR), "Print the generated LLVM IR");
+    ("-c", Arg.Unit (set_action Compile), "Check and print the generated LLVM IR (default)");] in
   let usage_msg = "usage: ./toplevel.native [-a|-s|-l] [file.pr]" in
   let channel = ref stdin in
   Arg.parse speclist (fun file -> channel:= open_in file) usage_msg;
@@ -25,7 +26,10 @@ let () =
           Ast -> ()
         | Sast    -> print_string (Sast.string_of_sprogram sast)
         | LLVM_IR -> print_string (Llvm.string_of_llmodule (Codegen.translate sast))
-        | _       -> print_string "UNDEF"
+        | Compile ->
+            let m = Codegen.translate sast in
+            Llvm_analysis.assert_valid_module m;
+            print_string (Llvm.string_of_llmodule m)
 
   (* let sast = Semant.check ast in
   print_string(Sast.string_of_sprogram sast) *)
