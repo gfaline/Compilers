@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 LLC="llc"
 CC="cc"
@@ -6,7 +6,7 @@ PROPC=$(dirname "$0")/propeller.native
 UNAME=$(uname -s)
 
 Usage() {
-  echo "Usage: $0 [options] <*.pr>"
+  echo "Usage: $0 <*.pr>"
   exit 1
 }
 

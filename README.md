@@ -1,12 +1,6 @@
 # Compilers
 Spring 2022 Compilers project
 
-To run our code for the Scanner Parser assignment, enter the scanner-parser folder. It can be run with the same required downloads as MicroC.
-
-To compile, run "ocamlbuild toplevel.native"
-
-To run tests run "./testall.sh" after compiling
-
 Isra Ali
 isra.hamid_ali@tufts.edu
 
@@ -18,6 +12,45 @@ edward.price@tufts.edu
 
 Chris Xiong
 lxiong01@tufts.edu
+
+## Requirements
+
+Required tools are similar to that of MicroC. Below is a pessimistic estimate of versions that will
+work:
+
+```
+OCaml >4.0, opam >2, LLVM for OCaml >8.0
+```
+
+In addition, you need a relatively recent version of Bash to run the scripts. On macOS, you can use
+Homebrew or a similar package manager to install a recent version of bash.
+
+## Building & Testing
+
+The following instruction has been tested on the following platforms:
+
+ - Gentoo Linux ~amd64, OCaml 4.13.1, opam 2.1.2, LLVM 13.0.01
+
+Assuming you are already in the `propeller` subfolder, use the following command to build the
+compiler:
+
+```
+make
+```
+
+Use the following command to run all supplied tests:
+
+```
+make test
+```
+
+## Compiler Invocation
+
+A script has been provided for generating executable in one step. Use `prc.sh <source.pr>` to create
+an executable for `source.pr`. The executable created will be named `source.out` (or `source.exe` on
+Windows), located in the same directory as `source.pr`.
+
+## Language Overview
 
 Since Propeller has C-like syntax, we borrowed several simple grammar rules
 and their corresponding OCaml expressions from MicroC. Rather than list
