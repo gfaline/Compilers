@@ -225,4 +225,4 @@ let string_of_fdecl fdecl =
 let string_of_program (vdecls, odecls, fdecls) =
   string_of_vdecls vdecls ^
   String.concat "\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
-  String.concat "\n" (List.rev (List.map string_of_fdecl fdecls)) ^ "\n"
+  String.concat "\n" (List.rev (List.map string_of_fdecl fdecls))

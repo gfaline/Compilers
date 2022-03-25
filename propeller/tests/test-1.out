@@ -1,4 +1,0 @@
-objdef our_first
-{
-int a;
-}
