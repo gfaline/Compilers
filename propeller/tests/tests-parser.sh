@@ -4,7 +4,7 @@ cd $(dirname "$0")/parser
 
 for i in test-*.pr
 do
-  out=${i%.pr}.out
+  out=${i%.pr}.exp
   if CheckExpect "$TheCompiler -a $i" $out; then
     echo "$i passed"
   else
