@@ -4,8 +4,8 @@ Spring 2022 Compilers project
 Isra Ali
 isra.hamid_ali@tufts.edu
 
-Grenwolyn Edgar
-grendolynedgar@tufts.edu
+Gwendolyn Edgar
+gwendolyn.edgar@tufts.edu
 
 Randy Price
 edward.price@tufts.edu
