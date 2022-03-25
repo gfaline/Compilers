@@ -12,10 +12,10 @@ CheckExpectWReturnCode() {
   ExpectedOutput=$2
   ExpectedStderr=$3
   ExpectedRet=$4
-  OutputT=$(mktemp prtest.XXXXX)
-  StderrT=$(mktemp prtest.XXXXX)
-  Output=$(mktemp prtest.XXXXX)
-  Stderr=$(mktemp prtest.XXXXX)
+  OutputT=$(mktemp prtest.outt.XXXXX)
+  StderrT=$(mktemp prtest.errt.XXXXX)
+  Output=$(mktemp prtest.out.XXXXX)
+  Stderr=$(mktemp prtest.err.XXXXX)
 
   eval "${EXEC} > ${OutputT} 2> ${StderrT}"
   Ret=$?
@@ -52,7 +52,7 @@ CheckFail() {
 }
 
 
-# CompiledCheckExpectWReturnCode Source ExpectedOutput ExpectedStderrExpectedReturnCode
+# CompiledCheckExpectWReturnCode Source ExpectedOutput ExpectedStderr ExpectedReturnCode
 # convenience function. Compile the given propeller source program and run it with CheckExpectedWReturnCode
 CompiledCheckExpectWReturnCode() {
   SRC=$1
@@ -61,8 +61,10 @@ CompiledCheckExpectWReturnCode() {
   EXEC=$BASENAME.out
   [[ $UNAME =~ (CYGWIN|MINGW|MSYS).* ]] && EXEC=$BASENAME.exe
   ${TheWrapper} $SRC
-  CheckExpectWReturnCode "$EXEC" $@
+  CheckExpectWReturnCode "./$EXEC" $@
+  RET=$?
   rm $EXEC
+  return $RET
 }
 
 # CompiledCheckFail Exec ExpectedStderr
@@ -78,5 +80,5 @@ CompiledCheckExpect() {
 CompiledCheckFail() {
   SRC=$1
   ExpectedStderr=$2
-  CompiledCheckExpectWReturnCode $SRC IGNORED $ExpectedStderr 0
+  CompiledCheckExpectWReturnCode $SRC IGNORED $ExpectedStderr FAIL
 }
