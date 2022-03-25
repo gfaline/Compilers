@@ -6,7 +6,9 @@ PROPC=$(dirname "$0")/propeller.native
 UNAME=$(uname -s)
 
 Usage() {
-  echo "Usage: $0 <*.pr>"
+  echo "Usage: $0 [options] <*.pr>"
+  echo "-k    Keep intermediate files"
+  echo "-h    Print this help"
   exit 1
 }
 
@@ -14,6 +16,21 @@ if [ $# -lt 1 ]
 then
   Usage $0
 fi
+
+keep=0
+
+while getopts kh c; do
+    case $c in
+	k) # Keep intermediate files
+	    keep=1
+	    ;;
+	h) # Help
+	    Usage $0
+	    ;;
+    esac
+done
+
+shift `expr $OPTIND - 1`
 
 SRC=$1
 
@@ -37,9 +54,9 @@ OUTPUT=$BASENAME.out
 
 INTERMEDIATES="$LLVMIRS $ASM"
 
-$PROPC $SRC > $LLVMIRS
+$PROPC $SRC > $LLVMIRS || exit 1
 $LLC -relocation-model=pic $LLVMIRS > $ASM
 $CC -o $OUTPUT $ASM
 
-rm $INTERMEDIATES
+[ $keep -eq 1 ] || rm $INTERMEDIATES
 
