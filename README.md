@@ -44,11 +44,22 @@ Use the following command to run all supplied tests:
 make test
 ```
 
+In addition, use `test_*` targets to run tests in a certain category (e.g. `make test_parser`
+runs all tests for the parser).
+
+Tests are done using a simple testing utility script (`testutil.sh`). Three different aspects of
+execution result can be checked against a given standard: standard output, standard error and
+return code. The first two can be ignored if needed. Since the compiler exits with non-zero return
+code if an invalid program is fed to it, it can be used to verify test cases in which the compilation
+is expected to fail.
+
 ## Compiler Invocation
 
-A script has been provided for generating executable in one step. Use `prc.sh <source.pr>` to create
+A script has been provided for generating executable in one step. Use `./prc.sh <source.pr>` to create
 an executable for `source.pr`. The executable created will be named `source.out` (or `source.exe` on
 Windows), located in the same directory as `source.pr`.
+
+Use `./prc.sh -k <source.pr>` to keep all intermediate files.
 
 ## Language Overview
 
@@ -89,5 +100,4 @@ to Propeller, and to assume everything else was inspired by MicroC (unless other
       an ID is invalid!)
     - several revised/tidied printing functions for vdecls, odecls, and fdecls
 - TESTING
-  - followed basic infrastructure
-  - used Run, RunFail, Check, CheckFail, and Compare with minor modifications
+    - A simple testing framework is used. See `testutil.sh`.
