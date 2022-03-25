@@ -84,6 +84,7 @@ let check (globals, objects, functions) =
 
     let (*rec*) check_stmt = function (* not yet recursive *)
         Expr e -> SExpr (expr e)
+      | Return e -> SReturn (expr e)
       | _ -> SExpr (expr (Iliteral 0))
     in
 

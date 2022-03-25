@@ -18,7 +18,7 @@ let translate ( (*globals, objects*) _, _, functions) =
   (*let global_vars : L.llvalue StringMap.t = StringMap.empty in*)
 
   let print_t : L.lltype = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
-  let print_func : L.llvalue = L.declare_function "print" print_t the_module in
+  let print_func : L.llvalue = L.declare_function "printf" print_t the_module in
 
   let function_decls : (L.llvalue * sfunc_decl) StringMap.t =
     let function_decl m fdecl =
@@ -43,7 +43,8 @@ let translate ( (*globals, objects*) _, _, functions) =
     in*)
 
     let rec expr builder ((_, e) : sexpr) = match e with
-        SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
+        SIliteral i -> L.const_int i32_t i
+      | SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
       | _ -> L.const_int i32_t 0
     in
 
@@ -54,7 +55,9 @@ let translate ( (*globals, objects*) _, _, functions) =
 
     let (*rec*) stmt builder = function (* not yet recursive -- causes warnings *)
         SExpr e -> let _ = expr builder e in builder
-      | _ -> builder
+      | SReturn e -> let _ = (* TODO: case for function returning void *)
+                       L.build_ret (expr builder e) builder
+                     in builder
     in
 
     let builder = List.fold_left stmt builder fdecl.sbody in

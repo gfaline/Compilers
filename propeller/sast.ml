@@ -11,7 +11,7 @@ and sx =
 
 type sstmt =
     SExpr of sexpr
-  | Return of expr
+  | SReturn of sexpr
 
 type sfunc_decl = {
   styp : typ;
