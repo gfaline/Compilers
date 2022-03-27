@@ -22,6 +22,8 @@
 *.pr.diff
 *.err.diff
 *.test
+*.out
+*.exe
 
 # ocamlbuild working directory
 _build/
