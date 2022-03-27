@@ -1,1 +1,5 @@
-objdef our_first { int a; }
+# A simple object definition
+objdef our_first
+{
+  int a;
+}

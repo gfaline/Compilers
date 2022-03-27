@@ -1,3 +1,6 @@
+# This test fails because there are extra parenthesis around the beginning
+# of the "for" block. For loops do not take a single expression; they have
+# unique syntax.
 fn foo(int a, int c) -> int
 {
   int b;
@@ -8,5 +11,4 @@ fn foo(int a, int c) -> int
       
   }
   return b;
- 
 }

@@ -1,10 +1,11 @@
-fn foo() -> void{
-
-    bool a;
-    if ( b > a )
-    {
-        break b;
-    }
-    return a;
-    a = z - 1;    
+# This test fails because an expression follows the keyword "break."
+fn foo() -> void
+{
+  bool a;
+  if ( b > a )
+  {
+    break b;
+  }
+  return a;
+  a = z - 1;    
 }

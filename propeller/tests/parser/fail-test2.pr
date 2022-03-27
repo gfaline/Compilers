@@ -1,3 +1,4 @@
+# This test fails because "string" is not a type, but "str" is!
 fn foo() -> void
 {
   string foo;

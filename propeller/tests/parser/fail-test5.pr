@@ -1,3 +1,4 @@
+# This tests fails because a variable beginning with an underscore is declared.
 fn foo() -> void
 {
     int a;

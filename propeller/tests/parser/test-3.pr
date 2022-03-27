@@ -1,3 +1,4 @@
+# A messy function with valid syntax
 fn while_function (str Success) -> str { 
 
 if correct==true { return Success;} else { return Fail;} }

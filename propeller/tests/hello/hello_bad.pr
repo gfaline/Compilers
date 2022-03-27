@@ -1,5 +1,6 @@
+# A simple program that fails to compile
 fn main() -> int
 {
-  print(-);
+  print(-); # Can't print an operator!
   return 5;
 }

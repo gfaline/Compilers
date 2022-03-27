@@ -1,1 +1,7 @@
-fn first_function () -> str { str a; a = HelloWorld; return a; } 
+# A simple function that's syntactically valid, but semantically meaningless
+fn first_function () -> str
+{
+  str a;
+  a = HelloWorld;
+  return a;
+} 

@@ -1,1 +1,2 @@
+# This test fails due to missing the semicolon required for variable declaration
 int a
