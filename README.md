@@ -50,8 +50,9 @@ runs all tests for the parser).
 Tests are done using a simple testing utility script (`testutil.sh`). Three different aspects of
 execution result can be checked against a given standard: standard output, standard error and
 return code. The first two can be ignored if needed. Since the compiler exits with non-zero return
-code if an invalid program is fed to it, it can be used to verify test cases in which the compilation
-is expected to fail.
+code if an invalid program is fed to it, it can be used to verify test cases in which the compilation is expected to fail.
+
+A description of each test is included at the top of its corresponding .pr source file.
 
 ## Compiler Invocation
 
