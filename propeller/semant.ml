@@ -79,6 +79,22 @@ let check (globals, objects, functions) =
           in
           let es' = List.map2 check_call fdecl.formals es in
           (fdecl.typ, SCall(f, es'))
+      (* | Assign (id, e) as ex ->
+          let tid = type_of_identifier id
+          and (te, e') = expr e in
+          let err_msg = "Illegal assignment" in
+          (check_assign tid te error_msg, SAssign(id, (te, e'))) *)
+      | Binop (e1, op, e2) ->
+          let (t1, e1') = expr e1
+          and (t2, e2') = expr e2 in
+          let ty = match op with
+              Add | Sub | Mlt | Div | Mod when t1 = t2 && t1 = Int   -> Int
+            | Add | Sub | Mlt | Div       when t1 = t2 && t1 = Float -> Float
+            | Eq  | Neq                   when t1 = t2               -> Bool
+            | Lt  | Leq | Gt  | Geq       when t1 = t2 && (t1 = Int || t2 = Float) -> Bool
+            | And | Or  | Xor             when t1 = t2 && t1 = Bool -> Bool
+            | _ -> raise (Failure "Illegal binary operator") in
+          (ty, SBinop((t1, e1'), op, (t2, e2')))
       | _ -> (Int, SIliteral 0)
     in
 

@@ -7,7 +7,8 @@ and sx =
   | SBliteral of bool
   | SSliteral of string
   | SCall of string * sexpr list
-  | SAssign of string * expr
+  (* | SAssign of string * sexpr *)
+  | SBinop of sexpr * binop * sexpr
 
 type sstmt =
     SExpr of sexpr
@@ -27,7 +28,9 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SFliteral x -> string_of_float x
   | SBliteral x -> string_of_bool x
   | SSliteral x -> x
-  | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")" 
+  | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
+  (* | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e ^ ";" *)
+  | SBinop (e1, op, e2) -> string_of_sexpr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_sexpr e2
   | _ -> "NONE") ^ ")"
 
 let string_of_sodecl _ = "NONE"
