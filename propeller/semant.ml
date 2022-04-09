@@ -102,6 +102,9 @@ let check (globals, objects, functions) =
             | Not when t == Bool -> Bool
             | _ -> raise (Failure "Illegal unary operator") in
           (ty, SUnop(op, (t, e')))
+      | Parentheses e ->
+          let (ty, e') = expr e in
+          (ty, SParentheses (ty, e'))
       | _ -> (Int, SIliteral 0)
     in
 

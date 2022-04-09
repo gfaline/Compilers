@@ -11,6 +11,7 @@ and sx =
   (* | SAssign of string * sexpr *)
   | SBinop of sexpr * binop * sexpr
   | SUnop of unop * sexpr
+  | SParentheses of sexpr
 
 type sstmt =
     SExpr of sexpr
@@ -36,6 +37,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SUnop (op, e) -> (match op with
       Not -> string_of_unop op ^ " (" ^ string_of_sexpr e ^ ")"
     | Neg -> string_of_unop op ^ "(" ^ string_of_sexpr e ^ ")")
+  | SParentheses e -> "(" ^ string_of_sexpr e ^ ")"
   | _ -> "NONE") ^ ")"
 
 let string_of_sodecl _ = "NONE"
