@@ -95,6 +95,13 @@ let check (globals, objects, functions) =
             | And | Or  | Xor             when t1 = t2 && t1 = Bool -> Bool
             | _ -> raise (Failure "Illegal binary operator") in
           (ty, SBinop((t1, e1'), op, (t2, e2')))
+      | Unop (op, e) ->
+          let (t, e') = expr e in
+          let ty = match op with
+              Neg when t == Int || t == Float -> t
+            | Not when t == Bool -> Bool
+            | _ -> raise (Failure "Illegal unary operator") in
+          (ty, SUnop(op, (t, e')))
       | _ -> (Int, SIliteral 0)
     in
 

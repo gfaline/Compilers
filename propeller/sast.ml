@@ -6,9 +6,11 @@ and sx =
   | SFliteral of float
   | SBliteral of bool
   | SSliteral of string
+  (* | SLliteral of sexpr list *)
   | SCall of string * sexpr list
   (* | SAssign of string * sexpr *)
   | SBinop of sexpr * binop * sexpr
+  | SUnop of unop * sexpr
 
 type sstmt =
     SExpr of sexpr
@@ -31,6 +33,9 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
   (* | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e ^ ";" *)
   | SBinop (e1, op, e2) -> string_of_sexpr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_sexpr e2
+  | SUnop (op, e) -> (match op with
+      Not -> string_of_unop op ^ " (" ^ string_of_sexpr e ^ ")"
+    | Neg -> string_of_unop op ^ "(" ^ string_of_sexpr e ^ ")")
   | _ -> "NONE") ^ ")"
 
 let string_of_sodecl _ = "NONE"
