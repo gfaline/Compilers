@@ -9,9 +9,11 @@ let translate ( (*globals, objects*) _, _, functions) =
 
   let i32_t      = L.i32_type context
   and i8_t       = L.i8_type  context
+  and i1_t       = L.i1_type  context
   and the_module = L.create_module context "Propeller" in
 
   let ltype_of_typ = function
+      | A.Bool  -> i1_t
       _ -> i32_t
   in
 
@@ -45,6 +47,7 @@ let translate ( (*globals, objects*) _, _, functions) =
     let rec expr builder ((_, e) : sexpr) = match e with
         SIliteral i -> L.const_int i32_t i
       | SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
+      | SBLiteral b -> L.const_int i1_t (if b then 1 else 0)
       | _ -> L.const_int i32_t 0
     in
 
