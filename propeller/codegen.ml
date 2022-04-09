@@ -13,8 +13,8 @@ let translate ( (*globals, objects*) _, _, functions) =
   and the_module = L.create_module context "Propeller" in
 
   let ltype_of_typ = function
-      | A.Bool  -> i1_t
-      _ -> i32_t
+      A.Bool  -> i1_t
+      | _ -> i32_t
   in
 
   (*let global_vars : L.llvalue StringMap.t = StringMap.empty in*)
