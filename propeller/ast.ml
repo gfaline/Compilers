@@ -139,71 +139,46 @@ let rec string_of_expr = function
   | Parentheses(e) -> "(" ^ string_of_expr e ^ ")"
   | Noexpr -> ""
 
-let rec string_of_stmt_list = function
-    [] -> ""
-  | st::sts -> (match st with
-      Expr(e) -> string_of_expr e ^ ";"
-    | Return(e) -> (match e with
-        Noexpr -> "return;"
-      | _   -> "return " ^ string_of_expr e ^ ";")
 
-    | If (e, s1, elifs, s2) ->
-        let if_str =
-          "if " ^ string_of_expr e ^ "\n" ^
-          "{\n" ^
-          string_of_stmt_list s1 ^
-          "}" in
-        let string_of_elif (elif_e, elif_s) = 
-          "elif " ^ string_of_expr elif_e ^ "\n" ^
-          "{\n" ^
-          string_of_stmt_list elif_s ^
-          "}"
-        in
-        let elif_str = (match elifs with 
-            [] -> ""
-          | _  -> "\n" ^
-                  String.concat "\n" (List.map string_of_elif elifs)) in
-        let else_str = (match s2 with
-            [] -> ""
-          | _  -> "\n" ^
-                  "else\n" ^
-                  "{\n" ^
-                  string_of_stmt_list s2 ^
-                  "}") in
-        (* let else_str = (match (elifs, s2) with
-            ([], []) -> ""
-          | ([], s)  -> 
-              "\n" ^
-              "else\n" ^
-              "{\n" ^
-              string_of_stmt_list s ^
-              "}"
-          | (elfs, []) ->
-              "\n" ^
-              String.concat "\n" (List.map string_of_elif elfs)
-          | (elfs, s) ->
-              "\n" ^
-              String.concat "\n" (List.map string_of_elif elfs) ^ "\n" ^
-              "else\n" ^
-              "{\n" ^
-              string_of_stmt_list s ^
-              "}" ) in *)
-        if_str ^ elif_str ^ else_str
-    | While(e, s) ->
-        "while " ^ string_of_expr e ^ "\n" ^
-        "{\n" ^
-        string_of_stmt_list s ^
-        "}"
-    | For(id, e1, e2, s) ->
-        "for " ^ id ^ " from " ^ string_of_expr e1 ^ " to " ^ string_of_expr e2 ^ "\n" ^
-        "{\n" ^
-        string_of_stmt_list s ^
-        "}"
-    | Break -> "break;"
-    | Continue -> "continue;"
-    | Bind(o, p, f) -> "bind( " ^ o ^ "." ^ p ^ ", " ^ f ^ ");"
-    | Unbind(o, p, f) -> "unbind( " ^ o ^ "." ^ p ^", " ^ f ^ ");") ^
-    "\n" ^ string_of_stmt_list sts
+(* wrap stuff in curly braces *)
+let brace_wrap s =
+  "{\n" ^
+  s ^ "\n" ^
+  "}"
+
+let rec string_of_stmt = function
+    Expr(e) -> string_of_expr e ^ ";"
+  | Return(e) -> (match e with
+      Noexpr -> "return;"
+    | _   -> "return " ^ string_of_expr e ^ ";")
+  | If (e, s1, elifs, s2) ->
+      let if_str =
+        "if " ^ string_of_expr e ^ "\n" ^
+        brace_wrap (String.concat "\n" (List.map string_of_stmt s1)) in
+      let string_of_elif (elif_e, elif_s) = 
+        "elif " ^ string_of_expr elif_e ^ "\n" ^
+        brace_wrap(String.concat "\n" (List.map string_of_stmt elif_s))
+      in
+      let elif_str = match elifs with 
+          [] -> ""
+        | _  -> "\n" ^
+                String.concat "\n" (List.map string_of_elif elifs) in
+      let else_str = match s2 with
+          [] -> ""
+        | _  -> "\n" ^
+                "else\n" ^
+                brace_wrap(String.concat "\n" (List.map string_of_stmt s2)) in
+      if_str ^ elif_str ^ else_str
+  | While(e, s) ->
+      "while " ^ string_of_expr e ^ "\n" ^
+      brace_wrap (String.concat "\n" (List.map string_of_stmt s))
+  | For(id, e1, e2, s) ->
+      "for " ^ id ^ " from " ^ string_of_expr e1 ^ " to " ^ string_of_expr e2 ^ "\n" ^
+      brace_wrap (String.concat "\n" (List.map string_of_stmt s))
+  | Break -> "break;"
+  | Continue -> "continue;"
+  | Bind(o, p, f) -> "bind( " ^ o ^ "." ^ p ^ ", " ^ f ^ ");"
+  | Unbind(o, p, f) -> "unbind( " ^ o ^ "." ^ p ^", " ^ f ^ ");"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";"
 let string_of_vdecls = function
@@ -213,23 +188,16 @@ let string_of_vdecls = function
 let string_of_odecl odecl =
   if odecl.extern then
     "external objdef " ^ odecl.oname ^ "\n" ^
-    "{\n" ^
-    String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
-    "}"
+    brace_wrap (String.concat "\n" (List.map string_of_vdecl odecl.props))
   else
     "objdef " ^ odecl.oname ^ "\n" ^
-    "{\n" ^
-    String.concat "\n" (List.map string_of_vdecl odecl.props) ^ "\n" ^
-    "}"
+    brace_wrap (String.concat "\n" (List.map string_of_vdecl odecl.props))
 
 let string_of_formal (t, id) = string_of_typ t ^ " " ^ id
 
 let string_of_fdecl fdecl =
   "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map string_of_formal fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
-  "{\n" ^
-  string_of_vdecls fdecl.locals ^
-  string_of_stmt_list fdecl.body ^
-  "}"
+  brace_wrap (string_of_vdecls fdecl.locals ^ String.concat "\n" (List.map string_of_stmt fdecl.body))
 
 let string_of_program (vdecls, odecls, fdecls) =
   string_of_vdecls vdecls ^
