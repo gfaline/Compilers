@@ -122,6 +122,12 @@ let check (globals, objects, functions) =
       | Return e -> SReturn (expr e)
       | If (e, s, [], []) -> SIf(check_bool_expr e, List.map check_stmt s, [], [])
       | If (e, s1, [] , s2) -> SIf(check_bool_expr e, List.map check_stmt s1, [], List.map check_stmt s2)
+      | If (e, s, elifs, []) ->
+          let rec check_elifs elfs = match elfs with
+            []      -> []
+          | (ee, ss)::eess -> (check_bool_expr ee, List.map check_stmt ss) :: check_elifs eess
+          in
+          SIf(check_bool_expr e, List.map check_stmt s, check_elifs elifs, [])
       (* | _ -> SExpr (expr (Iliteral 0)) *)
       | _ -> raise (Failure "bad stmt")
     in
