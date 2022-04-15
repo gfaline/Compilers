@@ -120,7 +120,8 @@ let check (globals, objects, functions) =
     let rec check_stmt = function
         Expr e -> SExpr (expr e)
       | Return e -> SReturn (expr e)
-      | If (e, s1, [], []) -> SIf(check_bool_expr e, List.map check_stmt s1, [], [])
+      | If (e, s, [], []) -> SIf(check_bool_expr e, List.map check_stmt s, [], [])
+      | If (e, s1, [] , s2) -> SIf(check_bool_expr e, List.map check_stmt s1, [], List.map check_stmt s2)
       (* | _ -> SExpr (expr (Iliteral 0)) *)
       | _ -> raise (Failure "bad stmt")
     in

@@ -57,10 +57,12 @@ let rec string_of_sstmt_list = function
       | SIf(e, s1, [], s2) ->
           "if " ^ string_of_sexpr e ^ "\n" ^
           "{\n" ^
-          string_of_sstmt_list s1 ^ "\n" ^
+          string_of_sstmt_list s1 ^
           "}\n" ^
           "else\n" ^
-          string_of_sstmt_list s2
+          "{\n" ^
+          string_of_sstmt_list s2 ^
+          "}"
       | SIf (e, s, elifs, []) -> 
           "if " ^ string_of_sexpr e ^ "\n" ^
           "{\n" ^
