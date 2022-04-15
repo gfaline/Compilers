@@ -120,14 +120,17 @@ let check (globals, objects, functions) =
     let rec check_stmt = function
         Expr e -> SExpr (expr e)
       | Return e -> SReturn (expr e)
-      | If (e, s, [], []) -> SIf(check_bool_expr e, List.map check_stmt s, [], [])
-      | If (e, s1, [] , s2) -> SIf(check_bool_expr e, List.map check_stmt s1, [], List.map check_stmt s2)
-      | If (e, s, elifs, []) ->
-          let rec check_elifs elfs = match elfs with
-            []      -> []
-          | (ee, ss)::eess -> (check_bool_expr ee, List.map check_stmt ss) :: check_elifs eess
+      | If (e, s1, elifs, s2) ->
+          let check_elif (elif_e, elif_s) =
+            (check_bool_expr elif_e, List.map check_stmt elif_s)
           in
-          SIf(check_bool_expr e, List.map check_stmt s, check_elifs elifs, [])
+          let elifs' = match elifs with
+              [] -> []
+            | _  -> List.map check_elif elifs in
+          let s2' = match s2 with
+              [] -> []
+            | _  -> List.map check_stmt s2 in
+          SIf (check_bool_expr e, List.map check_stmt s1, elifs', s2')
       (* | _ -> SExpr (expr (Iliteral 0)) *)
       | _ -> raise (Failure "bad stmt")
     in
