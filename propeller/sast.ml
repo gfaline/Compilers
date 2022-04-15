@@ -45,54 +45,31 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
 
 let string_of_sodecl _ = "NONE"
 
-let rec string_of_sstmt_list = function
-    [] -> ""
-  | st::sts -> (match st with
-        SExpr e -> string_of_sexpr e ^ ";"
-      | SIf(e, s, [], []) ->
-          "if " ^ string_of_sexpr e ^ "\n" ^
-          "{\n" ^
-          string_of_sstmt_list s ^
-          "}"
-      | SIf(e, s1, [], s2) ->
-          "if " ^ string_of_sexpr e ^ "\n" ^
-          "{\n" ^
-          string_of_sstmt_list s1 ^
-          "}\n" ^
-          "else\n" ^
-          "{\n" ^
-          string_of_sstmt_list s2 ^
-          "}"
-      | SIf (e, s, elifs, []) -> 
-          "if " ^ string_of_sexpr e ^ "\n" ^
-          "{\n" ^
-          string_of_sstmt_list s ^
-          "}\n" ^
-          String.concat "\n" (List.map (fun elif -> "elif " ^ string_of_sexpr (fst elif) ^ "\n" ^
-                                                    "{\n" ^
-                                                    string_of_sstmt_list (snd elif) ^
-                                                    "}") elifs)
-      | SIf (e, s1, elifs, s2) -> 
+let rec string_of_sstmt = function
+    SExpr e -> string_of_sexpr e ^ ";"
+  | SIf (e, s1, elifs, s2) ->
+      let if_str =
         "if " ^ string_of_sexpr e ^ "\n" ^
-        "{\n" ^
-        string_of_sstmt_list s1 ^
-        "}\n" ^
-        (String.concat "\n" (List.map (fun elif -> "elif " ^ string_of_sexpr (fst elif) ^ "\n" ^
-                                                   "{\n" ^
-                                                   string_of_sstmt_list (snd elif) ^
-                                                   "}") elifs)) ^ "\n" ^
-                                                   "else\n" ^
-                                                   "{\n" ^
-                                                   string_of_sstmt_list s2 ^
-                                                   "}"
-      | _ -> "NONE") ^ "\n" ^ string_of_sstmt_list sts
+        brace_wrap (String.concat "\n" (List.map string_of_sstmt s1)) in
+      let string_of_elif (elif_e, elif_s) = 
+        "elif " ^ string_of_sexpr elif_e ^ "\n" ^
+        brace_wrap(String.concat "\n" (List.map string_of_sstmt elif_s))
+      in
+      let elif_str = match elifs with 
+          [] -> ""
+        | _  -> "\n" ^
+                String.concat "\n" (List.map string_of_elif elifs) in
+      let else_str = match s2 with
+          [] -> ""
+        | _  -> "\n" ^
+                "else\n" ^
+                brace_wrap(String.concat "\n" (List.map string_of_sstmt s2)) in
+      if_str ^ elif_str ^ else_str
+  | _ -> "NONE"
 
 let string_of_sfdecl fdecl =
   "fn " ^ fdecl.sfname ^ "("  ^ String.concat ", " (List.map snd fdecl.sformals) ^ ") -> " ^ string_of_typ fdecl.styp ^ "\n" ^
-  "{\n" ^
-  string_of_vdecls fdecl.slocals ^
-  string_of_sstmt_list fdecl.sbody ^
-  "}"
+  brace_wrap (string_of_vdecls fdecl.slocals ^ String.concat "\n" (List.map string_of_sstmt fdecl.sbody))
 
 let string_of_sprogram (vdecls, odecls, fdecls) =
   string_of_vdecls vdecls ^
