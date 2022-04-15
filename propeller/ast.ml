@@ -146,42 +146,49 @@ let rec string_of_stmt_list = function
     | Return(e) -> (match e with
         Noexpr -> "return;"
       | _   -> "return " ^ string_of_expr e ^ ";")
-    | If(e, s, [], []) ->
-        "if " ^ string_of_expr e ^ "\n" ^
-        "{\n" ^
-        string_of_stmt_list s ^
-        "}"
-    | If(e, s1, [], s2) ->
-        "if " ^ string_of_expr e ^ "\n" ^
-        "{\n" ^
-        string_of_stmt_list s1 ^ "\n" ^
-        "}\n" ^
-        "else\n" ^
-        "{\n" ^
-        string_of_stmt_list s2 ^
-        "}"
-    | If (e, s, elifs, []) -> 
-      "if " ^ string_of_expr e ^ "\n" ^
-      "{\n" ^
-      string_of_stmt_list s ^
-      "}\n" ^
-      String.concat "\n" (List.map (fun elif -> "elif " ^ string_of_expr (fst elif) ^ "\n" ^
-                                              "{\n" ^
-                                              string_of_stmt_list (snd elif) ^
-                                              "}") elifs)
-    | If (e, s1, elifs, s2) -> 
-      "if " ^ string_of_expr e ^ "\n" ^
-      "{\n" ^
-      string_of_stmt_list s1 ^
-      "}\n" ^
-      (String.concat "\n" (List.map (fun elif -> "elif " ^ string_of_expr (fst elif) ^ "\n" ^
-                                              "{\n" ^
-                                              string_of_stmt_list (snd elif) ^
-                                              "}") elifs)) ^ "\n" ^
-                                              "else\n" ^
-                                              "{\n" ^
-                                              string_of_stmt_list s2 ^
-                                              "}"
+
+    | If (e, s1, elifs, s2) ->
+        let if_str =
+          "if " ^ string_of_expr e ^ "\n" ^
+          "{\n" ^
+          string_of_stmt_list s1 ^
+          "}" in
+        let string_of_elif (elif_e, elif_s) = 
+          "elif " ^ string_of_expr elif_e ^ "\n" ^
+          "{\n" ^
+          string_of_stmt_list elif_s ^
+          "}"
+        in
+        let elif_str = (match elifs with 
+            [] -> ""
+          | _  -> "\n" ^
+                  String.concat "\n" (List.map string_of_elif elifs)) in
+        let else_str = (match s2 with
+            [] -> ""
+          | _  -> "\n" ^
+                  "else\n" ^
+                  "{\n" ^
+                  string_of_stmt_list s2 ^
+                  "}") in
+        (* let else_str = (match (elifs, s2) with
+            ([], []) -> ""
+          | ([], s)  -> 
+              "\n" ^
+              "else\n" ^
+              "{\n" ^
+              string_of_stmt_list s ^
+              "}"
+          | (elfs, []) ->
+              "\n" ^
+              String.concat "\n" (List.map string_of_elif elfs)
+          | (elfs, s) ->
+              "\n" ^
+              String.concat "\n" (List.map string_of_elif elfs) ^ "\n" ^
+              "else\n" ^
+              "{\n" ^
+              string_of_stmt_list s ^
+              "}" ) in *)
+        if_str ^ elif_str ^ else_str
     | While(e, s) ->
         "while " ^ string_of_expr e ^ "\n" ^
         "{\n" ^
