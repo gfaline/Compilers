@@ -147,17 +147,19 @@ let rec string_of_stmt_list = function
         Noexpr -> "return;"
       | _   -> "return " ^ string_of_expr e ^ ";")
     | If(e, s, [], []) ->
-      "if " ^ string_of_expr e ^ "\n" ^
-      "{\n" ^
-      string_of_stmt_list s ^
-      "}"
+        "if " ^ string_of_expr e ^ "\n" ^
+        "{\n" ^
+        string_of_stmt_list s ^
+        "}"
     | If(e, s1, [], s2) ->
-      "if " ^ string_of_expr e ^ "\n" ^
-      "{\n" ^
-      string_of_stmt_list s1 ^ "\n" ^
-      "}\n" ^
-      "else\n" ^
-      string_of_stmt_list s2
+        "if " ^ string_of_expr e ^ "\n" ^
+        "{\n" ^
+        string_of_stmt_list s1 ^ "\n" ^
+        "}\n" ^
+        "else\n" ^
+        "{\n" ^
+        string_of_stmt_list s2 ^
+        "}"
     | If (e, s, elifs, []) -> 
       "if " ^ string_of_expr e ^ "\n" ^
       "{\n" ^
