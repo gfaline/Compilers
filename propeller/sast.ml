@@ -13,6 +13,7 @@ and sx =
   | SBinop of sexpr * binop * sexpr
   | SUnop of unop * sexpr
   | SParentheses of sexpr
+  | SNoexpr
 
 type sstmt =
     SExpr of sexpr
@@ -41,12 +42,16 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
       Not -> string_of_unop op ^ " (" ^ string_of_sexpr e ^ ")"
     | Neg -> string_of_unop op ^ "(" ^ string_of_sexpr e ^ ")")
   | SParentheses e -> "(" ^ string_of_sexpr e ^ ")"
+  | SNoexpr -> ""
   (*| _ -> "NONE"*)) ^ ")"
 
 let string_of_sodecl _ = "NONE"
 
 let rec string_of_sstmt = function
     SExpr e -> string_of_sexpr e ^ ";"
+  | SReturn e -> (match e with
+        (Void, SNoexpr) -> "return;"
+      | _            -> "return " ^ string_of_sexpr e ^ ";")
   | SIf (e, s1, elifs, s2) ->
       let if_str =
         "if " ^ string_of_sexpr e ^ "\n" ^
