@@ -7,6 +7,7 @@ and sx =
   | SBliteral of bool
   | SSliteral of string
   (* | SLliteral of sexpr list *)
+  | SId of string
   | SCall of string * sexpr list
   (* | SAssign of string * sexpr *)
   | SBinop of sexpr * binop * sexpr
@@ -16,6 +17,7 @@ and sx =
 type sstmt =
     SExpr of sexpr
   | SReturn of sexpr
+  | SIf of sexpr * sstmt list * (sexpr * sstmt list) list * sstmt list
 
 type sfunc_decl = {
   styp : typ;
@@ -31,6 +33,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SFliteral x -> string_of_float x
   | SBliteral x -> string_of_bool x
   | SSliteral x -> x
+  | SId id -> id
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
   (* | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e ^ ";" *)
   | SBinop (e1, op, e2) -> string_of_sexpr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_sexpr e2
@@ -38,7 +41,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
       Not -> string_of_unop op ^ " (" ^ string_of_sexpr e ^ ")"
     | Neg -> string_of_unop op ^ "(" ^ string_of_sexpr e ^ ")")
   | SParentheses e -> "(" ^ string_of_sexpr e ^ ")"
-  | _ -> "NONE") ^ ")"
+  (*| _ -> "NONE"*)) ^ ")"
 
 let string_of_sodecl _ = "NONE"
 
@@ -46,6 +49,40 @@ let rec string_of_sstmt_list = function
     [] -> ""
   | st::sts -> (match st with
         SExpr e -> string_of_sexpr e ^ ";"
+      | SIf(e, s, [], []) ->
+          "if " ^ string_of_sexpr e ^ "\n" ^
+          "{\n" ^
+          string_of_sstmt_list s ^
+          "}"
+      | SIf(e, s1, [], s2) ->
+          "if " ^ string_of_sexpr e ^ "\n" ^
+          "{\n" ^
+          string_of_sstmt_list s1 ^ "\n" ^
+          "}\n" ^
+          "else\n" ^
+          string_of_sstmt_list s2
+      | SIf (e, s, elifs, []) -> 
+          "if " ^ string_of_sexpr e ^ "\n" ^
+          "{\n" ^
+          string_of_sstmt_list s ^
+          "}\n" ^
+          String.concat "\n" (List.map (fun elif -> "elif " ^ string_of_sexpr (fst elif) ^ "\n" ^
+                                                    "{\n" ^
+                                                    string_of_sstmt_list (snd elif) ^
+                                                    "}") elifs)
+      | SIf (e, s1, elifs, s2) -> 
+        "if " ^ string_of_sexpr e ^ "\n" ^
+        "{\n" ^
+        string_of_sstmt_list s1 ^
+        "}\n" ^
+        (String.concat "\n" (List.map (fun elif -> "elif " ^ string_of_sexpr (fst elif) ^ "\n" ^
+                                                   "{\n" ^
+                                                   string_of_sstmt_list (snd elif) ^
+                                                   "}") elifs)) ^ "\n" ^
+                                                   "else\n" ^
+                                                   "{\n" ^
+                                                   string_of_sstmt_list s2 ^
+                                                   "}"
       | _ -> "NONE") ^ "\n" ^ string_of_sstmt_list sts
 
 let string_of_sfdecl fdecl =

@@ -67,6 +67,7 @@ let check (globals, objects, functions) =
       | Fliteral x -> (Float, SFliteral x)
       | Bliteral x -> (Bool,  SBliteral x)
       | Sliteral x -> (Str,   SSliteral x)
+      (* | Id id -> (type_of_identifier id, SId id) *)
       | Call (f, es) ->
           let fdecl = find_func f in
           let n_args = List.length fdecl.formals in
@@ -105,13 +106,23 @@ let check (globals, objects, functions) =
       | Parentheses e ->
           let (ty, e') = expr e in
           (ty, SParentheses (ty, e'))
-      | _ -> (Int, SIliteral 0)
+      (* | _ -> (Int, SIliteral 0) *)
+      | _ -> raise (Failure "bad expr")
     in
 
-    let (*rec*) check_stmt = function (* not yet recursive *)
+    let check_bool_expr e =
+      let (t', e') = expr e in
+      if   t' != Bool
+      then raise (Failure "expected boolean expression")
+      else (t', e')
+    in
+
+    let rec check_stmt = function
         Expr e -> SExpr (expr e)
       | Return e -> SReturn (expr e)
-      | _ -> SExpr (expr (Iliteral 0))
+      | If (e, s1, [], []) -> SIf(check_bool_expr e, List.map check_stmt s1, [], [])
+      (* | _ -> SExpr (expr (Iliteral 0)) *)
+      | _ -> raise (Failure "bad stmt")
     in
 
     { styp = func.typ;
