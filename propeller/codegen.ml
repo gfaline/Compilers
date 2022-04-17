@@ -14,7 +14,7 @@ let translate ( (*globals, objects*) _, _, functions) =
 
   let ltype_of_typ = function
       A.Int   -> i32_t
-    | A.float -> float_t
+    | A.Float -> float_t
   in
 
   (*let global_vars : L.llvalue StringMap.t = StringMap.empty in*)
