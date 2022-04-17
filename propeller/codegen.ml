@@ -7,12 +7,14 @@ module StringMap = Map.Make(String)
 let translate ( (*globals, objects*) _, _, functions) =
   let context = L.global_context () in
 
-  let i32_t      = L.i32_type context
-  and i8_t       = L.i8_type  context
+  let i32_t      = L.i32_type      context
+  and i8_t       = L.i8_type       context
+  and float_t    = L.double_type   context
   and the_module = L.create_module context "Propeller" in
 
   let ltype_of_typ = function
-      _ -> i32_t
+      A.Int   -> i32_t
+    | A.float -> float_t
   in
 
   (*let global_vars : L.llvalue StringMap.t = StringMap.empty in*)
@@ -43,7 +45,8 @@ let translate ( (*globals, objects*) _, _, functions) =
     in*)
 
     let rec expr builder ((_, e) : sexpr) = match e with
-        SIliteral i -> L.const_int i32_t i
+        SIliteral x -> L.const_int i32_t x
+      | SFliteral x -> L.const_float float_t x
       | SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
       | _ -> L.const_int i32_t 0
     in
@@ -58,6 +61,7 @@ let translate ( (*globals, objects*) _, _, functions) =
       | SReturn e -> let _ = (* TODO: case for function returning void *)
                        L.build_ret (expr builder e) builder
                      in builder
+      | _ -> let _ = expr builder (Int, SIliteral 0) in builder
     in
 
     let builder = List.fold_left stmt builder fdecl.sbody in

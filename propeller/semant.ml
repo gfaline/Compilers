@@ -106,7 +106,6 @@ let check (globals, objects, functions) =
       | Parentheses e ->
           let (ty, e') = expr e in
           (ty, SParentheses (ty, e'))
-      (* | _ -> (Int, SIliteral 0) *)
       | Noexpr -> (Void, SNoexpr)
       | _ -> raise (Failure "bad expr")
     in
