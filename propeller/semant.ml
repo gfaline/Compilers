@@ -4,28 +4,14 @@ open Sast
 module StringMap = Map.Make(String)
 
 let check (globals, objects, functions) =
-  let check_binds (*kind*) _ to_check =
+  let check_binds kind to_check =
     let name_compare (_, n1) (_, n2) =
       compare n1 n2
     in
     let check_it checked binding = match binding with
-        (Void, _) -> raise (Failure "void global")
+        (Void, _) -> raise (Failure ("void " ^ kind))
       | (_, n1)   -> match checked with
-          ((_, n2) :: _) when n1 = n2 -> raise (Failure "duplicate global")
-        | _ -> binding :: checked
-    in
-    let _ = List.fold_left check_it [] (List.sort name_compare to_check) in
-    to_check
-  in
-
-  let check_props _ to_check =
-    let name_compare (_, n1) (_, n2) = 
-      compare n1 n2
-    in
-    let check_it checked binding = match binding with
-        (Void, _) -> raise (Failure "void property")
-      | (_, n1)    -> match checked with
-          ((_, n2):: _ ) when n1 = n2 -> raise (Failure "duplicate property")
+          ((_, n2) :: _) when n1 = n2 -> raise (Failure ("duplicate " ^ kind))
         | _ -> binding :: checked
     in
     let _ = List.fold_left check_it [] (List.sort name_compare to_check) in
@@ -34,7 +20,7 @@ let check (globals, objects, functions) =
 
   let check_obj odecl = {
     soname = odecl.oname;
-    sprops = check_props "object" odecl.props;
+    sprops = check_binds "property" odecl.props;
     sextern = odecl.extern }
   in
 
