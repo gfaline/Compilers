@@ -7,9 +7,12 @@ and sx =
   | SBliteral of bool
   | SSliteral of string
   (* | SLliteral of sexpr list *)
-  | SId of string
   | SCall of string * sexpr list
   | SAssign of string * sexpr
+  (* | SSetprop of string * string * sexpr *)
+  | SId of string
+  (* | SGetprop of string * string *)
+  (* | SIndex of string * sexpr *)
   | SBinop of sexpr * binop * sexpr
   | SUnop of unop * sexpr
   | SParentheses of sexpr
@@ -19,6 +22,7 @@ type sstmt =
     SExpr of sexpr
   | SReturn of sexpr
   | SIf of sexpr * sstmt list * (sexpr * sstmt list) list * sstmt list
+  | SFor of string * sexpr * sexpr * sstmt list
 
 type sfunc_decl = {
   styp : typ;
@@ -34,16 +38,19 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SFliteral x -> string_of_float x
   | SBliteral x -> string_of_bool x
   | SSliteral x -> x
+  (* | SLliteral *)
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
-  | SId id -> id
   | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e ^ ";"
+  (* | SSetprop*)
+  | SId id -> id
+  (* | SGetprop*)
+  (* | SIndex *)
   | SBinop (e1, op, e2) -> string_of_sexpr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_sexpr e2
   | SUnop (op, e) -> (match op with
       Not -> string_of_unop op ^ " (" ^ string_of_sexpr e ^ ")"
     | Neg -> string_of_unop op ^ "(" ^ string_of_sexpr e ^ ")")
   | SParentheses e -> "(" ^ string_of_sexpr e ^ ")"
-  | SNoexpr -> ""
-  (*| _ -> "NONE"*)) ^ ")"
+  | SNoexpr -> "") ^ ")"
 
 let string_of_sodecl _ = "NONE"
 
@@ -70,7 +77,11 @@ let rec string_of_sstmt = function
                 "else\n" ^
                 brace_wrap(String.concat "\n" (List.map string_of_sstmt s2)) in
       if_str ^ elif_str ^ else_str
-  | _ -> "NONE"
+  | SFor (id, e1, e2, s) ->
+      "for " ^ id ^ " from " ^ string_of_sexpr e1 ^ " to " ^ string_of_sexpr e2 ^ "\n" ^
+      brace_wrap (String.concat "\n" (List.map string_of_sstmt s))
+
+  (* | _ -> "NONE" *)
 
 let string_of_sfdecl fdecl =
   "fn " ^ fdecl.sfname ^ "("  ^ String.concat ", " (List.map snd fdecl.sformals) ^ ") -> " ^ string_of_typ fdecl.styp ^ "\n" ^

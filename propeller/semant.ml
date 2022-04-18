@@ -48,6 +48,7 @@ let check (globals, objects, functions) =
   let check_function func =
     let formals' = check_binds "formal" func.formals in
     let locals'  = check_binds "local" func.locals in
+    (* let iters    = ref [] in *)
 
     let check_assign lt rt msg =
       if   lt = rt
@@ -57,6 +58,7 @@ let check (globals, objects, functions) =
 
     let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
 	                               StringMap.empty (globals' @ formals' @ locals') in
+    (* let r_symbols = ref symbols in *)
 
     let type_of_identifier s =
       try StringMap.find s symbols
@@ -81,7 +83,7 @@ let check (globals, objects, functions) =
           in
           let es' = List.map2 check_call fdecl.formals es in
           (fdecl.typ, SCall(f, es'))
-      | Assign (id, e) as ex ->
+      | Assign (id, e) ->
           let tid = type_of_identifier id
           and (te, e') = expr e in
           let err_msg = "Illegal assignment" in
@@ -118,6 +120,13 @@ let check (globals, objects, functions) =
       else (t', e')
     in
 
+    let check_int_expr e =
+      let (t', e') = expr e in
+      if   t' != Int
+      then raise (Failure "expected int expression")
+      else (t', e')
+    in
+
     let rec check_stmt = function
         Expr e -> SExpr (expr e)
       | Return e -> SReturn (expr e)
@@ -132,6 +141,10 @@ let check (globals, objects, functions) =
               [] -> []
             | _  -> List.map check_stmt s2 in
           SIf (check_bool_expr e, List.map check_stmt s1, elifs', s2')
+      (* Need to somehow create local indexing variable *)
+      | For (id, e1, e2, s) -> 
+          (* StringMap.add id Int !r_symbols; *)
+          SFor (id, check_int_expr e1, check_int_expr e2, List.map check_stmt s)
       (* | _ -> SExpr (expr (Iliteral 0)) *)
       | _ -> raise (Failure "bad stmt")
     in
