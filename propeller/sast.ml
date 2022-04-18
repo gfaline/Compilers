@@ -9,7 +9,7 @@ and sx =
   (* | SLliteral of sexpr list *)
   | SId of string
   | SCall of string * sexpr list
-  (* | SAssign of string * sexpr *)
+  | SAssign of string * sexpr
   | SBinop of sexpr * binop * sexpr
   | SUnop of unop * sexpr
   | SParentheses of sexpr
@@ -36,7 +36,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SSliteral x -> x
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
   | SId id -> id
-  (* | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e ^ ";" *)
+  | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e ^ ";"
   | SBinop (e1, op, e2) -> string_of_sexpr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_sexpr e2
   | SUnop (op, e) -> (match op with
       Not -> string_of_unop op ^ " (" ^ string_of_sexpr e ^ ")"

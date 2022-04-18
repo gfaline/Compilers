@@ -81,11 +81,11 @@ let check (globals, objects, functions) =
           in
           let es' = List.map2 check_call fdecl.formals es in
           (fdecl.typ, SCall(f, es'))
-      (* | Assign (id, e) as ex ->
+      | Assign (id, e) as ex ->
           let tid = type_of_identifier id
           and (te, e') = expr e in
           let err_msg = "Illegal assignment" in
-          (check_assign tid te error_msg, SAssign(id, (te, e'))) *)
+          (check_assign tid te err_msg, SAssign(id, (te, e')))
       | Binop (e1, op, e2) ->
           let (t1, e1') = expr e1
           and (t2, e2') = expr e2 in
