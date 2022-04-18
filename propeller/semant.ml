@@ -145,6 +145,7 @@ let check (globals, objects, functions) =
       | For (id, e1, e2, s) -> 
           (* StringMap.add id Int !r_symbols; *)
           SFor (id, check_int_expr e1, check_int_expr e2, List.map check_stmt s)
+      | While (e, s) -> SWhile (check_bool_expr e, List.map check_stmt s)
       (* | _ -> SExpr (expr (Iliteral 0)) *)
       | _ -> raise (Failure "bad stmt")
     in

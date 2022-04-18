@@ -23,6 +23,7 @@ type sstmt =
   | SReturn of sexpr
   | SIf of sexpr * sstmt list * (sexpr * sstmt list) list * sstmt list
   | SFor of string * sexpr * sexpr * sstmt list
+  | SWhile of sexpr * sstmt list
 
 type sfunc_decl = {
   styp : typ;
@@ -80,6 +81,9 @@ let rec string_of_sstmt = function
   | SFor (id, e1, e2, s) ->
       "for " ^ id ^ " from " ^ string_of_sexpr e1 ^ " to " ^ string_of_sexpr e2 ^ "\n" ^
       brace_wrap (String.concat "\n" (List.map string_of_sstmt s))
+  | SWhile (e, s) ->
+        "while " ^ string_of_sexpr e ^ "\n" ^
+        brace_wrap (String.concat "\n" (List.map string_of_sstmt s))
 
   (* | _ -> "NONE" *)
 
