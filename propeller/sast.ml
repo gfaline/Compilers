@@ -6,7 +6,7 @@ and sx =
   | SFliteral of float
   | SBliteral of bool
   | SSliteral of string
-  (* | SLliteral of sexpr list *)
+  | SLliteral of sexpr array
   | SCall of string * sexpr list
   | SAssign of string * sexpr
   (* | SSetprop of string * string * sexpr *)
@@ -41,7 +41,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SFliteral x -> string_of_float x
   | SBliteral x -> string_of_bool x
   | SSliteral x -> x
-  (* | SLliteral *)
+  | SLliteral xs -> "[" ^ String.concat ", " (Array.to_list (Array.map string_of_sexpr xs)) ^ "]"
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
   | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e ^ ";"
   (* | SSetprop*)

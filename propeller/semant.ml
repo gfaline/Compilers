@@ -70,6 +70,25 @@ let check (globals, objects, functions) =
       | Fliteral x -> (Float, SFliteral x)
       | Bliteral x -> (Bool,  SBliteral x)
       | Sliteral x -> (Str,   SSliteral x)
+      | Lliteral xs ->
+          let (ty, _) = expr (Array.get xs 0) in
+          let eqty e =
+            let (tt, _) = expr e in
+            tt = ty
+          in
+          let same = List.fold_left ( = ) true (List.map eqty (Array.to_list xs)) in
+          if   not same
+          then raise (Failure "unequal list element types")
+          else (match ty with
+                    Int   -> let sxs = Array.map (fun (Iliteral e) -> (Int, SIliteral e)) xs in
+                             (List(Int), SLliteral sxs)
+                  | Float -> let sxs = Array.map (fun (Fliteral e) -> (Float, SFliteral e)) xs in
+                             (List(Float), SLliteral sxs)
+                  | Bool  -> let sxs = Array.map (fun (Bliteral e) -> (Bool, SBliteral e)) xs in
+                             (List(Bool), SLliteral sxs)
+                  | Str   -> let sxs = Array.map (fun (Sliteral e) -> (Str, SSliteral e)) xs in
+                             (List(Str), SLliteral sxs)
+                  | _     -> raise (Failure "bad list type"))
       | Id id -> (type_of_identifier id, SId id)
       | Call (f, es) ->
           let fdecl = find_func f in
