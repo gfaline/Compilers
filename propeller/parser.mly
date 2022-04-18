@@ -142,7 +142,7 @@ expr:
   | FLIT { Fliteral($1) }
   | BLIT { Bliteral($1) }
   | SLIT { Sliteral($1) }
-  | LBRCKT args_list RBRCKT   { Lliteral($2) }
+  | LBRCKT args_list RBRCKT   { Lliteral(Array.of_list $2) }
   // ID evaluation
   | ID   { Id($1) }
   | ID PERIOD ID %prec NOT    { Getprop($1, $3) }

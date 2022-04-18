@@ -45,7 +45,7 @@ type expr =
   | Fliteral of float
   | Bliteral of bool
   | Sliteral of string
-  | Lliteral of expr list
+  | Lliteral of expr array
   (* function call *)
   | Call of string * expr list
   (* assignment *)
@@ -119,7 +119,7 @@ let rec string_of_expr = function
   | Fliteral(x) -> string_of_float x
   | Bliteral(b) -> string_of_bool b
   | Sliteral(s) -> s
-  | Lliteral(es) -> "[" ^ String.concat ", " (List.map string_of_expr es) ^ "]"
+  | Lliteral(es) -> "[" ^ String.concat ", " (Array.to_list (Array.map string_of_expr es)) ^ "]"
   (* function call *)
   | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
   (* assignment *)
