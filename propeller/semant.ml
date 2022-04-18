@@ -4,6 +4,9 @@ open Sast
 module StringMap = Map.Make(String)
 
 let check (globals, objects, functions) =
+
+  (* global variables *)
+
   let check_binds kind to_check =
     let name_compare (_, n1) (_, n2) =
       compare n1 n2
@@ -17,6 +20,10 @@ let check (globals, objects, functions) =
     let _ = List.fold_left check_it [] (List.sort name_compare to_check) in
     to_check
   in
+
+  let globals' = check_binds "global" globals in
+
+  (* objects *)
 
   let check_obj odecl = {
     soname = odecl.oname;
@@ -33,7 +40,7 @@ let check (globals, objects, functions) =
 
   let _ = List.fold_left add_obj StringMap.empty objects' in
 
-  let globals' = check_binds "global" globals in
+  (* functions *)
 
   let built_in_decls =
     let add_bind map (name, t) = StringMap.add name
