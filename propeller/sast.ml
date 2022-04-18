@@ -24,6 +24,8 @@ type sstmt =
   | SIf of sexpr * sstmt list * (sexpr * sstmt list) list * sstmt list
   | SFor of string * sexpr * sexpr * sstmt list
   | SWhile of sexpr * sstmt list
+  | SBreak
+  | SContinue
 
 type sfunc_decl = {
   styp : typ;
@@ -84,6 +86,8 @@ let rec string_of_sstmt = function
   | SWhile (e, s) ->
         "while " ^ string_of_sexpr e ^ "\n" ^
         brace_wrap (String.concat "\n" (List.map string_of_sstmt s))
+  | SBreak -> "break;"
+  | SContinue -> "continue;"
 
   (* | _ -> "NONE" *)
 
