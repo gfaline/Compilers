@@ -90,6 +90,14 @@ let check (globals, objects, functions) =
                              (List(Str), SLliteral sxs)
                   | _     -> raise (Failure "bad list type"))
       | Id id -> (type_of_identifier id, SId id)
+      | Index (id, e) ->
+          let ty = (match type_of_identifier id with
+                       List(t) -> t
+                     | _      -> raise (Failure "not a list")) in
+          let (t, e') = expr e in
+          (match t with
+              Int -> (ty, SIndex(id, (t, e')))
+            | _   -> raise (Failure "non-int index"))
       | Call (f, es) ->
           let fdecl = find_func f in
           let n_args = List.length fdecl.formals in
