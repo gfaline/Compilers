@@ -1,5 +1,10 @@
 open Ast
 
+type sobj_decl = {
+  soname : string;
+  sprops : bind list;
+  sextern : bool }
+
 type sexpr = typ * sx
 and sx =
     SIliteral of int
@@ -55,7 +60,13 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SParentheses e -> "(" ^ string_of_sexpr e ^ ")"
   | SNoexpr -> "") ^ ")"
 
-let string_of_sodecl _ = "NONE"
+  let string_of_sodecl odecl =
+    if odecl.sextern then
+      "external objdef " ^ odecl.soname ^ "\n" ^
+      brace_wrap (String.concat "\n" (List.map string_of_vdecl odecl.sprops))
+    else
+      "objdef " ^ odecl.soname ^ "\n" ^
+      brace_wrap (String.concat "\n" (List.map string_of_vdecl odecl.sprops))
 
 let rec string_of_sstmt = function
     SExpr e -> string_of_sexpr e ^ ";"
@@ -93,9 +104,10 @@ let rec string_of_sstmt = function
 
 let string_of_sfdecl fdecl =
   "fn " ^ fdecl.sfname ^ "("  ^ String.concat ", " (List.map snd fdecl.sformals) ^ ") -> " ^ string_of_typ fdecl.styp ^ "\n" ^
-  brace_wrap (string_of_vdecls fdecl.slocals ^ String.concat "\n" (List.map string_of_sstmt fdecl.sbody))
+  brace_wrap ((String.concat "\n" (List.rev (List.map string_of_vdecl fdecl.slocals))) ^
+               String.concat "\n" (List.map string_of_sstmt fdecl.sbody))
 
 let string_of_sprogram (vdecls, odecls, fdecls) =
-  string_of_vdecls vdecls ^
-  String.concat "\n" (List.rev (List.map string_of_sodecl odecls)) ^ "\n" ^
-  String.concat "\n" (List.rev (List.map string_of_sfdecl fdecls)) ^ "\n"
+  String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n\n" ^
+  String.concat "\n\n" (List.rev (List.map string_of_sodecl odecls)) ^ "\n\n" ^
+  String.concat "\n\n" (List.rev (List.map string_of_sfdecl fdecls))

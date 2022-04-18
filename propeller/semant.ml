@@ -9,14 +9,43 @@ let check (globals, objects, functions) =
       compare n1 n2
     in
     let check_it checked binding = match binding with
-        (Void, _) -> raise (Failure "void")
+        (Void, _) -> raise (Failure "void global")
       | (_, n1)   -> match checked with
-          ((_, n2) :: _) when n1 = n2 -> raise (Failure "dup")
+          ((_, n2) :: _) when n1 = n2 -> raise (Failure "duplicate global")
         | _ -> binding :: checked
     in
     let _ = List.fold_left check_it [] (List.sort name_compare to_check) in
     to_check
   in
+
+  let check_props _ to_check =
+    let name_compare (_, n1) (_, n2) = 
+      compare n1 n2
+    in
+    let check_it checked binding = match binding with
+        (Void, _) -> raise (Failure "void property")
+      | (_, n1)    -> match checked with
+          ((_, n2):: _ ) when n1 = n2 -> raise (Failure "duplicate property")
+        | _ -> binding :: checked
+    in
+    let _ = List.fold_left check_it [] (List.sort name_compare to_check) in
+    to_check
+  in
+
+  let check_obj odecl = {
+    soname = odecl.oname;
+    sprops = check_props "object" odecl.props;
+    sextern = odecl.extern }
+  in
+
+  let objects' = List.map check_obj objects in
+
+  let add_obj map odecl = match odecl with
+      _ when StringMap.mem odecl.soname map -> raise (Failure "duplicate objdef")
+    | _ ->   StringMap.add odecl.soname odecl map
+  in
+
+  let _ = List.fold_left add_obj StringMap.empty objects' in
 
   let globals' = check_binds "global" globals in
 
@@ -31,8 +60,8 @@ let check (globals, objects, functions) =
     List.fold_left add_bind StringMap.empty [ ("print", Int)] in
 
   let add_func map fdecl = match fdecl with
-      _ when StringMap.mem fdecl.fname built_in_decls -> raise (Failure "built-in")
-    | _ when StringMap.mem fdecl.fname map            -> raise (Failure "dup")
+      _ when StringMap.mem fdecl.fname built_in_decls -> raise (Failure "already a built-in function")
+    | _ when StringMap.mem fdecl.fname map            -> raise (Failure "duplicate function")
     | _ -> StringMap.add fdecl.fname fdecl map
   in
 
@@ -187,4 +216,4 @@ let check (globals, objects, functions) =
   in
 
   let functions' = List.map check_function functions in
-  (globals', objects, functions')
+  (globals', objects', functions')
