@@ -34,8 +34,8 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SFliteral x -> string_of_float x
   | SBliteral x -> string_of_bool x
   | SSliteral x -> x
-  | SId id -> id
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
+  | SId id -> id
   (* | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e ^ ";" *)
   | SBinop (e1, op, e2) -> string_of_sexpr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_sexpr e2
   | SUnop (op, e) -> (match op with

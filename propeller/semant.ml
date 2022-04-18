@@ -55,19 +55,20 @@ let check (globals, objects, functions) =
       else raise (Failure msg)
     in
 
-    (*let symbols = List.fold_left (fun map (t, name) -> StringMap.add name t map) StringMap.empty (globals' @ formals' @ locals') in
+    let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+	                               StringMap.empty (globals' @ formals' @ locals') in
 
     let type_of_identifier s =
       try StringMap.find s symbols
       with Not_found -> raise (Failure "undef")
-    in*)
+    in
 
     let rec expr = function
         Iliteral x -> (Int,   SIliteral x)
       | Fliteral x -> (Float, SFliteral x)
       | Bliteral x -> (Bool,  SBliteral x)
       | Sliteral x -> (Str,   SSliteral x)
-      (* | Id id -> (type_of_identifier id, SId id) *)
+      | Id id -> (type_of_identifier id, SId id)
       | Call (f, es) ->
           let fdecl = find_func f in
           let n_args = List.length fdecl.formals in
