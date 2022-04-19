@@ -81,6 +81,8 @@ let translate (globals, _ (* objects *), functions) =
           let e' = expr builder e in
           let _ = L.build_store e' (lookup id) builder in
           e'
+      (* | SSetprop (o, p, e) -> *)
+      | SId id -> L.build_load (lookup id) id builder
       | SBinop (e1, op, e2) ->
           let (t, _) = e1
           and e1' = expr builder e1
@@ -116,7 +118,8 @@ let translate (globals, _ (* objects *), functions) =
                              | A.Neq -> L.build_icmp L.Icmp.Ne
                              | A.And -> L.build_and
                              | A.Or  -> L.build_or
-                             | A.Xor -> raise (Failure "internal error - bad float operator"))
+                             | A.Xor -> raise (Failure "internal error - bad float operator")
+                             | _ -> raise (Failure "internal error - bad bool operator"))
               | _ -> raise (Failure ("internal error - bad binary operator type"))) in
           instr e1' e2' "tmp" builder
       | SUnop (op, e) ->
@@ -142,7 +145,7 @@ let translate (globals, _ (* objects *), functions) =
       | SReturn e -> let _ = (* TODO: case for function returning void *)
                        L.build_ret (expr builder e) builder
                      in builder
-      | _ -> let _ = expr builder (Int, SIliteral 0) in builder
+      | _ -> let _ = expr builder (A.Int, SIliteral 0) in builder
     in
 
     let builder = List.fold_left stmt builder fdecl.sbody in
