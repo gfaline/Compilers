@@ -32,6 +32,7 @@ type sstmt =
   | SBreak
   | SContinue
   | SBind of string * string * string
+  | SUnbind of string * string * string
 
 type sfunc_decl = {
   styp : typ;
@@ -102,6 +103,7 @@ let rec string_of_sstmt = function
   | SBreak -> "break;"
   | SContinue -> "continue;"
   | SBind (o, p, f) -> "bind(" ^ o ^ "." ^ p ^ ", " ^ f ^ ");"
+  | SUnbind(o, p, f) -> "unbind( " ^ o ^ "." ^ p ^", " ^ f ^ ");"
 
   (* | _ -> "NONE" *)
 

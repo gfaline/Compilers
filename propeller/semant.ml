@@ -254,7 +254,16 @@ let check (globals, objects, functions) =
                  let _ = get_prop p odecl in
                  let _ = find_func f in
                  SBind (o, p, f)
-             | _ -> raise (Failure (o ^ " is not an object"))) 
+             | _ -> raise (Failure (o ^ " is not an object")))
+      | Unbind (o, p, f) -> 
+          let oty = type_of_identifier o in
+          (match oty with
+               Custom t ->
+                 let odecl = find_objdecl t in
+                 let _ = get_prop p odecl in
+                 let _ = find_func f in
+                 SUnbind (o, p, f)
+               | _ -> raise (Failure (o ^ " is not an object"))) 
       | _ -> raise (Failure "bad stmt")
     in
 
