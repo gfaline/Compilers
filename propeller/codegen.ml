@@ -108,6 +108,7 @@ let translate (globals, _ (* objects *), functions) =
                          | A.Not when t = A.Bool  -> L.build_not
                          | _ -> raise (Failure "bad unary operator/operand")) in
           instr e' "tmp" builder
+      | SParentheses e -> expr builder e
       | _ -> L.const_int i32_t 0
     in
 
