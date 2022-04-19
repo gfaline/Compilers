@@ -115,28 +115,28 @@ let rec string_of_typ = function
 
 let rec string_of_expr = function
   (* literals *)
-    Iliteral(x) -> string_of_int x
-  | Fliteral(x) -> string_of_float x
+    Iliteral x -> string_of_int x
+  | Fliteral x -> string_of_float x
   | Bliteral x -> if x then "true" else "false"
-  | Sliteral(s) -> s
-  | Lliteral(es) -> "[" ^ String.concat ", " (Array.to_list (Array.map string_of_expr es)) ^ "]"
+  | Sliteral x -> x
+  | Lliteral xs -> "[" ^ String.concat ", " (Array.to_list (Array.map string_of_expr xs)) ^ "]"
   (* function call *)
-  | Call(f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
+  | Call (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_expr es) ^ ")"
   (* assignment *)
-  | Assign(id, e) -> id ^ " = " ^ string_of_expr e
-  | Setprop(o, p, e) -> o ^ "." ^ p ^ " = " ^ string_of_expr e
+  | Assign (id, e) -> id ^ " = " ^ string_of_expr e
+  | Setprop (o, p, e) -> o ^ "." ^ p ^ " = " ^ string_of_expr e
   (* ID evaluation *)
-  | Id(id) -> id
-  | Getprop(o, p) -> o ^ "." ^ p
+  | Id id -> id
+  | Getprop (o, p) -> o ^ "." ^ p
   (* list indexing *)
-  | Index(id, e) -> id ^ "[" ^ string_of_expr e ^ "]"
+  | Index (id, e) -> id ^ "[" ^ string_of_expr e ^ "]"
   (* operators*)
-  | Binop(e1, op, e2) -> string_of_expr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_expr e2
-  | Unop(op, e) -> (match op with
+  | Binop (e1, op, e2) -> string_of_expr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_expr e2
+  | Unop (op, e) -> (match op with
       Not -> string_of_unop op ^ " (" ^ string_of_expr e ^ ")"
     | Neg -> string_of_unop op ^ "(" ^ string_of_expr e ^ ")")
   (* other *)
-  | Parentheses(e) -> "(" ^ string_of_expr e ^ ")"
+  | Parentheses e -> "(" ^ string_of_expr e ^ ")"
   | Noexpr -> ""
 
 

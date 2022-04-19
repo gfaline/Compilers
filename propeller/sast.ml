@@ -51,7 +51,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SLliteral xs -> "[" ^ String.concat ", " (Array.to_list (Array.map string_of_sexpr xs)) ^ "]"
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
   | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e
-  | SSetprop(o, p, e) -> o ^ "." ^ p ^ " = " ^ string_of_sexpr e
+  | SSetprop (o, p, e) -> o ^ "." ^ p ^ " = " ^ string_of_sexpr e
   | SId id -> id
   | SGetprop (o, p) -> o ^ "." ^ p
   | SIndex (id, e) -> id ^ "[" ^ string_of_sexpr e ^ "]"
