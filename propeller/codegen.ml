@@ -162,16 +162,14 @@ let translate (globals, _ (* objects *), functions) =
           let e_bb = L.append_block context "while" the_function in
           let _    = L.build_br e_bb builder in
           let s_bb = L.append_block context "while_body" the_function in
-          let build_stmt st =
+          let build_one_stmt st =
             stmt (L.builder_at_end context s_bb) st
           in
-          let while_builders = List.map build_stmt s in
-          (* let while_builder = stmt (L.builder_at_end context s_bb) s in *)
+          let while_builders = List.map build_one_stmt s in
           let rec add_terminals = function
               [] -> ()
             | (t::ts) -> add_terminal t (L.build_br e_bb); add_terminals ts
           in
-          (* let () = add_terminal while_builder (L.build_br e_bb) in *)
           let () = add_terminals while_builders in
           let e_builder = L.builder_at_end context e_bb in
           let bool_val = expr e_builder e in
