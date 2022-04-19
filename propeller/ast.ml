@@ -117,8 +117,7 @@ let rec string_of_expr = function
   (* literals *)
     Iliteral(x) -> string_of_int x
   | Fliteral(x) -> string_of_float x
-  | Bliteral(true) -> "true"
-  | Bliteral(false) -> "false"
+  | Bliteral x -> if x then "true" else "false"
   | Sliteral(s) -> s
   | Lliteral(es) -> "[" ^ String.concat ", " (Array.to_list (Array.map string_of_expr es)) ^ "]"
   (* function call *)
@@ -201,4 +200,4 @@ let string_of_fdecl fdecl =
 let string_of_program (vdecls, odecls, fdecls) =
   String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n" ^
   String.concat "\n\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
-  String.concat "\\nn" (List.rev (List.map string_of_fdecl fdecls))
+  String.concat "\n\n" (List.rev (List.map string_of_fdecl fdecls))
