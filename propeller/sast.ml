@@ -31,6 +31,7 @@ type sstmt =
   | SWhile of sexpr * sstmt list
   | SBreak
   | SContinue
+  | SBind of string * string * string
 
 type sfunc_decl = {
   styp : typ;
@@ -100,6 +101,7 @@ let rec string_of_sstmt = function
         brace_wrap (String.concat "\n" (List.map string_of_sstmt s))
   | SBreak -> "break;"
   | SContinue -> "continue;"
+  | SBind (o, p, f) -> "bind(" ^ o ^ "." ^ p ^ ", " ^ f ^ ");"
 
   (* | _ -> "NONE" *)
 
