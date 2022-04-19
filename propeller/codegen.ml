@@ -158,6 +158,28 @@ let translate (globals, _ (* objects *), functions) =
                       A.Void -> L.build_ret_void builder
                     | _      -> L.build_ret (expr builder e) builder in
           builder
+      | SIf (e, s1, elifs, s2) ->
+          (match (elifs, s2) with
+              ([], []) ->
+                let bool_val = expr builder e in
+                let merge_bb = L.append_block context "merge" the_function in
+                let branch_instr = L.build_br merge_bb in
+                let s1_bb = L.append_block context "then" the_function in
+                let build_one_stmt st =
+                  stmt (L.builder_at_end context s1_bb) st
+                in
+                let s1_builders = List.map build_one_stmt s1 in
+                let rec add_terminals = function
+                    [] -> ()
+                  | (t::ts) -> add_terminal t branch_instr; add_terminals ts
+                in
+                let () = add_terminals s1_builders in
+                let noelse_bb = L.append_block context "noelse" the_function in
+                let noelse_builder = stmt (L.builder_at_end context noelse_bb) (SExpr (A.Int, SNoexpr)) in
+                let () = add_terminal noelse_builder branch_instr in
+                let _ = L.build_cond_br bool_val s1_bb noelse_bb builder in
+                L.builder_at_end context merge_bb
+            | _ -> raise (Failure "if stmt not implemented"))
       | SWhile (e, s) ->
           let e_bb = L.append_block context "while" the_function in
           let _    = L.build_br e_bb builder in
