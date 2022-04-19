@@ -176,6 +176,15 @@ let check (globals, objects, functions) =
           and (te, e') = expr e in
           let err_msg = "Illegal assignment" in
           (check_assign tid te err_msg, SAssign(id, (te, e')))
+      | Setprop (o, p, e) ->
+        let otype = type_of_identifier o in
+        (match otype with
+            Custom t ->
+              let odecl = find_objdecl t in
+              let (pt, _) = get_prop p odecl in
+              let (et, e') = expr e in
+              (check_assign pt et "illegal property assignment", SSetprop(o, p, (et, e')))
+          | _        -> raise (Failure (o ^ " is not an object")))
       | Binop (e1, op, e2) ->
           let (t1, e1') = expr e1
           and (t2, e2') = expr e2 in
