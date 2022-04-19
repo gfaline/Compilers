@@ -132,6 +132,7 @@ let translate (globals, _ (* objects *), functions) =
                          | _ -> raise (Failure "bad unary operator/operand")) in
           instr e' "tmp" builder
       | SParentheses e -> expr builder e
+      | SNoexpr -> L.const_int i32_t 0
       | _ -> L.const_int i32_t 0
     in
 
