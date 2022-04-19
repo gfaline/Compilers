@@ -59,9 +59,8 @@ let translate (globals, _ (* objects *), functions) =
     let rec expr builder ((_, e) : sexpr) = match e with
         SIliteral x -> L.const_int i32_t x
       | SFliteral x -> L.const_float float_t x
-      | SBliteral x -> L.const_int i1_t (Bool.to_int x)
-      | SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
       | SBliteral b -> L.const_int i1_t (if b then 1 else 0)
+      | SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
       | _ -> L.const_int i32_t 0
     in
 
