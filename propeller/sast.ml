@@ -16,7 +16,7 @@ and sx =
   | SAssign of string * sexpr
   (* | SSetprop of string * string * sexpr *)
   | SId of string
-  (* | SGetprop of string * string *)
+  | SGetprop of string * string
   | SIndex of string * sexpr
   | SBinop of sexpr * binop * sexpr
   | SUnop of unop * sexpr
@@ -51,7 +51,7 @@ let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with
   | SAssign (id, e) -> id ^ " = " ^ string_of_sexpr e
   (* | SSetprop*)
   | SId id -> id
-  (* | SGetprop*)
+  | SGetprop (o, p) -> o ^ "." ^ p
   | SIndex (id, e) -> id ^ "[" ^ string_of_sexpr e ^ "]"
   | SBinop (e1, op, e2) -> string_of_sexpr e1 ^ " " ^ string_of_binop op ^ " " ^ string_of_sexpr e2
   | SUnop (op, e) -> (match op with
@@ -104,7 +104,7 @@ let rec string_of_sstmt = function
 
 let string_of_sfdecl fdecl =
   "fn " ^ fdecl.sfname ^ "("  ^ String.concat ", " (List.map snd fdecl.sformals) ^ ") -> " ^ string_of_typ fdecl.styp ^ "\n" ^
-  brace_wrap ((String.concat "\n" (List.rev (List.map string_of_vdecl fdecl.slocals))) ^
+  brace_wrap ((String.concat "\n" (List.rev (List.map string_of_vdecl fdecl.slocals))) ^ "\n\n" ^
                String.concat "\n" (List.map string_of_sstmt fdecl.sbody))
 
 let string_of_sprogram (vdecls, odecls, fdecls) =

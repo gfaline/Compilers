@@ -38,8 +38,20 @@ let check (globals, objects, functions) =
     | _ ->   StringMap.add odecl.soname odecl map
   in
 
-  let _ = List.fold_left add_obj StringMap.empty objects' in
+  let object_decls = List.fold_left add_obj StringMap.empty objects' in
 
+  let find_objdecl o =
+    try StringMap.find o object_decls
+    with Not_found -> raise (Failure ("undefined object " ^ o))
+  in
+
+  let get_prop p odecl =
+    let f (_, name) =
+      name = p
+    in
+    try  List.find f odecl.sprops
+    with Not_found -> raise (Failure ("object type " ^ odecl.soname ^ " has no property " ^ p))
+  in
   (* functions *)
 
   let built_in_decls =
@@ -60,16 +72,35 @@ let check (globals, objects, functions) =
 
   let function_decls = List.fold_left add_func built_in_decls functions in
 
-  let find_func s =
-    try StringMap.find s function_decls
-    with Not_found -> raise (Failure "undef")
+  let find_func f =
+    try StringMap.find f function_decls
+    with Not_found -> raise (Failure ("undefined function " ^ f))
   in
 
   let _ = find_func "main" in
 
   let check_function func =
+
+    let check_locals kind to_check =
+      let name_compare (_, n1) (_, n2) =
+        compare n1 n2
+      in
+      let check_it checked binding = match binding with
+          (Void, _) -> raise (Failure ("void " ^ kind))
+        | (Custom o, n1) -> let _ = find_objdecl o in
+                            (match checked with
+                                ((_, n2) :: _) when n1 = n2 -> raise (Failure ("duplicate " ^ kind))
+                              | _ -> binding :: checked)
+        | (_, n1)   -> match checked with
+            ((_, n2) :: _) when n1 = n2 -> raise (Failure ("duplicate " ^ kind))
+          | _ -> binding :: checked
+      in
+      let _ = List.fold_left check_it [] (List.sort name_compare to_check) in
+      to_check
+    in
+
     let formals' = check_binds "formal" func.formals in
-    let locals'  = check_binds "local" func.locals in
+    let locals'  = check_locals "local" func.locals in
     (* let iters    = ref [] in *)
 
     let check_assign lt rt msg =
@@ -84,7 +115,7 @@ let check (globals, objects, functions) =
 
     let type_of_identifier s =
       try StringMap.find s symbols
-      with Not_found -> raise (Failure "undef")
+      with Not_found -> raise (Failure ("undefined identifier " ^ s))
     in
 
     let rec expr = function
@@ -112,6 +143,14 @@ let check (globals, objects, functions) =
                              (List(Str), SLliteral sxs)
                   | _     -> raise (Failure "bad list type"))
       | Id id -> (type_of_identifier id, SId id)
+      | Getprop (o, p) -> (* (Int, SIliteral 0) *)
+          let otype = type_of_identifier o in
+          (match otype with
+              Custom t ->
+                let odecl = find_objdecl t in
+                let (pty, _) = get_prop p odecl in
+                (pty, SGetprop(o, p))
+            | _       -> raise (Failure (o ^ " is not an object")))
       | Index (id, e) ->
           let ty = (match type_of_identifier id with
                        List(t) -> t
