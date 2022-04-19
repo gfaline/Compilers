@@ -76,13 +76,23 @@ let translate (globals, _ (* objects *), functions) =
       | SBliteral x -> L.const_int i1_t (if x then 1 else 0)
       (* | SSLiteral x -> *)
       (* | SLliteral xs -> *)
-      | SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
+      | SCall (f, es) -> (match (f, es) with 
+                             ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
+                           | _ -> let (fdef, fdecl) = StringMap.find f function_decls in
+                                  let lles = List.rev (List.map (expr builder) (List.rev es)) in
+                                  let result = (match fdecl.styp with 
+                                                    A.Void -> ""
+                                                  | _ -> f ^ "_result") in
+                                  L.build_call fdef (Array.of_list lles) result builder)
+                                  
       | SAssign (id, e) ->
           let e' = expr builder e in
           let _ = L.build_store e' (lookup id) builder in
           e'
       (* | SSetprop (o, p, e) -> *)
       | SId id -> L.build_load (lookup id) id builder
+      (* | Getprop (o, p) -> *)
+      (* | SIndex (id, e) -> *)
       | SBinop (e1, op, e2) ->
           let (t, _) = e1
           and e1' = expr builder e1
@@ -143,9 +153,11 @@ let translate (globals, _ (* objects *), functions) =
 
     let (*rec*) stmt builder = function (* not yet recursive -- causes warnings *)
         SExpr e -> let _ = expr builder e in builder
-      | SReturn e -> let _ = (* TODO: case for function returning void *)
-                       L.build_ret (expr builder e) builder
-                     in builder
+      | SReturn e -> 
+          let _ = match fdecl.styp with
+                      A.Void -> L.build_ret_void builder
+                    | _      -> L.build_ret (expr builder e) builder in
+          builder
       | _ -> let _ = expr builder (A.Int, SIliteral 0) in builder
     in
 
