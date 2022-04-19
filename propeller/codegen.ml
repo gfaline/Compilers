@@ -99,6 +99,15 @@ let translate (globals, _ (* objects *), functions) =
                              | A.Xor -> raise (Failure "internal error - bad float operator"))
               | _ -> raise (Failure ("internal error - bad binary operator type"))) in
           instr e1' e2' "tmp" builder
+      | SUnop (op, e) ->
+          let (t, _) = e in
+          let e' = expr builder e in
+          let instr = (match op with
+                           A.Neg when t = A.Float -> L.build_fneg
+                         | A.Neg when t = A.Int   -> L.build_neg
+                         | A.Not when t = A.Bool  -> L.build_not
+                         | _ -> raise (Failure "bad unary operator/operand")) in
+          instr e' "tmp" builder
       | _ -> L.const_int i32_t 0
     in
 
