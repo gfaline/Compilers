@@ -159,27 +159,53 @@ let translate (globals, _ (* objects *), functions) =
                     | _      -> L.build_ret (expr builder e) builder in
           builder
       | SIf (e, s1, elifs, s2) ->
-          (match (elifs, s2) with
-              ([], []) ->
-                let bool_val = expr builder e in
-                let merge_bb = L.append_block context "merge" the_function in
-                let branch_instr = L.build_br merge_bb in
-                let s1_bb = L.append_block context "then" the_function in
-                let build_one_stmt st =
-                  stmt (L.builder_at_end context s1_bb) st
+
+          (* convert elifs to nested SIf *)
+          let s2' = (match elifs with
+              [] -> s2
+            | _  -> 
+                let rec transform_elifs = function
+                    [(elif_e, elif_s)]     -> SIf(elif_e, elif_s, [], s2)
+                  | (elif_e, elif_s) :: es  -> SIf(elif_e, elif_s, [], [transform_elifs es])
                 in
-                let s1_builders = List.map build_one_stmt s1 in
-                let rec add_terminals = function
-                    [] -> ()
-                  | (t::ts) -> add_terminal t branch_instr; add_terminals ts
-                in
-                let () = add_terminals s1_builders in
-                let noelse_bb = L.append_block context "noelse" the_function in
-                let noelse_builder = stmt (L.builder_at_end context noelse_bb) (SExpr (A.Int, SNoexpr)) in
-                let () = add_terminal noelse_builder branch_instr in
-                let _ = L.build_cond_br bool_val s1_bb noelse_bb builder in
-                L.builder_at_end context merge_bb
-            | _ -> raise (Failure "if stmt not implemented"))
+                [transform_elifs elifs]) in
+
+          (* merge block, branch to merge block instruction *)
+          let merge_bb = L.append_block context "merge" the_function in
+          let branch_instr = L.build_br merge_bb in
+
+          (* add instruction builders for a list of statements to the end of a basic block *)
+          let build_bb_stmts bb s =
+            let build_bb_stmt st =
+              stmt (L.builder_at_end context bb) st
+            in
+            List.map build_bb_stmt s
+          in
+
+          (* add terminal to end of list of statements *)
+          let rec terminate = function
+              [] -> ()
+            | (t :: []) -> add_terminal t branch_instr
+            | (_ :: ts) -> terminate ts
+          in
+
+          (* if *)
+          let if_bool = expr builder e in
+          let if_bb = L.append_block context "if" the_function in
+          let if_builders = build_bb_stmts if_bb s1 in
+          let () = terminate if_builders in
+
+          (* else *)
+          let else_bb = L.append_block context "else" the_function in
+          let else_builders = (match s2' with
+              [] -> [stmt (L.builder_at_end context else_bb) (SExpr (A.Int, SNoexpr))]
+            | _ ->  build_bb_stmts else_bb s2') in
+          let () = terminate else_builders in
+
+          (* build stuff *)
+          let _ = L.build_cond_br if_bool if_bb else_bb builder in
+          L.builder_at_end context merge_bb
+
       | SWhile (e, s) ->
           let e_bb = L.append_block context "while" the_function in
           let _    = L.build_br e_bb builder in
