@@ -151,13 +151,34 @@ let translate (globals, _ (* objects *), functions) =
       | None -> ignore (instr builder)
     in
 
-    let (*rec*) stmt builder = function (* not yet recursive -- causes warnings *)
+    let rec stmt builder = function (* not yet recursive -- causes warnings *)
         SExpr e -> let _ = expr builder e in builder
       | SReturn e -> 
           let _ = match fdecl.styp with
                       A.Void -> L.build_ret_void builder
                     | _      -> L.build_ret (expr builder e) builder in
           builder
+      | SWhile (e, s) ->
+          let e_bb = L.append_block context "while" the_function in
+          let _    = L.build_br e_bb builder in
+          let s_bb = L.append_block context "while_body" the_function in
+          let build_stmt st =
+            stmt (L.builder_at_end context s_bb) st
+          in
+          let while_builders = List.map build_stmt s in
+          (* let while_builder = stmt (L.builder_at_end context s_bb) s in *)
+          let rec add_terminals = function
+              [] -> ()
+            | (t::ts) -> add_terminal t (L.build_br e_bb); add_terminals ts
+          in
+          (* let () = add_terminal while_builder (L.build_br e_bb) in *)
+          let () = add_terminals while_builders in
+          let e_builder = L.builder_at_end context e_bb in
+          let bool_val = expr e_builder e in
+          let merge_bb = L.append_block context "merge" the_function in
+          let _ = L.build_cond_br bool_val s_bb merge_bb e_builder in
+          L.builder_at_end context merge_bb
+
       | _ -> let _ = expr builder (A.Int, SIliteral 0) in builder
     in
 
