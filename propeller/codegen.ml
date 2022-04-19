@@ -61,6 +61,44 @@ let translate (globals, _ (* objects *), functions) =
       | SFliteral x -> L.const_float float_t x
       | SBliteral b -> L.const_int i1_t (if b then 1 else 0)
       | SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
+      | SBinop (e1, op, e2) ->
+          let (t, _) = e1
+          and e1' = expr builder e1
+          and e2' = expr builder e2 in
+          let instr = (match t with
+               A.Int -> (match op with
+                             A.Add -> L.build_add
+                           | A.Sub -> L.build_sub
+                           | A.Mlt -> L.build_mul
+                           | A.Div -> L.build_sdiv
+                           | A.Mod -> raise (Failure "modulo not implemented")
+                           | A.Eq  -> L.build_icmp L.Icmp.Eq
+                           | A.Neq -> L.build_icmp L.Icmp.Ne
+                           | A.Lt  -> L.build_icmp L.Icmp.Slt
+                           | A.Leq -> L.build_icmp L.Icmp.Sle
+                           | A.Gt  -> L.build_icmp L.Icmp.Sgt
+                           | A.Geq -> L.build_icmp L.Icmp.Sge
+                           | _ -> raise (Failure "internal error - bad int operator"))
+             | A.Float -> (match op with
+                               A.Add -> L.build_fadd
+                             | A.Sub -> L.build_fsub
+                             | A.Mlt -> L.build_fmul
+                             | A.Div -> L.build_fdiv 
+                             | A.Eq  -> L.build_fcmp L.Fcmp.Oeq
+                             | A.Neq -> L.build_fcmp L.Fcmp.One
+                             | A.Lt  -> L.build_fcmp L.Fcmp.Olt
+                             | A.Leq -> L.build_fcmp L.Fcmp.Ole
+                             | A.Gt  -> L.build_fcmp L.Fcmp.Ogt
+                             | A.Geq -> L.build_fcmp L.Fcmp.Oge
+                             | _ -> raise (Failure "internal error - bad float operator"))
+              | A.Bool -> (match op with
+                               A.Eq  -> L.build_icmp L.Icmp.Eq
+                             | A.Neq -> L.build_icmp L.Icmp.Ne
+                             | A.And -> L.build_and
+                             | A.Or  -> L.build_or
+                             | A.Xor -> raise (Failure "internal error - bad float operator"))
+              | _ -> raise (Failure ("internal error - bad binary operator type"))) in
+          instr e1' e2' "tmp" builder
       | _ -> L.const_int i32_t 0
     in
 
