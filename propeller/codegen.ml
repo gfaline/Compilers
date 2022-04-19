@@ -44,23 +44,43 @@ let translate (globals, _ (* objects *), functions) =
     List.fold_left function_decl StringMap.empty functions in
 
   let build_function_body fdecl =
+
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
 
-    (*let local_vars = StringMap.empty in
-
+    let local_vars =
+      let add_formal m (t, n) p = 
+        let () = L.set_value_name n p in
+	      let local = L.build_alloca (ltype_of_typ t) n builder in
+        let _  = L.build_store p local builder in
+	      StringMap.add n local m
+      in
+      let add_local m (t, n) =
+	      let local_var = L.build_alloca (ltype_of_typ t) n builder
+	      in StringMap.add n local_var m 
+      in
+      let formals = List.fold_left2 add_formal StringMap.empty fdecl.sformals
+                                    (Array.to_list (L.params the_function)) in
+      List.fold_left add_local formals fdecl.slocals in
+      
     let lookup n =
-      try StringMap.find n local_vars
+      try  StringMap.find n local_vars
       with Not_found -> StringMap.find n global_vars
-    in*)
+    in 
 
     let rec expr builder ((_, e) : sexpr) = match e with
         SIliteral x -> L.const_int i32_t x
       | SFliteral x -> L.const_float float_t x
-      | SBliteral b -> L.const_int i1_t (if b then 1 else 0)
+      | SBliteral x -> L.const_int i1_t (if x then 1 else 0)
+      (* | SSLiteral x -> *)
+      (* | SLliteral xs -> *)
       | SCall ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
+      | SAssign (id, e) ->
+          let e' = expr builder e in
+          let _ = L.build_store e' (lookup id) builder in
+          e'
       | SBinop (e1, op, e2) ->
           let (t, _) = e1
           and e1' = expr builder e1
