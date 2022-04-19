@@ -117,7 +117,8 @@ let rec string_of_expr = function
   (* literals *)
     Iliteral(x) -> string_of_int x
   | Fliteral(x) -> string_of_float x
-  | Bliteral(b) -> string_of_bool b
+  | Bliteral(true) -> "true"
+  | Bliteral(false) -> "false"
   | Sliteral(s) -> s
   | Lliteral(es) -> "[" ^ String.concat ", " (Array.to_list (Array.map string_of_expr es)) ^ "]"
   (* function call *)

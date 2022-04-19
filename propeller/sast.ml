@@ -44,7 +44,8 @@ type sprogram = bind list * obj_decl list * sfunc_decl list
 let rec string_of_sexpr (t, e) = "(" ^ string_of_typ t ^ " : " ^ (match e with 
     SIliteral x -> string_of_int x
   | SFliteral x -> string_of_float x
-  | SBliteral x -> string_of_bool x
+  | SBliteral(true) -> "true"
+  | SBliteral(false) -> "false"
   | SSliteral x -> x
   | SLliteral xs -> "[" ^ String.concat ", " (Array.to_list (Array.map string_of_sexpr xs)) ^ "]"
   | SCall (f, es) -> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr es) ^ ")"
