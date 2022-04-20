@@ -1,7 +1,5 @@
-
 fn first_function() -> str
 {
-str a;
-a = HelloWorld;
+str a;a = HelloWorld;
 return a;
 }

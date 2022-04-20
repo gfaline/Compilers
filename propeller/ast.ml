@@ -198,6 +198,7 @@ let string_of_fdecl fdecl =
                String.concat "\n" (List.map string_of_stmt fdecl.body))
 
 let string_of_program (vdecls, odecls, fdecls) =
-  String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n" ^
+  String.trim
+  (String.concat "\n" (List.rev (List.map string_of_vdecl vdecls)) ^ "\n" ^
   String.concat "\n\n" (List.rev (List.map string_of_odecl odecls)) ^ "\n" ^
-  String.concat "\n\n" (List.rev (List.map string_of_fdecl fdecls))
+  String.concat "\n\n" (List.rev (List.map string_of_fdecl fdecls))) ^ "\n"

@@ -1,12 +1,11 @@
-
 fn if_function(bool correct, str Success, str Fail) -> str
 {
 if correct == true
 {
 return Success;
-
 }
 else
+{
 return Fail;
-
+}
 }
