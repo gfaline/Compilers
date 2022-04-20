@@ -1,0 +1,8 @@
+# Semantic error: trying to use an already declared variable as for-loop variable.
+fn main()->int
+{
+  int i;
+  for i from 1 to 10
+  { print(i); }
+  return 0;
+}

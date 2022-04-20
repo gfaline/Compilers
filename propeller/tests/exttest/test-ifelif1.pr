@@ -1,4 +1,4 @@
-# Tests variable assignment and and if, elif, else statemtne to print on elif
+# Tests variable assignment and and if, elif, else statement to print on elif
 fn main() -> int
 {
   bool a;

@@ -1,4 +1,4 @@
-# Basic test for nested for-loop
+# Basic test for nested for-loops
 fn main()->int
 {
   int z;
