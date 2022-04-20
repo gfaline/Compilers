@@ -129,17 +129,24 @@ let check (globals, objects, functions) =
             let (tt, _) = expr e in
             tt = ty
           in
+          let tocheckedlit = function 
+              Iliteral e -> (Int, SIliteral e)
+            | Fliteral e -> (Float, SFliteral e)
+            | Bliteral e -> (Bool, SBliteral e)
+            | Sliteral e -> (Str, SSliteral e)
+            | _ -> raise (Failure "invalid literal in list")
+          in
           let same = List.fold_left ( = ) true (List.map eqty (Array.to_list xs)) in
           if   not same
           then raise (Failure "unequal list element types")
           else (match ty with
-                    Int   -> let sxs = Array.map (fun (Iliteral e) -> (Int, SIliteral e)) xs in
+                    Int   -> let sxs = Array.map tocheckedlit xs in
                              (List(Int), SLliteral sxs)
-                  | Float -> let sxs = Array.map (fun (Fliteral e) -> (Float, SFliteral e)) xs in
+                  | Float -> let sxs = Array.map tocheckedlit xs in
                              (List(Float), SLliteral sxs)
-                  | Bool  -> let sxs = Array.map (fun (Bliteral e) -> (Bool, SBliteral e)) xs in
+                  | Bool  -> let sxs = Array.map tocheckedlit xs in
                              (List(Bool), SLliteral sxs)
-                  | Str   -> let sxs = Array.map (fun (Sliteral e) -> (Str, SSliteral e)) xs in
+                  | Str   -> let sxs = Array.map tocheckedlit xs in
                              (List(Str), SLliteral sxs)
                   | _     -> raise (Failure "bad list type"))
       | Id id -> (type_of_identifier id, SId id)
@@ -207,7 +214,6 @@ let check (globals, objects, functions) =
           let (ty, e') = expr e in
           (ty, SParentheses (ty, e'))
       | Noexpr -> (Void, SNoexpr)
-      | _ -> raise (Failure "bad expr")
     in
 
     let check_bool_expr e =
@@ -263,8 +269,7 @@ let check (globals, objects, functions) =
                  let _ = get_prop p odecl in
                  let _ = find_func f in
                  SUnbind (o, p, f)
-               | _ -> raise (Failure (o ^ " is not an object"))) 
-      | _ -> raise (Failure "bad stmt")
+               | _ -> raise (Failure (o ^ " is not an object")))
     in
 
     { styp = func.typ;

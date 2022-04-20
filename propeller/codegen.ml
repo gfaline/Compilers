@@ -151,7 +151,7 @@ let translate (globals, _ (* objects *), functions) =
       | None -> ignore (instr builder)
     in
 
-    let rec stmt builder = function (* not yet recursive -- causes warnings *)
+    let rec stmt builder = function
         SExpr e -> let _ = expr builder e in builder
       | SReturn e -> 
           let _ = match fdecl.styp with
@@ -167,6 +167,7 @@ let translate (globals, _ (* objects *), functions) =
                 let rec transform_elifs = function
                     [(elif_e, elif_s)]     -> SIf(elif_e, elif_s, [], s2)
                   | (elif_e, elif_s) :: es  -> SIf(elif_e, elif_s, [], [transform_elifs es])
+                  | [] -> raise (Failure "semant internal error")
                 in
                 [transform_elifs elifs]) in
 
