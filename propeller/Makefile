@@ -5,14 +5,14 @@ all: propeller.native
 
 propeller.native: scanner.mll parser.mly ast.ml sast.ml semant.ml codegen.ml propeller.ml
 	opam exec -- \
-	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -lflags -I,/usr/lib/llvm/14/lib64/ -cflags -w,+a-4 propeller.native
+	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 propeller.native
 
 .PHONY:clean
 clean:
 	ocamlbuild -clean
 
 .PHONY:test
-test: test_parser test_hello
+test: test_parser test_hello test_extended
 
 .PHONY:test_parser
 test_parser: propeller.native
