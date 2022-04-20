@@ -232,7 +232,10 @@ let check (globals, objects, functions) =
 
     let rec check_stmt = function
         Expr e -> SExpr (expr e)
-      | Return e -> SReturn (expr e)
+      | Return e ->
+        let (ty, ex) = expr e in
+        let _ = check_assign ty func.typ "bad return type" in
+        SReturn (ty, ex)
       | If (e, s1, elifs, s2) ->
           let check_elif (elif_e, elif_s) =
             (check_bool_expr elif_e, List.map check_stmt elif_s)
