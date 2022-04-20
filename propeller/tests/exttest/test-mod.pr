@@ -1,0 +1,9 @@
+# Test the semantics of modulo operator -- we use the "truncated" definition
+fn main() -> int
+{
+  print(9%5);
+  print(9%-5);
+  print(-9%5);
+  print(-9%-5);
+  return 0;
+}

@@ -1,0 +1,6 @@
+# Print the result of a simple integer expression, and return 0.
+fn main() -> int
+{
+  print(12 + 34);
+  return 0;
+}

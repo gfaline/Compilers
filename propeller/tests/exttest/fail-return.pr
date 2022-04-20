@@ -1,0 +1,5 @@
+# Semantic error: returning a float in a function that should return int.
+fn main() -> int
+{
+  return 12.34;
+}

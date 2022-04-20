@@ -103,7 +103,7 @@ let translate (globals, _ (* objects *), functions) =
                            | A.Sub -> L.build_sub
                            | A.Mlt -> L.build_mul
                            | A.Div -> L.build_sdiv
-                           | A.Mod -> raise (Failure "modulo not implemented")
+                           | A.Mod -> L.build_srem
                            | A.Eq  -> L.build_icmp L.Icmp.Eq
                            | A.Neq -> L.build_icmp L.Icmp.Ne
                            | A.Lt  -> L.build_icmp L.Icmp.Slt
