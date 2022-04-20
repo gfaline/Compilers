@@ -81,6 +81,19 @@ let check (globals, objects, functions) =
 
   let check_function func =
 
+    let loop_vars =
+      let rec find_loop_vars = function
+          [] -> []
+        | (st::sts) -> (match st with
+                          If (_, s1, elifs, s2) ->
+                            let elif_stmts = List.map snd elifs in
+                            (find_loop_vars s1) @ (List.flatten (List.map find_loop_vars elif_stmts)) @ (find_loop_vars s2) @ (find_loop_vars sts)
+                        | For (id, _, _, s) -> (Int, id) :: find_loop_vars s
+                        | While (_, s) -> (find_loop_vars s) @ (find_loop_vars sts)
+                        | _ -> find_loop_vars sts)
+      in
+      find_loop_vars func.body in
+
     let check_locals kind to_check =
       let name_compare (_, n1) (_, n2) =
         compare n1 n2
@@ -100,7 +113,7 @@ let check (globals, objects, functions) =
     in
 
     let formals' = check_binds "formal" func.formals in
-    let locals'  = check_locals "local" func.locals in
+    let locals'  = check_locals "local" (func.locals @ loop_vars) in
     (* let iters    = ref [] in *)
 
     let check_assign lt rt msg =
@@ -150,7 +163,7 @@ let check (globals, objects, functions) =
                              (List(Str), SLliteral sxs)
                   | _     -> raise (Failure "bad list type"))
       | Id id -> (type_of_identifier id, SId id)
-      | Getprop (o, p) -> (* (Int, SIliteral 0) *)
+      | Getprop (o, p) ->
           let otype = type_of_identifier o in
           (match otype with
               Custom t ->
