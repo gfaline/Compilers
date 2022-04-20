@@ -230,7 +230,7 @@ let check (globals, objects, functions) =
       else (t', e')
     in
 
-    let rec check_stmt = function
+    let rec check_stmt in_loop stmt = match stmt with
         Expr e -> SExpr (expr e)
       | Return e ->
         let (ty, ex) = expr e in
@@ -238,23 +238,23 @@ let check (globals, objects, functions) =
         SReturn (ty, ex)
       | If (e, s1, elifs, s2) ->
           let check_elif (elif_e, elif_s) =
-            (check_bool_expr elif_e, List.map check_stmt elif_s)
+            (check_bool_expr elif_e, List.map (check_stmt in_loop) elif_s)
           in
           let elifs' = match elifs with
               [] -> []
             | _  -> List.map check_elif elifs in
           let s2' = match s2 with
               [] -> []
-            | _  -> List.map check_stmt s2 in
-          SIf (check_bool_expr e, List.map check_stmt s1, elifs', s2')
+            | _  -> List.map (check_stmt in_loop) s2 in
+          SIf (check_bool_expr e, List.map (check_stmt in_loop) s1, elifs', s2')
       (* Need to somehow create local indexing variable *)
       | For (id, e1, e2, s) -> 
           (* StringMap.add id Int !r_symbols; *)
-          SFor (id, check_int_expr e1, check_int_expr e2, List.map check_stmt s)
-      | While (e, s) -> SWhile (check_bool_expr e, List.map check_stmt s)
+          SFor (id, check_int_expr e1, check_int_expr e2, List.map (check_stmt true) s)
+      | While (e, s) -> SWhile (check_bool_expr e, List.map (check_stmt true) s)
       (* | _ -> SExpr (expr (Iliteral 0)) *)
-      | Break    -> SBreak
-      | Continue -> SContinue
+      | Break    -> if not in_loop then raise (Failure "break outside loop") else SBreak
+      | Continue -> if not in_loop then raise (Failure "continue outside loop") else SContinue
       | Bind (o, p, f) -> 
           let oty = type_of_identifier o in
           (match oty with
@@ -279,7 +279,7 @@ let check (globals, objects, functions) =
       sfname = func.fname;
       sformals = formals';
       slocals = locals';
-      sbody = List.map check_stmt func.body }
+      sbody = List.map (check_stmt false) func.body }
   in
 
   let functions' = List.map check_function functions in
