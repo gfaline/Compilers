@@ -151,7 +151,7 @@ let translate (globals, _ (* objects *), functions) =
       | None -> ignore (instr builder)
     in
 
-    let rec stmt builder = function
+    let rec stmt loop_start loop_after builder = function
         SExpr e -> let _ = expr builder e in builder
       | SReturn e -> 
           let _ = match fdecl.styp with
@@ -178,7 +178,7 @@ let translate (globals, _ (* objects *), functions) =
           (* add instruction builders for a list of statements to the end of a basic block *)
           let build_bb_stmts bb s =
             let build_bb_stmt st =
-              stmt (L.builder_at_end context bb) st
+              stmt loop_start loop_after (L.builder_at_end context bb) st
             in
             List.map build_bb_stmt s
           in
@@ -199,7 +199,7 @@ let translate (globals, _ (* objects *), functions) =
           (* else *)
           let else_bb = L.append_block context "else" the_function in
           let else_builders = (match s2' with
-              [] -> [stmt (L.builder_at_end context else_bb) (SExpr (A.Int, SNoexpr))]
+              [] -> [stmt loop_start loop_after (L.builder_at_end context else_bb) (SExpr (A.Int, SNoexpr))]
             | _ ->  build_bb_stmts else_bb s2') in
           let () = terminate else_builders in
 
@@ -211,25 +211,29 @@ let translate (globals, _ (* objects *), functions) =
           let e_bb = L.append_block context "while" the_function in
           let _    = L.build_br e_bb builder in
           let s_bb = L.append_block context "while_body" the_function in
-          let build_one_stmt st =
-            stmt (L.builder_at_end context s_bb) st
+          let merge_bb = L.append_block context "merge" the_function in
+          let while_builder = List.fold_left (stmt (Some e_bb) (Some merge_bb))
+                              (L.builder_at_end context s_bb) s
           in
-          let while_builders = List.map build_one_stmt s in
-          let rec add_terminals = function
-              [] -> ()
-            | (t::ts) -> add_terminal t (L.build_br e_bb); add_terminals ts
-          in
-          let () = add_terminals while_builders in
+          let () = add_terminal while_builder (L.build_br e_bb) in
           let e_builder = L.builder_at_end context e_bb in
           let bool_val = expr e_builder e in
-          let merge_bb = L.append_block context "merge" the_function in
           let _ = L.build_cond_br bool_val s_bb merge_bb e_builder in
           L.builder_at_end context merge_bb
-
+      | SContinue ->
+          (match loop_start with
+            (Some bb) -> let _ = L.build_br bb builder in
+                           builder
+          | None -> raise (Failure "semant internal error"))
+      | SBreak ->
+          (match loop_after with
+            (Some bb) -> let _ = L.build_br bb builder in
+                           builder
+          | None -> raise (Failure "semant internal error"))
       | _ -> let _ = expr builder (A.Int, SIliteral 0) in builder
     in
 
-    let builder = List.fold_left stmt builder fdecl.sbody in
+    let builder = List.fold_left (stmt None None) builder fdecl.sbody in
 
     add_terminal builder (match fdecl.styp with
         t -> L.build_ret (L.const_int (ltype_of_typ t) 0))
