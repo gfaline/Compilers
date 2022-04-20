@@ -1,0 +1,16 @@
+# Simple test for the break statement.
+fn main() -> int
+{
+  int i;
+  i = 0;
+  while true
+  {
+    print(i);
+    i = i + 1;
+    if i == 5
+    { break; }
+  }
+  if i != 5
+  { return 1; }
+  return 0;
+}
