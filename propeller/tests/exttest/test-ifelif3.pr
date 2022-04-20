@@ -1,0 +1,15 @@
+# Tests variable assignment and and if, elif, else statemtne to print on else
+fn main() -> int
+{
+  bool a;
+  bool b;
+  a=false;
+  b=false;
+  if   a
+  { print(1); }
+  elif b
+  { print(2); }
+  else
+  { print(3); }
+  return 0;
+}

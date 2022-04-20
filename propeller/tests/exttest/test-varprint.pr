@@ -1,0 +1,8 @@
+# A simple program that prints a variable and returns 0.
+fn main() -> int
+{
+  int b;
+  b = 1;
+  print(b);
+  return 0;
+}
