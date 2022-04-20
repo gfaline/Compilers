@@ -243,7 +243,7 @@ let check (globals, objects, functions) =
       else (t', e')
     in
 
-    let rec check_stmt in_loop stmt = match stmt with
+    let rec check_stmt in_loop = function
         Expr e -> SExpr (expr e)
       | Return e ->
         let (ty, ex) = expr e in

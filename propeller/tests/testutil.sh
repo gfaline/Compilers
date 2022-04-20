@@ -8,6 +8,7 @@ TheWrapper=$(realpath $(dirname "$0")/../prc.sh)
 # ExpectedReturnCode: Expected return code. Pass "FAIL" to accept any non-zero return code.
 CheckExpectWReturnCode() {
   RETCODE=0
+  BADRET=0
   EXEC=$1
   ExpectedOutput=$2
   ExpectedStderr=$3
@@ -26,9 +27,14 @@ CheckExpectWReturnCode() {
   [[ ${ExpectedStderr} == IGNORED ]] || diff -u ${ExpectedStderr} ${Stderr} || RETCODE=1
 
   if [[ ${ExpectedRet} == FAIL ]]; then
-    [ $Ret -ne 0 ] || RETCODE=1
+    [ $Ret -ne 0 ] || BADRET=1
   else
-    [ $Ret -eq $ExpectedRet ] || RETCODE=1
+    [ $Ret -eq $ExpectedRet ] || BADRET=1
+  fi
+
+  if [[ $BADRET == 1 ]]; then
+    RETCODE=1
+    echo "unexpected return code $Ret"
   fi
   
   rm ${OutputT} ${StderrT} ${Output} ${Stderr}
