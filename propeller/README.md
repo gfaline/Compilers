@@ -102,3 +102,35 @@ to Propeller, and to assume everything else was inspired by MicroC (unless other
     - several revised/tidied printing functions for vdecls, odecls, and fdecls
 - TESTING
     - A simple testing framework is used. See `testutil.sh`.
+
+## Tests
+
+A broad range of tests for different features of Propeller can be found in
+`propeller/tests/exttest`.
+
+* Note for the "Extended Testsuite" deliverable: since lists, objects and bindings aren't
+ready for testing yet, current tests only focus on basic features. Features tested that
+are not found in MicroC include: modulo operator, elif branches, and break / continue
+statements.
+
+Here's a list of included tests and a short description for each for your convenience:
+
+```
+fail-badreturn.pr         | Semantic error: returning a float in a function that should return int.
+fail-breakwithoutloop.pr  | Semantic error: break statement outside a loop
+fail-for-varid-reused.pr  | Semantic error: trying to use an already declared variable as for-loop variable.
+test-break.pr             | Simple test for the break statement.
+test-cont1.pr             | Simple test for the continue statement.
+test-cont2.pr             | Variant of the simple continue test: continuing just before loop predicate becomes false.
+test-expr.pr              | Print the result of a simple integer expression, and return 0.
+test-for-nested.pr        | Basic test for nested for-loops
+test-for.pr               | Basic test for for-loop
+test-functioncall.pr      | Testing basic function calls.
+test-if.pr                | Test a basic if statement
+test-ifelif1.pr           | Tests variable assignment and and if, elif, else statement to print on elif (part 1)
+test-ifelif2.pr           | Tests variable assignment and and if, elif, else statement to print on elif (part 2)
+test-ifelif3.pr           | Tests variable assignment and and if, elif, else statement to print on elif (part 3)
+test-mod.pr               | Test the semantics of the modulo operator -- we use the "truncated" definition
+test-varprint.pr          | A simple program that prints a variable and returns 0.
+test-while.pr             | Simple test for the while statement.
+```
