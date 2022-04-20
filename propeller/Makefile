@@ -21,3 +21,7 @@ test_parser: propeller.native
 .PHONY:test_hello
 test_hello: propeller.native
 	tests/tests-hello.sh
+
+.PHONY:test_extended
+test_extended: propeller.native
+	tests/tests-extended.sh
