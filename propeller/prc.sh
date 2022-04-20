@@ -54,9 +54,14 @@ OUTPUT=$BASENAME.out
 
 INTERMEDIATES="$LLVMIRS $ASM"
 
-$PROPC $SRC > $LLVMIRS || exit 1
-$LLC -relocation-model=pic $LLVMIRS > $ASM
-$CC -o $OUTPUT $ASM
+CleanUpAndFail() {
+  [ $keep -eq 1 ] || rm -f $INTERMEDIATES
+  exit 1
+}
 
-[ $keep -eq 1 ] || rm $INTERMEDIATES
+$PROPC $SRC > $LLVMIRS || CleanUpAndFail
+$LLC -relocation-model=pic $LLVMIRS > $ASM || CleanUpAndFail
+$CC -o $OUTPUT $ASM || CleanUpAndFail
+
+[ $keep -eq 1 ] || rm -f $INTERMEDIATES
 
