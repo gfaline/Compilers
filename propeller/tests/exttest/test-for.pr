@@ -1,0 +1,7 @@
+# Basic test for for-loop
+fn main()->int
+{
+  for i from 1 to 10
+  { print(i); }
+  return 0;
+}

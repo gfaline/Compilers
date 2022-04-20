@@ -1,0 +1,19 @@
+# Variant of the simple continue test: continuing just before loop predicate becomes false.
+fn main() -> int
+{
+  int i;
+  i = 0;
+  while i < 10
+  {
+    if i == 9
+    {
+      i = i + 1;
+      continue; 
+    }
+    print(i);
+    i = i + 1;
+  }
+  if i != 10
+  { return 1; }
+  return 0;
+}

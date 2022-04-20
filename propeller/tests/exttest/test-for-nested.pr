@@ -1,0 +1,17 @@
+# Basic test for nested for-loop
+fn main()->int
+{
+  int z;
+  z = 0;
+  for i from 1 to 2
+  {
+    for j from 1 to 5
+    {
+      print(i);
+      print(j);
+      z = z + 1;
+    }
+  }
+  print(z);
+  return 0;
+}
