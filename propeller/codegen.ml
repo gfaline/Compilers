@@ -225,7 +225,16 @@ let translate (globals, _ (* objects *), functions) =
           let merge_bb = L.append_block context "merge" the_function in
           let _ = L.build_cond_br bool_val s_bb merge_bb e_builder in
           L.builder_at_end context merge_bb
-
+      | SFor (id, e1, e2, s) ->
+          let _ = stmt builder (SExpr (A.Int, SAssign(id, e1))) in
+          let id_sexpr = (A.Int, SId id) in
+          let cmp_sexpr = (A.Bool, SBinop(id_sexpr, A.Leq, e2)) in
+          let int1_sexpr = (A.Int, SIliteral 1) in
+          let add_sexpr = (A.Int, SBinop (id_sexpr, A.Add, int1_sexpr)) in
+          let inc_sexpr = (A.Int, SAssign(id, add_sexpr)) in
+          let inc_stmt = SExpr inc_sexpr in
+          let while_stmts = s @ [inc_stmt] in
+          stmt builder (SWhile (cmp_sexpr, while_stmts))
       | _ -> let _ = expr builder (A.Int, SIliteral 0) in builder
     in
 
