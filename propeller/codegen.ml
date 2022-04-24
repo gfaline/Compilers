@@ -75,8 +75,7 @@ let translate (globals, _ (* objects *), functions) =
       | SFliteral x -> L.const_float float_t x
       | SBliteral x -> L.const_int i1_t (if x then 1 else 0)
       (* | SSLiteral x -> *)
-      (* Still in progress. List compiles, but I'm getting "Stored value type does not match 
-         pointer operand type!" when I test out a simple int list.*)
+      (* Still in progress. *)
       | SLliteral xs -> 
         let (x, _) = Array.get xs 0 in
         let allocate = L.build_array_alloca (ltype_of_typ x) (L.const_int i32_t (Array.length xs)) "list" builder in
