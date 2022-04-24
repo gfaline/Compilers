@@ -75,7 +75,13 @@ let translate (globals, _ (* objects *), functions) =
       | SFliteral x -> L.const_float float_t x
       | SBliteral x -> L.const_int i1_t (if x then 1 else 0)
       (* | SSLiteral x -> *)
-      (* | SLliteral xs -> *)
+      (* Still in progress. List compiles, but I'm getting "Stored value type does not match 
+         pointer operand type!" when I test out a simple int list.*)
+      | SLliteral xs -> 
+        let (x, _) = Array.get xs 0 in
+        let allocate = L.build_array_alloca (ltype_of_typ x) (L.const_int i32_t (Array.length xs)) "list" builder in
+        let _ =  Array.fold_left (fun y el -> build_list el y allocate) 0 xs in 
+        allocate  *)
       | SCall (f, es) -> (match (f, es) with 
                              ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
                            | _ -> let (fdef, fdecl) = StringMap.find f function_decls in
@@ -144,6 +150,12 @@ let translate (globals, _ (* objects *), functions) =
       | SParentheses e -> expr builder e
       | SNoexpr -> L.const_int i32_t 0
       | _ -> L.const_int i32_t 0
+      
+    and build_list x i arr =
+      let gep_ptr = L.build_gep arr [| L.const_int i32_t i |] "list" builder in
+      let _ = L.build_store (expr builder x) gep_ptr builder in 
+      i + 1 
+          
     in
 
     let add_terminal builder instr = match L.block_terminator (L.insertion_block builder) with
