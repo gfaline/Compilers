@@ -12,6 +12,7 @@ let translate (globals, _ (* objects *), functions) =
   and i1_t       = L.i1_type       context
   and float_t    = L.double_type   context
   and void_t     = L.void_type     context
+  and intp_t     = L.pointer_type  (L.i32_type (context)) 
   and the_module = L.create_module context "Propeller" in
 
   let ltype_of_typ = function
@@ -19,6 +20,7 @@ let translate (globals, _ (* objects *), functions) =
     | A.Float -> float_t
     | A.Bool  -> i1_t
     | A.Void  -> void_t
+    | A.List(_) -> intp_t
     | _       -> i32_t
   in
 
