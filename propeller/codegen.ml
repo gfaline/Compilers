@@ -4,7 +4,7 @@ open Sast
 
 module StringMap = Map.Make(String)
 
-let translate (globals, _ (* objects *), functions) =
+let translate (globals, objects, functions) =
   let context = L.global_context () in
 
   let i32_t      = L.i32_type      context
@@ -15,13 +15,36 @@ let translate (globals, _ (* objects *), functions) =
   (* and intp_t     = L.pointer_type  (L.i32_type (context))  *)
   and the_module = L.create_module context "Propeller" in
 
-  let ltype_of_typ = function
+  let objdef_strs = String.concat "\n" (List.map (fun o -> o.soname) objects) in
+
+  let rec ltype_of_typ = function
       A.Int   -> i32_t
     | A.Float -> float_t
     | A.Bool  -> i1_t
     | A.Void  -> void_t
+    | A.Custom t ->
+        let objdef = List.find (fun o -> o.soname = t) objects in
+        let ptys = List.map fst objdef.sprops in
+        let ltys = Array.of_list (List.map ltype_of_typ ptys) in
+        L.struct_type context ltys
     (* | A.List(_) -> intp_t *)
     | _       -> i32_t
+  in
+
+  
+
+  let get_obj_gep_idx o p =
+    let obj_geps = 
+      let add_obj m odecl =
+        let rec build_pmap n = function
+            []         -> StringMap.empty
+          | (_, p)::ps -> StringMap.add p n (build_pmap (n + 1) ps)
+        in
+        let pmap = build_pmap 0 odecl.sprops in
+        StringMap.add odecl.soname pmap m
+      in
+      List.fold_left add_obj StringMap.empty objects in
+    StringMap.find p (StringMap.find o obj_geps)
   in
 
   let global_vars : L.llvalue StringMap.t =
@@ -45,6 +68,10 @@ let translate (globals, _ (* objects *), functions) =
     in
     List.fold_left function_decl StringMap.empty functions in
 
+  let gsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+                             StringMap.empty globals in
+
+  (* function body *)
   let build_function_body fdecl =
 
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
@@ -70,7 +97,29 @@ let translate (globals, _ (* objects *), functions) =
     let lookup n =
       try  StringMap.find n local_vars
       with Not_found -> StringMap.find n global_vars
-    in 
+    in
+    
+    (* type of symbols *)
+
+    let lsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+	                               StringMap.empty fdecl.slocals in
+    let fsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+                                 StringMap.empty fdecl.sformals in
+    
+
+    let type_of_identifier id =
+      try StringMap.find id lsyms
+      with Not_found -> 
+        try StringMap.find id fsyms
+        with Not_found -> 
+          try StringMap.find id gsyms
+          with Not_found -> raise (Failure ("Internal error - undefined identifier " ^ id))
+    in
+
+    let type_of_obj o = match type_of_identifier o with
+        Custom t -> t
+      | _ -> raise (Failure (o ^ " is not an object"))
+    in
 
     let rec expr builder ((_, e) : sexpr) = match e with
         SIliteral x -> L.const_int i32_t x
@@ -96,9 +145,19 @@ let translate (globals, _ (* objects *), functions) =
           let e' = expr builder e in
           let _ = L.build_store e' (lookup id) builder in
           e'
-      (* | SSetprop (o, p, e) -> *)
+      | SSetprop (o, p, e) ->
+          let e' = expr builder e in
+          let objtype = type_of_obj o in
+          let idx = get_obj_gep_idx objtype p in
+          let tmp = L.build_struct_gep (lookup o) idx (o ^ "__" ^ p) builder in
+          let _ = L.build_store e' tmp builder in
+          e'
       | SId id -> L.build_load (lookup id) id builder
-      (* | Getprop (o, p) -> *)
+      | SGetprop (o, p) ->
+        let objtype = type_of_obj o in
+        let idx = get_obj_gep_idx objtype p in
+        let tmp = L.build_struct_gep (lookup o) idx (o ^ "__" ^ p) builder in
+        L.build_load tmp (o ^ "__" ^ p) builder
       (* | SIndex (id, e) -> *)
       | SBinop (e1, op, e2) ->
           let (t, _) = e1

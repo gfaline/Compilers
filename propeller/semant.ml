@@ -124,7 +124,6 @@ let check (globals, objects, functions) =
 
     let symbols = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
 	                               StringMap.empty (globals' @ formals' @ locals') in
-    (* let r_symbols = ref symbols in *)
 
     let type_of_identifier s =
       try StringMap.find s symbols
