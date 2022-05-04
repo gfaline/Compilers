@@ -272,9 +272,15 @@ let check (globals, objects, functions) =
           (match oty with
                Custom t ->
                  let odecl = find_objdecl t in
-                 let _ = get_prop p odecl in
-                 let _ = find_func f in
-                 SBind (o, p, f)
+                 let (pty, _) = get_prop p odecl in
+                 let fdecl = find_func f in
+                 (match fdecl.formals with
+                     (fty1, _) :: (fty2, _) :: [] ->
+                        if fty1 != pty || fty2 != pty
+                        then raise (Failure "type of property must match type of bound function arguments")
+                        else
+                        SBind (o, p, f)
+                   | _ -> raise (Failure "bound functions must take 2 arguments"))
              | _ -> raise (Failure (o ^ " is not an object")))
       | Unbind (o, p, f) -> 
           let oty = type_of_identifier o in
