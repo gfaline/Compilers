@@ -21,6 +21,7 @@ let translate (globals, objects, functions) =
       A.Int   -> i32_t
     | A.Float -> float_t
     | A.Bool  -> i1_t
+    | A.Str ->  L.pointer_type (L.i8_type (context)) 
     | A.Void  -> void_t
     | A.Custom t ->
         let objdef = List.find (fun o -> o.soname = t) objects in
@@ -78,6 +79,8 @@ let translate (globals, objects, functions) =
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
+    let str_format_str = L.build_global_stringptr "%s" "fmt" builder in 
+
 
     let local_vars =
       let add_formal m (t, n) p = 
