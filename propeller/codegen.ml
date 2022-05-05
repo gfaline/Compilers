@@ -12,7 +12,7 @@ let translate (globals, objects, functions) =
   and i1_t       = L.i1_type       context
   and float_t    = L.double_type   context
   and void_t     = L.void_type     context
-  (* and intp_t     = L.pointer_type  (L.i32_type (context))  *)
+(*   and intp_t     = L.pointer_type  (L.i32_type (context))  *)
   and the_module = L.create_module context "Propeller" in
 
   (* let objdef_strs = String.concat "\n" (List.map (fun o -> o.soname) objects) in *)
@@ -21,6 +21,7 @@ let translate (globals, objects, functions) =
       A.Int   -> i32_t
     | A.Float -> float_t
     | A.Bool  -> i1_t
+    | A.Str ->  L.pointer_type (L.i8_type (context)) 
     | A.Void  -> void_t
     | A.Custom t ->
         let objdef = List.find (fun o -> o.soname = t) objects in
@@ -73,6 +74,17 @@ let translate (globals, objects, functions) =
   let gsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                              StringMap.empty globals in
 
+  let lval l =
+    (match (L.string_of_lltype l) with
+    | "i32" -> A.Int
+    | "i32*" -> A.Int
+    | "i8*" -> A.Str
+    | "double" -> A.Float
+    | "i1" -> A.Bool
+    | _ -> raise (Failure "This type is unsupported"))
+    in
+    	let lvalue_type lv = lval (L.type_of lv ) in
+
   (* function body *)
   let build_function_body fdecl =
 
@@ -80,6 +92,10 @@ let translate (globals, objects, functions) =
     let builder = L.builder_at_end context (L.entry_block the_function) in
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
+    let str_format_str = L.build_global_stringptr "%s" "fmt" builder in 
+    let float_format_str = L.build_global_stringptr "%f\n" "fmt" builder in
+
+
 
     let local_vars =
       let add_formal m (t, n) p = 
@@ -100,6 +116,8 @@ let translate (globals, objects, functions) =
       try  StringMap.find n local_vars
       with Not_found -> StringMap.find n global_vars
     in
+    
+    
     
     (* type of symbols *)
     let fsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
@@ -195,7 +213,7 @@ let translate (globals, objects, functions) =
         SIliteral x -> L.const_int i32_t x
       | SFliteral x -> L.const_float float_t x
       | SBliteral x -> L.const_int i1_t (if x then 1 else 0)
-      (* | SSLiteral x -> *)
+      | SSliteral x ->  L.build_global_stringptr x "str" builder
       (* Still in progress. *)
       (* | SLliteral xs -> 
         let (x, _) = Array.get xs 0 in
@@ -203,13 +221,25 @@ let translate (globals, objects, functions) =
         let _ =  Array.fold_left (fun y el -> build_list el y allocate) 0 xs in () *)
         (* allocate  *)
       | SCall (f, es) -> (match (f, es) with 
-                             ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
-                           | _ -> let (fdef, fdecl) = StringMap.find f function_decls in
-                                  let lles = List.rev (List.map (expr builder) (List.rev es)) in
-                                  let result = (match fdecl.styp with 
-                                                    A.Void -> ""
-                                                  | _ -> f ^ "_result") in
-                                  L.build_call fdef (Array.of_list lles) result builder)
+      		  ("print", [e]) -> 
+			    let e' = expr builder e in
+				(match (lvalue_type e') with
+				      A.Int -> L.build_call print_func 
+					[|int_format_str ; (e') |] "print" builder
+				    | A.Str -> L.build_call print_func 
+				    	[|str_format_str ; (e') |] "prints" builder
+				    | A.Float -> L.build_call print_func 
+					[|float_format_str ; (e') |] "printf" builder
+				    | A.Bool -> L.build_call print_func 
+				    	[|int_format_str ; (e') |] "printb" builder
+				    | _ -> raise (Failure "print type invalid"))
+				    
+		   | _ -> let (fdef, fdecl) = StringMap.find f function_decls in
+			  let lles = List.rev (List.map (expr builder) (List.rev es)) in
+			  let result = (match fdecl.styp with 
+					    A.Void -> ""
+					  | _ -> f ^ "_result") in
+			  L.build_call fdef (Array.of_list lles) result builder)
                                   
       | SAssign (id, e) ->
           let e' = expr builder e in
@@ -233,7 +263,12 @@ let translate (globals, objects, functions) =
         let idx = get_obj_gep_idx objtype p in
         let tmp = L.build_struct_gep (lookup o) idx (o ^ "__" ^ p) builder in
         L.build_load tmp (o ^ "__" ^ p) builder
-      (* | SIndex (id, e) -> *)
+      (* | SIndex (id, e) ->
+        let id' = lookup id  in
+        let indx = expr builder e in
+        let pointer = L.build_gep id' [|indx|] "indexptr" builder 
+      in
+        L.build_load pointer "indexptr" builder*)
       | SBinop (e1, op, e2) ->
           let (t, _) = e1
           and e1' = expr builder e1
