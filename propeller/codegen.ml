@@ -59,6 +59,7 @@ let translate (globals, objects, functions) =
 
   let print_t : L.lltype = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let print_func : L.llvalue = L.declare_function "printf" print_t the_module in
+  
 
   let function_decls : (L.llvalue * sfunc_decl) StringMap.t =
     let function_decl m fdecl =
@@ -80,6 +81,8 @@ let translate (globals, objects, functions) =
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
     let str_format_str = L.build_global_stringptr "%s" "fmt" builder in 
+    let float_format_str = L.build_global_stringptr "%f\n" "fmt" builder in
+
 
 
     let local_vars =
