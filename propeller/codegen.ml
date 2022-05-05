@@ -15,7 +15,7 @@ let translate (globals, objects, functions) =
   (* and intp_t     = L.pointer_type  (L.i32_type (context))  *)
   and the_module = L.create_module context "Propeller" in
 
-  let objdef_strs = String.concat "\n" (List.map (fun o -> o.soname) objects) in
+  (* let objdef_strs = String.concat "\n" (List.map (fun o -> o.soname) objects) in *)
 
   let rec ltype_of_typ = function
       A.Int   -> i32_t
@@ -31,8 +31,7 @@ let translate (globals, objects, functions) =
     | _       -> i32_t
   in
 
-  
-
+  (* indices for struct getelementpointer *)
   let get_obj_gep_idx o p =
     let obj_geps = 
       let add_obj m odecl =
@@ -47,6 +46,7 @@ let translate (globals, objects, functions) =
     StringMap.find p (StringMap.find o obj_geps)
   in
 
+  (* globals *)
   let global_vars : L.llvalue StringMap.t =
     let global_var m (t, n) = 
       let init = match t with
@@ -56,9 +56,10 @@ let translate (globals, objects, functions) =
     in
     List.fold_left global_var StringMap.empty globals in
 
+  (* functions *)
   let print_t : L.lltype = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let print_func : L.llvalue = L.declare_function "printf" print_t the_module in
-
+  
   let function_decls : (L.llvalue * sfunc_decl) StringMap.t =
     let function_decl m fdecl =
       let name = fdecl.sfname
@@ -68,6 +69,7 @@ let translate (globals, objects, functions) =
     in
     List.fold_left function_decl StringMap.empty functions in
 
+  (* other stuff *)
   let gsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                              StringMap.empty globals in
 
@@ -100,11 +102,10 @@ let translate (globals, objects, functions) =
     in
     
     (* type of symbols *)
-
-    let lsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
-	                               StringMap.empty fdecl.slocals in
     let fsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                                  StringMap.empty fdecl.sformals in
+    let lsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
+	                               StringMap.empty fdecl.slocals in
     
 
     let type_of_identifier id =
@@ -116,10 +117,79 @@ let translate (globals, objects, functions) =
           with Not_found -> raise (Failure ("Internal error - undefined identifier " ^ id))
     in
 
+    (* get name of object type (objdef <type>) *)
     let type_of_obj o = match type_of_identifier o with
-        Custom t -> t
+        A.Custom t -> t
       | _ -> raise (Failure (o ^ " is not an object"))
     in
+    
+    (* get property names of object variable *)
+    let get_prop_names_of_var o =
+      let objdef = type_of_obj o in
+      let odecl = try List.find (fun od -> od.soname = objdef) objects
+                  with Not_found -> raise (Failure "can't find object") in
+      let props = odecl.sprops in
+      List.map snd props
+    in
+
+    (* craaaaaaazy stuff *)
+    (* BINDING ONLY WORKS WITH LOCAL OBJECTS RIGHT NOW *)
+
+    let local_obj_names =
+      let is_obj = function
+          (A.Custom _, _) -> true
+        | _ -> false
+      in
+      let local_obj_vars = List.filter is_obj fdecl.slocals in
+      List.map snd local_obj_vars in
+
+    let rec make_bigmap_keys = function
+        [] -> []
+      | o::os -> let props = get_prop_names_of_var o in
+                 let make_key p =
+                   o ^ "__" ^ p
+                 in
+                 (List.map make_key props) @ (make_bigmap_keys os)
+    in
+
+    let bigmap_keys = make_bigmap_keys local_obj_names in
+
+    let make_empty_lists m k =
+      StringMap.add k [] m
+    in
+
+    let bigmap = ref (List.fold_left make_empty_lists StringMap.empty bigmap_keys) in
+
+    let add_obj_bind o p f =
+      let k = (o ^ "__" ^ p) in
+      let fs = StringMap.find k !bigmap in
+      if List.mem f fs
+      then raise (Failure ("function " ^ f ^ " is already bound to " ^ o ^ "." ^ p))
+      else
+        let new_fs = f :: fs in
+        let new_m = StringMap.add k new_fs !bigmap in
+        bigmap := new_m
+    in
+
+    let rem_obj_bind o p f =
+      let k = (o ^ "__" ^ p) in
+      let fs = StringMap.find k !bigmap in
+      if List.mem f fs
+      then
+        let new_fs = List.filter (fun n -> n <> f) fs in
+        let fs_str = String.concat "\n" fs in
+        if List.mem f new_fs then raise (Failure ("unbinding failed!\n" ^ fs_str ^ "\n" ^ f)) else
+        let new_m = StringMap.add k new_fs !bigmap in
+        bigmap := new_m
+      else raise (Failure ("function " ^ f ^ " is not bound to " ^ o ^ "." ^ p))
+    in
+
+    let get_bound_funcs o p =
+      let k = (o ^ "__" ^ p) in
+      StringMap.find k !bigmap
+    in
+
+    (* end craaaaaaaaazy stuff *)
 
     let rec expr builder ((_, e) : sexpr) = match e with
         SIliteral x -> L.const_int i32_t x
@@ -151,6 +221,11 @@ let translate (globals, objects, functions) =
           let idx = get_obj_gep_idx objtype p in
           let tmp = L.build_struct_gep (lookup o) idx (o ^ "__" ^ p) builder in
           let _ = L.build_store e' tmp builder in
+          let fs = get_bound_funcs o p in
+          let call_bound_func f =
+            expr builder (A.Void, SCall(f, [e; e]))
+          in
+          let _ = List.map call_bound_func fs in
           e'
       | SId id -> L.build_load (lookup id) id builder
       | SGetprop (o, p) ->
@@ -211,13 +286,12 @@ let translate (globals, objects, functions) =
       | SNoexpr -> L.const_int i32_t 0
       | _ -> L.const_int i32_t 0
       
-    and build_list x i arr =
+    (* and build_list x i arr =
       let gep_ptr = L.build_gep arr [| L.const_int i32_t i |] "list" builder in
       let _ = L.build_store (expr builder x) gep_ptr builder in 
-      i + 1 
-          
+      i + 1    
+    *)
     in
-
     let add_terminal builder instr = match L.block_terminator (L.insertion_block builder) with
         Some _ -> ()
       | None -> ignore (instr builder)
@@ -285,8 +359,7 @@ let translate (globals, objects, functions) =
           let s_bb = L.append_block context "while_body" the_function in
           let merge_bb = L.append_block context "merge" the_function in
           let while_builder = List.fold_left (stmt (Some e_bb) (Some merge_bb))
-                              (L.builder_at_end context s_bb) s
-          in
+                              (L.builder_at_end context s_bb) s in
           let () = add_terminal while_builder (L.build_br e_bb) in
           let e_builder = L.builder_at_end context e_bb in
           let bool_val = expr e_builder e in
@@ -312,6 +385,8 @@ let translate (globals, objects, functions) =
             (Some bb) -> let _ = L.build_br bb builder in
                            builder
           | None -> raise (Failure "semant internal error"))
+      | SBind(o, p, f) -> let _ = add_obj_bind o p f in builder
+      | SUnbind(o, p, f) -> let _ = rem_obj_bind o p f in builder
       | _ -> let _ = expr builder (A.Int, SIliteral 0) in builder
     in
 

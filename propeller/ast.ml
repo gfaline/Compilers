@@ -194,7 +194,7 @@ let string_of_formal (t, id) = string_of_typ t ^ " " ^ id
 
 let string_of_fdecl fdecl =
   "fn " ^ fdecl.fname ^ "("  ^ String.concat ", " (List.map string_of_formal fdecl.formals) ^ ") -> " ^ string_of_typ fdecl.typ ^ "\n" ^
-  brace_wrap ((String.concat "\n" (List.rev (List.map string_of_vdecl fdecl.locals))) ^
+  brace_wrap ((String.concat "\n" (List.rev (List.map string_of_vdecl fdecl.locals))) ^ "\n\n" ^
                String.concat "\n" (List.map string_of_stmt fdecl.body))
 
 let string_of_program (vdecls, odecls, fdecls) =

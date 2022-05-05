@@ -104,7 +104,7 @@ bind_stmt:
   BIND LPAREN ID PERIOD ID COMMA ID RPAREN SEMI { Bind ($3, $5, $7) }
 
 unbind_stmt:
-  UNBIND LPAREN ID PERIOD ID COMMA ID RPAREN SEMI { Bind ($3, $5, $7) }
+  UNBIND LPAREN ID PERIOD ID COMMA ID RPAREN SEMI { Unbind ($3, $5, $7) }
 
 expr_stmt:
     expr SEMI { Expr($1) }
