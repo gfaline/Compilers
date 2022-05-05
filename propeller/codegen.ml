@@ -139,13 +139,25 @@ let translate (globals, objects, functions) =
         let _ =  Array.fold_left (fun y el -> build_list el y allocate) 0 xs in () *)
         (* allocate  *)
       | SCall (f, es) -> (match (f, es) with 
-                             ("print", [e]) -> L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
-                           | _ -> let (fdef, fdecl) = StringMap.find f function_decls in
-                                  let lles = List.rev (List.map (expr builder) (List.rev es)) in
-                                  let result = (match fdecl.styp with 
-                                                    A.Void -> ""
-                                                  | _ -> f ^ "_result") in
-                                  L.build_call fdef (Array.of_list lles) result builder)
+      		  ("print", [e]) -> 
+			    let e' = expr builder e in
+				(match (type_of_lvalue e') with
+				    A.Int -> L.build_call print_func 
+					[|int_format_str ; (e') |] "print" builder
+				    | A.Float -> L.build_call print_func 
+					[|float_format_str ; (e') |] "printf" builder
+				    | A.Str -> L.build_call print_func [| 
+					str_format_str ; (e') |] "prints" builder
+				    | A.Bool -> L.build_call print_func [| 
+					int_format_str ; (e') |] "printb" builder
+				    | _ -> raise (Failure "print type invalid"))
+				    
+		   | _ -> let (fdef, fdecl) = StringMap.find f function_decls in
+			  let lles = List.rev (List.map (expr builder) (List.rev es)) in
+			  let result = (match fdecl.styp with 
+					    A.Void -> ""
+					  | _ -> f ^ "_result") in
+			  L.build_call fdef (Array.of_list lles) result builder)
                                   
       | SAssign (id, e) ->
           let e' = expr builder e in
