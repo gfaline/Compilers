@@ -62,7 +62,8 @@ let check (globals, objects, functions) =
         locals = [];
         body = []; } map
     in
-    List.fold_left add_bind StringMap.empty [ ("print", Int)] in
+     List.fold_left add_bind StringMap.empty 
+    [ ("print", Int); ("prints", Str); ("printf", Float); ("printb", Bool)] in
 
   let add_func map fdecl = match fdecl with
       _ when StringMap.mem fdecl.fname built_in_decls -> raise (Failure "already a built-in function")
