@@ -17,6 +17,13 @@ let translate (globals, objects, functions) =
 
   (* let objdef_strs = String.concat "\n" (List.map (fun o -> o.soname) objects) in *)
 
+  let is_external = function
+      A.Custom t ->
+        let objdef = List.find (fun o -> o.soname = t) objects in
+        objdef.sextern
+    | _ -> false
+  in
+  
   let rec ltype_of_typ = function
       A.Int   -> i32_t
     | A.Float -> float_t
@@ -27,7 +34,7 @@ let translate (globals, objects, functions) =
         let objdef = List.find (fun o -> o.soname = t) objects in
         let ptys = List.map fst objdef.sprops in
         let ltys = Array.of_list (List.map ltype_of_typ ptys) in
-        L.struct_type context ltys
+        if objdef.sextern then i32_t else L.struct_type context ltys
     (* | A.List(_) -> intp_t *)
     | _       -> i32_t
   in
@@ -111,20 +118,17 @@ let translate (globals, objects, functions) =
       let formals = List.fold_left2 add_formal StringMap.empty fdecl.sformals
                                     (Array.to_list (L.params the_function)) in
       List.fold_left add_local formals fdecl.slocals in
-      
+    
     let lookup n =
       try  StringMap.find n local_vars
       with Not_found -> StringMap.find n global_vars
     in
-    
-    
     
     (* type of symbols *)
     let fsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                                  StringMap.empty fdecl.sformals in
     let lsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
 	                               StringMap.empty fdecl.slocals in
-    
 
     let type_of_identifier id =
       try StringMap.find id lsyms
@@ -134,11 +138,41 @@ let translate (globals, objects, functions) =
           try StringMap.find id gsyms
           with Not_found -> raise (Failure ("Internal error - undefined identifier " ^ id))
     in
+    
+    let type_of_prop o p = 
+      let objpropt = 
+        let add_obj m odecl =
+          let rec build_tmap = function
+              []         -> StringMap.empty
+            | (t, p)::ps -> StringMap.add p t (build_tmap ps)
+          in
+          let tmap = build_tmap odecl.sprops in
+          StringMap.add odecl.soname tmap m
+        in
+        List.fold_left add_obj StringMap.empty objects in
+      StringMap.find p (StringMap.find o objpropt)
+    in
 
     (* get name of object type (objdef <type>) *)
     let type_of_obj o = match type_of_identifier o with
         A.Custom t -> t
       | _ -> raise (Failure (o ^ " is not an object"))
+    in
+    
+    let extcreatef_t : L.lltype = L.function_type i32_t [| |] in
+    
+    let build_extern_local_init builder = 
+      let init_extern_local builder (t, n) =
+        if is_external (type_of_identifier n) then
+          match t with
+              A.Custom t ->
+                let create_func : L.llvalue = L.declare_function ("object_new_" ^ t) extcreatef_t the_module in
+                let r = L.build_call create_func [| |] "created" builder in
+                let _ = L.build_store r (StringMap.find n local_vars) builder in
+              builder
+            | _ -> raise (Failure ("internal codegen error"))
+        else builder
+      in List.fold_left init_extern_local builder fdecl.slocals
     in
     
     (* get property names of object variable *)
@@ -259,10 +293,18 @@ let translate (globals, objects, functions) =
           e'
       | SId id -> L.build_load (lookup id) id builder
       | SGetprop (o, p) ->
-        let objtype = type_of_obj o in
-        let idx = get_obj_gep_idx objtype p in
-        let tmp = L.build_struct_gep (lookup o) idx (o ^ "__" ^ p) builder in
-        L.build_load tmp (o ^ "__" ^ p) builder
+        if is_external (type_of_identifier o)
+        then
+          let oty = type_of_obj o in
+          let pty = type_of_prop (type_of_obj o) p in
+          let extgetf_t : L.lltype  = L.function_type (ltype_of_typ pty) [| i32_t |] in
+          let get_func  : L.llvalue = L.declare_function ("object_prop_bind_" ^ oty ^ "_" ^ p) extgetf_t the_module in
+          L.build_call get_func [| (lookup o) |] "get_result" builder
+        else
+          let objtype = type_of_obj o in
+          let idx = get_obj_gep_idx objtype p in
+          let tmp = L.build_struct_gep (lookup o) idx (o ^ "__" ^ p) builder in
+          L.build_load tmp (o ^ "__" ^ p) builder
       (* | SIndex (id, e) ->
         let id' = lookup id  in
         let indx = expr builder e in
@@ -420,15 +462,39 @@ let translate (globals, objects, functions) =
             (Some bb) -> let _ = L.build_br bb builder in
                            builder
           | None -> raise (Failure "semant internal error"))
-      | SBind(o, p, f) -> let _ = add_obj_bind o p f in builder
-      | SUnbind(o, p, f) -> let _ = rem_obj_bind o p f in builder
-      | _ -> let _ = expr builder (A.Int, SIliteral 0) in builder
+      | SBind(o, p, f) ->
+        if is_external (type_of_identifier o)
+        then
+          let oty = type_of_obj o in
+          let pty = type_of_prop (type_of_obj o) p in
+          let extboundfuncp_t : L.lltype = L.pointer_type (L.function_type void_t [| ltype_of_typ pty; ltype_of_typ pty |]) in
+          let extbindf_t     : L.lltype = L.function_type void_t [| i32_t; extboundfuncp_t |] in
+          let bind_func : L.llvalue = L.declare_function ("object_prop_bind_" ^ oty ^ "_" ^ p) extbindf_t the_module in
+          let ov = L.build_load (lookup o) o builder in
+          let _ = L.build_call bind_func [| ov; fst (StringMap.find f function_decls) |] "" builder in
+          builder
+        else let _ = add_obj_bind o p f in builder
+      | SUnbind(o, p, f) ->
+        if is_external (type_of_identifier o)
+        then
+          let oty = type_of_obj o in
+          let pty = type_of_prop (type_of_obj o) p in
+          let extboundfuncp_t : L.lltype = L.pointer_type (L.function_type void_t [| ltype_of_typ pty; ltype_of_typ pty |]) in
+          let extbindf_t     : L.lltype = L.function_type void_t [| i32_t; extboundfuncp_t |] in
+          let unbind_func : L.llvalue = L.declare_function ("object_prop_unbind_" ^ oty ^ "_" ^ p) extbindf_t the_module in
+          let ov = L.build_load (lookup o) o builder in
+          let _ = L.build_call unbind_func [| ov; fst (StringMap.find f function_decls) |] "" builder in
+          builder
+        else let _ = rem_obj_bind o p f in builder
+      (*| _ -> let _ = expr builder (A.Int, SIliteral 0) in builder*)
     in
 
-    let builder = List.fold_left (stmt None None) builder fdecl.sbody in
+    let b = build_extern_local_init builder in
+    let builder = List.fold_left (stmt None None) b fdecl.sbody in
 
     add_terminal builder (match fdecl.styp with
-        t -> L.build_ret (L.const_int (ltype_of_typ t) 0))
+        A.Void -> L.build_ret_void
+      | t -> L.build_ret (L.const_int (ltype_of_typ t) 0))
   in
 
   List.iter build_function_body functions;

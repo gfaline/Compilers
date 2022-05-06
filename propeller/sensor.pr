@@ -1,0 +1,19 @@
+external objdef Sensor
+{
+  int temperature;
+}
+
+fn print_warning(int oldt, int t) -> void
+{
+  if t > 70000
+  {
+    print(t / 1000);
+  }
+}
+
+fn init() -> int
+{
+  Sensor sensor;
+  bind(sensor.temperature, print_warning);
+  return 0;
+}

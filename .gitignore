@@ -22,6 +22,7 @@
 *.pr.diff
 *.err.diff
 *.test
+*.rto
 *.out
 *.exe
 

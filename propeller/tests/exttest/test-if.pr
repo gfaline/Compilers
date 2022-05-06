@@ -1,5 +1,5 @@
 # Test a basic if statement
-fn main() -> int
+fn init() -> int
 {
   if 42 % 2 == 0
   { return 0; }

@@ -1,5 +1,5 @@
 # Tests variable assignment and and if, elif, else statement to print on elif
-fn main() -> int
+fn init() -> int
 {
   bool a;
   bool b;

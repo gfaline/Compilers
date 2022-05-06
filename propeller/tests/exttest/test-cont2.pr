@@ -1,5 +1,5 @@
 # Variant of the simple continue test: continuing just before loop predicate becomes false.
-fn main() -> int
+fn init() -> int
 {
   int i;
   i = 0;

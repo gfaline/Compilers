@@ -1,5 +1,5 @@
 # A simple program that prints the integer 1234 and returns 0.
-fn main() -> int
+fn init() -> int
 {
   print(1234);
   return 0;

@@ -1,5 +1,5 @@
 # Semantic error: trying to use an already declared variable as for-loop variable.
-fn main()->int
+fn init()->int
 {
   int i;
   for i from 1 to 10

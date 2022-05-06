@@ -1,5 +1,5 @@
 # Simple test for the while statement.
-fn main() -> int
+fn init() -> int
 {
   int i;
   i = 0;

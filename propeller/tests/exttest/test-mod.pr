@@ -1,5 +1,5 @@
 # Test the semantics of the modulo operator -- we use the "truncated" definition
-fn main() -> int
+fn init() -> int
 {
   print(9%5);
   print(9%-5);

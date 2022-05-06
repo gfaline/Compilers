@@ -5,7 +5,7 @@ fn fib(int n) -> int
   { return 1; }
   return fib(n-1) + fib(n-2);
 }
-fn main() -> int
+fn init() -> int
 {
   print(fib(5));
 }

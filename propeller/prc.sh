@@ -8,6 +8,7 @@ UNAME=$(uname -s)
 Usage() {
   echo "Usage: $0 [options] <*.pr>"
   echo "-k    Keep intermediate files"
+  echo "-r    Specify a runtime to link against (without the .o extension ), defaults to 'default'"
   echo "-h    Print this help"
   exit 1
 }
@@ -18,12 +19,16 @@ then
 fi
 
 keep=0
+runtime="default"
 
-while getopts kh c; do
+while getopts "kr:h" c; do
     case $c in
 	k) # Keep intermediate files
 	    keep=1
 	    ;;
+        r) # Runtime
+            runtime=$OPTARG
+            ;;
 	h) # Help
 	    Usage $0
 	    ;;
@@ -61,7 +66,7 @@ CleanUpAndFail() {
 
 $PROPC $SRC > $LLVMIRS || CleanUpAndFail
 $LLC -relocation-model=pic $LLVMIRS > $ASM || CleanUpAndFail
-$CC -o $OUTPUT $ASM || CleanUpAndFail
+$CC -o $OUTPUT $ASM "$(dirname "$0")/runtime/${runtime}.rto"|| CleanUpAndFail
 
 [ $keep -eq 1 ] || rm -f $INTERMEDIATES
 

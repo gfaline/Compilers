@@ -77,7 +77,7 @@ let check (globals, objects, functions) =
     with Not_found -> raise (Failure ("undefined function " ^ f))
   in
 
-  let _ = find_func "main" in
+  let _ = find_func "init" in
 
   let check_function func =
 

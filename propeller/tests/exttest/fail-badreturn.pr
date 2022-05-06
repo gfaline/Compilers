@@ -1,5 +1,5 @@
 # Semantic error: returning a float in a function that should return int.
-fn main() -> int
+fn init() -> int
 {
   return 12.34;
 }
