@@ -1,0 +1,30 @@
+objdef Jumbo
+{
+  str name;
+  int age;
+  float gpa;
+}
+
+fn celebrate(int old, int new) -> void
+{
+  print(new);
+}
+
+fn init () -> int
+{
+  Jumbo jim;
+
+  jim.name = 'Jim';
+  jim.age  = 24;
+  jim.gpa  = 3.73;
+
+  bind(jim.age, celebrate);
+
+  jim.age = 25;
+
+  unbind(jim.age, celebrate);
+
+  jim.age = 26;
+
+  return 0;
+}

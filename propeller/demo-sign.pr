@@ -1,0 +1,29 @@
+fn clip (int n) -> int
+{
+  if n > 0
+  {
+    return 1;
+  }
+  elif n == 0
+  {
+    return 0;
+  }
+  else
+  {
+    return -1;
+  }
+}
+
+fn init() -> int
+{
+  int x;
+
+  x = sign(-7);
+  print(x);
+  x = sign(0);
+  print(x);
+  x = sign(3);
+  print(x);
+
+  return 0;
+}
