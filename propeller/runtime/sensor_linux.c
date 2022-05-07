@@ -3,7 +3,7 @@
 
 extern int init();
 
-void(*boundf)(int,int);
+void(*boundf)(int,int) = NULL;
 int oldt = 0;
 
 int object_new_Sensor()
@@ -17,6 +17,25 @@ int object_prop_bind_Sensor_temperature(int oid, void(*f)(int,int))
 		boundf = f;
 }
 
+int object_prop_unbind_Sensor_temperature(int oid, void(*f)(int,int))
+{
+	if (oid == 0 && boundf == f)
+		boundf = NULL;
+}
+
+int object_prop_get_Sensor_temperature(int oid)
+{
+        if (oid == 0)
+        {
+                FILE *f = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
+		int t;
+		fscanf(f, "%d", &t);
+		fclose(f);
+                return t;
+        }
+        return 0;
+}
+
 int main()
 {
 	int ret = init();
@@ -25,7 +44,7 @@ int main()
 		FILE *f = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
 		int t;
 		fscanf(f, "%d", &t);
-		boundf(oldt, t);
+		if (boundf) boundf(oldt, t);
 		oldt = t;
 		fclose(f);
 		sleep(1);
