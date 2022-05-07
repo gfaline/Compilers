@@ -1,3 +1,5 @@
+# compile with ./prc.sh -r sensor_linux sensor.pr
+
 external objdef Sensor
 {
   int temperature;
