@@ -76,12 +76,12 @@ let translate (globals, objects, functions) =
     in
     List.fold_left function_decl StringMap.empty functions in
 
-  (* other stuff *)
+  (* global symbols *)
   let gsyms = List.fold_left (fun m (ty, name) -> StringMap.add name ty m)
                              StringMap.empty globals in
 
 
-  (* function body *)
+  (* ================ FUNCTION BODY ================ *)
   let build_function_body fdecl =
 
     let (the_function, _) = StringMap.find fdecl.sfname function_decls in
@@ -90,8 +90,6 @@ let translate (globals, objects, functions) =
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
     let str_format_str = L.build_global_stringptr "%s" "fmt" builder in 
     let float_format_str = L.build_global_stringptr "%f\n" "fmt" builder in
-
-
 
     let local_vars =
       let add_formal m (t, n) p = 
@@ -164,74 +162,76 @@ let translate (globals, objects, functions) =
       in List.fold_left init_extern_local builder fdecl.slocals
     in
     
-    (* get property names of object variable *)
-    let get_prop_names_of_var o =
-      let objdef = type_of_obj o in
-      let odecl = try List.find (fun od -> od.soname = objdef) objects
-                  with Not_found -> raise (Failure "can't find object") in
-      let props = odecl.sprops in
-      List.map snd props
-    in
+    (* ================ PROPERTY BINDING MAP ================ *)
+    (* map of properties and their bound functions : string -> string list
+       <var_name>__<prop_name> -> [<function names>] *)
+    let bind_map = 
+      (* names of local objects *)
+      let local_obj_names =
+        let is_obj = function
+            (A.Custom _, _) -> true
+          | _ -> false
+        in
+        let local_obj_vars = List.filter is_obj fdecl.slocals in
+        List.map snd local_obj_vars in
 
-    (* craaaaaaazy stuff *)
-    (* BINDING ONLY WORKS WITH LOCAL OBJECTS RIGHT NOW *)
+      (* make keys for property-function bindings map *)
+      let bind_map_keys =
+        let rec make_bind_map_keys = function
+            [] -> []
+          | o::os -> let props =
+                        let get_prop_names_of_var v =
+                          let objdef = type_of_obj v in
+                          let odecl = try List.find (fun od -> od.soname = objdef) objects
+                                      with Not_found -> raise (Failure "can't find object") in
+                          let oprops = odecl.sprops in
+                          List.map snd oprops
+                        in
+                        get_prop_names_of_var o in
+                        let make_key p =
+                          o ^ "__" ^ p
+                        in
+                        (List.map make_key props) @ (make_bind_map_keys os)
+        in
+        make_bind_map_keys local_obj_names in
 
-    let local_obj_names =
-      let is_obj = function
-          (A.Custom _, _) -> true
-        | _ -> false
+      (* let bind_map_keys = make_bind_map_keys local_obj_names in *)
+      let make_empty_lists m k =
+        StringMap.add k [] m
       in
-      let local_obj_vars = List.filter is_obj fdecl.slocals in
-      List.map snd local_obj_vars in
+      ref (List.fold_left make_empty_lists StringMap.empty bind_map_keys) in
 
-    let rec make_bigmap_keys = function
-        [] -> []
-      | o::os -> let props = get_prop_names_of_var o in
-                 let make_key p =
-                   o ^ "__" ^ p
-                 in
-                 (List.map make_key props) @ (make_bigmap_keys os)
-    in
-
-    let bigmap_keys = make_bigmap_keys local_obj_names in
-
-    let make_empty_lists m k =
-      StringMap.add k [] m
-    in
-
-    let bigmap = ref (List.fold_left make_empty_lists StringMap.empty bigmap_keys) in
-
+    (* add binding to property*)
     let add_obj_bind o p f =
       let k = (o ^ "__" ^ p) in
-      let fs = StringMap.find k !bigmap in
+      let fs = StringMap.find k !bind_map in
       if List.mem f fs
       then raise (Failure ("function " ^ f ^ " is already bound to " ^ o ^ "." ^ p))
       else
         let new_fs = f :: fs in
-        let new_m = StringMap.add k new_fs !bigmap in
-        bigmap := new_m
+        let new_m = StringMap.add k new_fs !bind_map in
+        bind_map := new_m
     in
 
+    (* remove binding from property *)
     let rem_obj_bind o p f =
       let k = (o ^ "__" ^ p) in
-      let fs = StringMap.find k !bigmap in
+      let fs = StringMap.find k !bind_map in
       if List.mem f fs
       then
         let new_fs = List.filter (fun n -> n <> f) fs in
-        let fs_str = String.concat "\n" fs in
-        if List.mem f new_fs then raise (Failure ("unbinding failed!\n" ^ fs_str ^ "\n" ^ f)) else
-        let new_m = StringMap.add k new_fs !bigmap in
-        bigmap := new_m
+        let new_m = StringMap.add k new_fs !bind_map in
+        bind_map := new_m
       else raise (Failure ("function " ^ f ^ " is not bound to " ^ o ^ "." ^ p))
     in
 
+    (* get a property's bound functions *)
     let get_bound_funcs o p =
       let k = (o ^ "__" ^ p) in
-      StringMap.find k !bigmap
+      StringMap.find k !bind_map
     in
 
-    (* end craaaaaaaaazy stuff *)
-
+    (* ================ EXPRESSION BUILDER ================ *)
     let rec expr builder ((_, e) : sexpr) = match e with
         SIliteral x -> L.const_int i32_t x
       | SFliteral x -> L.const_float float_t x
@@ -355,6 +355,7 @@ let translate (globals, objects, functions) =
       | None -> ignore (instr builder)
     in
 
+    (* ================ STATEMENT BUILDER ================ *)
     let rec stmt loop_start loop_after builder = function
         SExpr e -> let _ = expr builder e in builder
       | SReturn e -> 
@@ -467,7 +468,6 @@ let translate (globals, objects, functions) =
           let _ = L.build_call unbind_func [| ov; fst (StringMap.find f function_decls) |] "" builder in
           builder
         else let _ = rem_obj_bind o p f in builder
-      (*| _ -> let _ = expr builder (A.Int, SIliteral 0) in builder*)
     in
 
     let b = build_extern_local_init builder in
