@@ -1,0 +1,15 @@
+
+
+fn main() -> int
+{
+  int list a;
+  a = [2, 5, 8, 6, 11, 13, 14];
+  print(a[3]);
+  
+  float list a;
+  b = [3.2, 5.5, 2.8, 7.62, 1.1, 13.22, 14.0];
+  printf(b[3]);
+  
+  
+  return 0;
+}
