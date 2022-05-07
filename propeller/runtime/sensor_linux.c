@@ -27,11 +27,7 @@ int object_prop_get_Sensor_temperature(int oid)
 {
         if (oid == 0)
         {
-                FILE *f = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
-		int t;
-		fscanf(f, "%d", &t);
-		fclose(f);
-                return t;
+                return oldt;
         }
         return 0;
 }

@@ -7,6 +7,7 @@ fn print_warning(int oldt, int t) -> void
 {
   if (t > 60000) and (t != oldt)
   {
+    prints('thermal zone sensor readout too high: ');
     print(t / 1000);
   }
 }
