@@ -135,7 +135,7 @@ let check (globals, objects, functions) =
         Iliteral x -> (Int,   SIliteral x)
       | Fliteral x -> (Float, SFliteral x)
       | Bliteral x -> (Bool,  SBliteral x)
-      | Sliteral x -> (Str,   SSliteral x)
+      | Sliteral x -> (Str,   SSliteral (Scanf.unescaped (String.sub x 1 ((String.length x) - 2))))
       | Lliteral xs ->
           let (ty, _) = expr (Array.get xs 0) in
           let eqty e =
