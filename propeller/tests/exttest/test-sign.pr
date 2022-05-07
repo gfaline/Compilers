@@ -1,4 +1,4 @@
-fn clip (int n) -> int
+fn sign (int n) -> int
 {
   if n > 0
   {
