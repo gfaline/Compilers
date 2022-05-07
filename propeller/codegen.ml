@@ -246,18 +246,18 @@ let translate (globals, objects, functions) =
           i + 1    
         in
         let _ =  Array.fold_left (fun y el -> build_list el y allocate) 0 (Array.of_list (List.rev (Array.to_list xs))) in 
-        allocate  
-      | SCall ("print", [e]) | SCall ("printb", [e])  -> 
-            L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
-      | SCall ("prints", [e]) -> L.build_call print_func [| str_format_str ; (expr builder e) |] "print" builder
-      | SCall ("printf", [e]) -> L.build_call print_func [| float_format_str ; (expr builder e) |] "print" builder
-      | SCall (f, es) -> 
-        let (fdef, fdecl) = StringMap.find f function_decls in
-              let lles = List.rev (List.map (expr builder) (List.rev es)) in
-              let result = (match fdecl.styp with 
-                                A.Void -> ""
-                              | _ -> f ^ "_result") in
-              L.build_call fdef (Array.of_list lles) result builder                             
+        allocate
+      | SCall (f, es) -> (match (f, es) with
+            ("print", [e]) | ("printb", [e]) ->
+              L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
+          | ("prints", [e]) -> L.build_call print_func [| str_format_str ; (expr builder e) |] "print" builder
+          | ("printf", [e]) -> L.build_call print_func [| float_format_str ; (expr builder e) |] "print" builder
+          | _ -> let (fdef, fdecl) = StringMap.find f function_decls in
+                 let lles = List.rev (List.map (expr builder) (List.rev es)) in
+                 let result = (match fdecl.styp with 
+                                    A.Void -> ""
+                                  | _ -> f ^ "_result") in
+                 L.build_call fdef (Array.of_list lles) result builder)
       | SAssign (id, e) ->
           let e' = expr builder e in
           let _ = L.build_store e' (lookup id) builder in
@@ -291,14 +291,9 @@ let translate (globals, objects, functions) =
       | SIndex (id, e) ->
         let id' = lookup id  in
         let indx = expr builder e in
-        let pp = L.build_load id' id builder in
-        let p  = L.build_gep pp [|indx|] "p" builder in
-        L.build_load p "tmp" builder
-        (* let pointer = L.build_gep id' [|indx|] "indexptr" builder in
-        L.build_load pointer "indexptr" builder *)
-        (* let pp = L.build_gep id' [|indx|] "pp" builder in
-        let p  = L.build_load pp "p" builder in
-        L.build_load p "tmp" builder *)
+        let head_ptr = L.build_load id' id builder in
+        let elem_ptr  = L.build_gep head_ptr [|indx|] "p" builder in
+        L.build_load elem_ptr "tmp" builder
       | SBinop (e1, op, e2) ->
           let (t, _) = e1
           and e1' = expr builder e1
