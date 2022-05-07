@@ -59,7 +59,8 @@ CheckFail() {
 
 
 # CompiledCheckExpectWReturnCode Source ExpectedOutput ExpectedStderr ExpectedReturnCode
-# convenience function. Compile the given propeller source program and run it with CheckExpectedWReturnCode
+# convenience function. Compile the given propeller source program and run it with
+# CheckExpectedWReturnCode
 CompiledCheckExpectWReturnCode() {
   SRC=$1
   shift

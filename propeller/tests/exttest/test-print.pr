@@ -1,3 +1,8 @@
-printb(true);
-printf(1.1);
-prints('hi');
+# Test different print built-in functions.
+fn init() -> int
+{
+  printb(true);
+  printf(1.1);
+  prints('hi\n');
+  return 0;
+}

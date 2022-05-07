@@ -1,1 +1,1 @@
-Fatal error: exception Failure("bad return type")
+Fatal error: exception Failure("bad return type in function init")

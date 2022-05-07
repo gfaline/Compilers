@@ -1,15 +1,14 @@
+# Test list indexing
 
-
-fn main() -> int
+fn init() -> int
 {
   int list a;
+  float list b;
   a = [2, 5, 8, 6, 11, 13, 14];
   print(a[3]);
   
-  float list a;
   b = [3.2, 5.5, 2.8, 7.62, 1.1, 13.22, 14.0];
   printf(b[3]);
-  
   
   return 0;
 }
