@@ -339,7 +339,6 @@ let translate (globals, objects, functions) =
           instr e' "tmp" builder
       | SParentheses e -> expr builder e
       | SNoexpr -> L.const_int i32_t 0
-      | _ -> L.const_int i32_t 0
       
     and build_list x i arr =
       let gep_ptr = L.build_gep arr [| L.const_int i32_t i |] "list" builder in
