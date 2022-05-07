@@ -5,7 +5,7 @@ external objdef Sensor
 
 fn print_warning(int oldt, int t) -> void
 {
-  if t > 70000
+  if (t > 60000) and (t != oldt)
   {
     print(t / 1000);
   }
