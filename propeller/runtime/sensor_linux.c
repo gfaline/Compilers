@@ -25,7 +25,7 @@ int main()
 		FILE *f = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
 		int t;
 		fscanf(f, "%d", &t);
-		boundf(t, oldt);
+		boundf(oldt, t);
 		oldt = t;
 		fclose(f);
 		sleep(1);
