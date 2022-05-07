@@ -239,8 +239,13 @@ let translate (globals, objects, functions) =
       | SSliteral x ->  L.build_global_stringptr x "str" builder
       | SLliteral xs -> 
         let (x, _) = Array.get xs 0 in
-        let allocate = L.build_array_alloca (ltype_of_typ x) (L.const_int i32_t (Array.length xs)) "list" builder in
-        let _ =  Array.fold_left (fun y el -> build_list el y allocate) 0 xs in 
+        let allocate = L.build_array_alloca (ltype_of_typ x) (L.const_int i32_t (Array.length xs)) "tmp_list" builder in
+        let build_list x i arr =
+          let gep_ptr = L.build_gep arr [| L.const_int i32_t i |] "list" builder in
+          let _ = L.build_store (expr builder x) gep_ptr builder in 
+          i + 1    
+        in
+        let _ =  Array.fold_left (fun y el -> build_list el y allocate) 0 (Array.of_list (List.rev (Array.to_list xs))) in 
         allocate  
       | SCall ("print", [e]) | SCall ("printb", [e])  -> 
             L.build_call print_func [| int_format_str ; (expr builder e) |] "print" builder
@@ -286,9 +291,14 @@ let translate (globals, objects, functions) =
       | SIndex (id, e) ->
         let id' = lookup id  in
         let indx = expr builder e in
-        let pointer = L.build_gep id' [|indx|] "indexptr" builder 
-      in
-        L.build_load pointer "indexptr" builder
+        let pp = L.build_load id' id builder in
+        let p  = L.build_gep pp [|indx|] "p" builder in
+        L.build_load p "tmp" builder
+        (* let pointer = L.build_gep id' [|indx|] "indexptr" builder in
+        L.build_load pointer "indexptr" builder *)
+        (* let pp = L.build_gep id' [|indx|] "pp" builder in
+        let p  = L.build_load pp "p" builder in
+        L.build_load p "tmp" builder *)
       | SBinop (e1, op, e2) ->
           let (t, _) = e1
           and e1' = expr builder e1
@@ -339,13 +349,8 @@ let translate (globals, objects, functions) =
           instr e' "tmp" builder
       | SParentheses e -> expr builder e
       | SNoexpr -> L.const_int i32_t 0
-      
-    and build_list x i arr =
-      let gep_ptr = L.build_gep arr [| L.const_int i32_t i |] "list" builder in
-      let _ = L.build_store (expr builder x) gep_ptr builder in 
-      i + 1    
-   
     in
+
     let add_terminal builder instr = match L.block_terminator (L.insertion_block builder) with
         Some _ -> ()
       | None -> ignore (instr builder)
