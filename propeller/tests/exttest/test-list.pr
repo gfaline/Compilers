@@ -1,4 +1,4 @@
-# Test list indexing
+# Tests lists and list indexing.
 
 fn init() -> int
 {

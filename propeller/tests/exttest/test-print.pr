@@ -1,4 +1,4 @@
-# Test different print built-in functions.
+# Tests built-in print functions for other types.
 fn init() -> int
 {
   printb(true);

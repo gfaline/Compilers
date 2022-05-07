@@ -1,3 +1,5 @@
+# A simple program that tests function calls, if statements and assignments.
+
 fn sign (int n) -> int
 {
   if n > 0

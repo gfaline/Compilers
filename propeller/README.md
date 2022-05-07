@@ -29,7 +29,9 @@ Homebrew or a similar package manager to install a recent version of bash.
 
 The following instruction has been tested on the following platforms:
 
- - Gentoo Linux ~amd64, OCaml 4.13.1, opam 2.1.2, LLVM 13.0.01
+ - Gentoo Linux ~amd64, OCaml 4.14.0, LLVM 14.0.1 with OCaml binding installed with system package manager
+ - Ubuntu 20.04 LTS on Windows Subsystem for Linux, Windows 10, OCaml 4.13.1, opam 2.1.0, LLVM 10.0.0
+ - MacOS Monterey, M1 chip, ocaml 4.13.1, opam 2.1.2, llvm 13.0.1
 
 Assuming you are already in the `propeller` subfolder, use the following command to build the
 compiler:
@@ -61,6 +63,10 @@ an executable for `source.pr`. The executable created will be named `source.out`
 Windows), located in the same directory as `source.pr`.
 
 Use `./prc.sh -k <source.pr>` to keep all intermediate files.
+
+Some propeller programs needs a specific runtime library to work. Use `-r <runtime>` to specify a
+runtime library to use (without the `.rto` extension). If not specified, the default one will be
+used. All available runtimes are in the runtime directory.
 
 ## Language Overview
 
@@ -133,4 +139,7 @@ test-ifelif3.pr           | Tests variable assignment and and if, elif, else sta
 test-mod.pr               | Test the semantics of the modulo operator -- we use the "truncated" definition
 test-varprint.pr          | A simple program that prints a variable and returns 0.
 test-while.pr             | Simple test for the while statement.
+test-print.pr             | Tests built-in print functions for other types.
+test-sign.pr              | A simple program that tests function calls, if statements and assignments.
+test-list.pr              | Tests lists and list indexing.
 ```
