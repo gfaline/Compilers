@@ -52,8 +52,8 @@ let check (globals, objects, functions) =
     try  List.find f odecl.sprops
     with Not_found -> raise (Failure ("object type " ^ odecl.soname ^ " has no property " ^ p))
   in
-  (* functions *)
 
+  (* functions *)
   let built_in_decls =
     let add_bind map (name, t) = StringMap.add name
       { typ = Void;
@@ -66,8 +66,8 @@ let check (globals, objects, functions) =
     [ ("print", Int); ("prints", Str); ("printf", Float); ("printb", Bool)] in
 
   let add_func map fdecl = match fdecl with
-      _ when StringMap.mem fdecl.fname built_in_decls -> raise (Failure "already a built-in function")
-    | _ when StringMap.mem fdecl.fname map            -> raise (Failure "duplicate function")
+      _ when StringMap.mem fdecl.fname built_in_decls -> raise (Failure (fdecl.fname ^ " is already a built-in function"))
+    | _ when StringMap.mem fdecl.fname map            -> raise (Failure ("duplicate function " ^ fdecl.fname))
     | _ -> StringMap.add fdecl.fname fdecl map
   in
 
@@ -81,7 +81,6 @@ let check (globals, objects, functions) =
   let _ = find_func "init" in
 
   let check_function func =
-
     let loop_vars =
       let rec find_loop_vars = function
           [] -> []
@@ -115,7 +114,6 @@ let check (globals, objects, functions) =
 
     let formals' = check_binds "formal" func.formals in
     let locals'  = check_locals "local" (func.locals @ loop_vars) in
-    (* let iters    = ref [] in *)
 
     let check_assign lt rt msg =
       if   lt = rt
@@ -174,27 +172,31 @@ let check (globals, objects, functions) =
       | Index (id, e) ->
           let ty = (match type_of_identifier id with
                        List(t) -> t
-                     | _      -> raise (Failure "not a list")) in
+                     | _      -> raise (Failure ("cannot index non-list variable " ^ id))) in
           let (t, e') = expr e in
           (match t with
               Int -> (ty, SIndex(id, (t, e')))
-            | _   -> raise (Failure "non-int index"))
+            | _   -> raise (Failure "list index expression must of type int"))
       | Call (f, es) ->
           let fdecl = find_func f in
-          let n_args = List.length fdecl.formals in
-          if   List.length es != n_args
-          then raise (Failure "nargs")
+          let fname = fdecl.fname in
+          let n_form = List.length fdecl.formals in
+          let n_args = List.length es in
+          if   n_args != n_form
+          then raise (Failure ("function " ^ fname ^ "expects " ^ (string_of_int n_form) ^
+                               " arguments, but was passed " ^ (string_of_int n_args)))
           else
           let check_call (ft, _) e =
             let (et, e') = expr e in
-            (check_assign ft et "argtype", e')
+            let err_msg = "bad argument types in call to " ^ fname in
+            (check_assign ft et err_msg, e')
           in
           let es' = List.map2 check_call fdecl.formals es in
           (fdecl.typ, SCall(f, es'))
       | Assign (id, e) ->
           let tid = type_of_identifier id
           and (te, e') = expr e in
-          let err_msg = "Illegal assignment" in
+          let err_msg = "illegal assignment to " ^ id in
           (check_assign tid te err_msg, SAssign(id, (te, e')))
       | Setprop (o, p, e) ->
         let otype = type_of_identifier o in
@@ -214,14 +216,14 @@ let check (globals, objects, functions) =
             | Eq  | Neq                   when t1 = t2               -> Bool
             | Lt  | Leq | Gt  | Geq       when t1 = t2 && (t1 = Int || t2 = Float) -> Bool
             | And | Or  | Xor             when t1 = t2 && t1 = Bool -> Bool
-            | _ -> raise (Failure "Illegal binary operator") in
+            | _ -> raise (Failure "illegal binary operator") in
           (ty, SBinop((t1, e1'), op, (t2, e2')))
       | Unop (op, e) ->
           let (t, e') = expr e in
           let ty = match op with
               Neg when t == Int || t == Float -> t
             | Not when t == Bool -> Bool
-            | _ -> raise (Failure "Illegal unary operator") in
+            | _ -> raise (Failure "illegal unary operator") in
           (ty, SUnop(op, (t, e')))
       | Parentheses e ->
           let (ty, e') = expr e in
@@ -247,7 +249,7 @@ let check (globals, objects, functions) =
         Expr e -> SExpr (expr e)
       | Return e ->
         let (ty, ex) = expr e in
-        let _ = check_assign ty func.typ "bad return type" in
+        let _ = check_assign ty func.typ ("bad return type in function " ^ func.fname) in
         SReturn (ty, ex)
       | If (e, s1, elifs, s2) ->
           let check_elif (elif_e, elif_s) =
@@ -260,12 +262,9 @@ let check (globals, objects, functions) =
               [] -> []
             | _  -> List.map (check_stmt in_loop) s2 in
           SIf (check_bool_expr e, List.map (check_stmt in_loop) s1, elifs', s2')
-      (* Need to somehow create local indexing variable *)
       | For (id, e1, e2, s) -> 
-          (* StringMap.add id Int !r_symbols; *)
           SFor (id, check_int_expr e1, check_int_expr e2, List.map (check_stmt true) s)
       | While (e, s) -> SWhile (check_bool_expr e, List.map (check_stmt true) s)
-      (* | _ -> SExpr (expr (Iliteral 0)) *)
       | Break    -> if not in_loop then raise (Failure "break outside loop") else SBreak
       | Continue -> if not in_loop then raise (Failure "continue outside loop") else SContinue
       | Bind (o, p, f) -> 
