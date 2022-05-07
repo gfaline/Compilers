@@ -258,6 +258,10 @@ let translate (globals, objects, functions) =
           let _ = L.build_store e' (lookup id) builder in
           e'
       | SSetprop (o, p, e) ->
+        if is_external (type_of_identifier o)
+        then
+          raise (Failure "Property assignment to external objects is unimplemented")
+        else
           let e' = expr builder e in
           let objtype = type_of_obj o in
           let idx = get_obj_gep_idx objtype p in
@@ -276,7 +280,7 @@ let translate (globals, objects, functions) =
           let oty = type_of_obj o in
           let pty = type_of_prop (type_of_obj o) p in
           let extgetf_t : L.lltype  = L.function_type (ltype_of_typ pty) [| i32_t |] in
-          let get_func  : L.llvalue = L.declare_function ("object_prop_bind_" ^ oty ^ "_" ^ p) extgetf_t the_module in
+          let get_func  : L.llvalue = L.declare_function ("object_prop_get_" ^ oty ^ "_" ^ p) extgetf_t the_module in
           L.build_call get_func [| (lookup o) |] "get_result" builder
         else
           let objtype = type_of_obj o in
