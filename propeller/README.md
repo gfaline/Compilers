@@ -32,6 +32,7 @@ The following instruction has been tested on the following platforms:
  - Gentoo Linux ~amd64, OCaml 4.14.0, LLVM 14.0.1 with OCaml binding installed with system package manager
  - Ubuntu 20.04 LTS on Windows Subsystem for Linux, Windows 10, OCaml 4.13.1, opam 2.1.0, LLVM 10.0.0
  - MacOS Monterey, M1 chip, ocaml 4.13.1, opam 2.1.2, llvm 13.0.1
+ - Kali GNU/Linux 2021.4, 5.10.16.3-microsoft-standard-WSL2 , Windows 10, OCaml 4.13.1, opam 2.1.2, LLVM 13.01
 
 Assuming you are already in the `propeller` subfolder, use the following command to build the
 compiler:
