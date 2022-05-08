@@ -1,0 +1,37 @@
+\section{Lessons learned} 
+
+\subsection{Isra}
+
+\subsection{Gwendolyn}
+
+\subsection{Randy}
+\begin{itemize}
+    \item Functional programming is super cool, but it has its limits. We resorted to using a
+          StringMap reference (which behaves like a global variable of sorts) to keep track of what
+          functions are bound to the properties of object variables. I'm sure there's a
+          functional way to do that, but this approach made the most sense to us.
+    \item Start early, on everything! Code generation can get particularly hairy.
+    \item The OCaml LLVM API can be pretty confusing, so be sure to ask your advisor a bunch
+          of questions if you can't figure out how to get something working.
+    \item Temper your expectations from the beginning. Your language should only have a handful of
+          core features are unique and super exciting - don't promise too much!
+\end{itemize}
+
+\subsection{Chris}
+\begin{itemize}
+\item Even after been warned multiple times, I still have the habit of not starting the real work
+until the last minute.
+\item Functional programming is fun in a way that it forces me to think in completely different
+patterns.
+\item (As advice for future students as well) Learn to manage the expectations. As initially
+planned, Propeller was clearly way too ambitious, even with GUIs, high-level list operations and
+all the bells and whistles. As time flew by, some of the goals are clearly unrealistic for a
+semester-long project and had to be dropped.
+\item (When implementing external object bindings) If searching something gives no useful results,
+and all hope is lost, trying all possible combinations could be a good way to go.
+\item Test-oriented development can be beneficial, but could result in a compiler that doesn't work
+with code that uses any untested features.
+\item Function pointers in LLVM causes even more confusion than function pointers in C++.
+\item I feel like as a team made of complete strangers, we could use more communication throughout
+the project.
+\end{itemize}

@@ -1,0 +1,225 @@
+\subsection{Syntax}
+
+% Expressions
+\subsubsection{Expressions}
+\begin{verbatim}
+<binary-operators> ::= "+" | "-" | "*" | "/" | "%"
+                     | "==" | "!=" | "<" | "<=" | ">" | ">="
+                     | "and" | "xor" | "or"
+ <unary-operators> ::= "-" | "not"
+       <expr-list> ::= <expression> | <expr-list> "," <expression>
+        <arg-list> ::= "" | <expr-list>
+      <expression> ::= <int-literal>
+                     | <float-literal>
+                     | <bool-literal>
+                     | <string-literal>
+                     | <list>
+                     | <identifier>
+                     | <expression> <binary-operators> <expression>
+                     | <unary-operators> <expression>
+                     | <identifier> "=" <expression>
+                     | <identifier> "[" <expression> "]"
+                     | "(" <expression> ")"
+                     | <identifier> "(" <arg-list> ")"
+                     | <identifier> "." <identifier>
+                     | <identifier> "." <identifier> = <expression>
+\end{verbatim}
+
+\noindent
+Operator precedence follows standard conventions (e.g. C-style precedence).
+
+\begin{mylisting}
+# the following are all syntactically correct expressions
+1
+abc
+abc + def
+alist[6]
+zzz = true
+(1 + 2) * 3
+o.k = 'ok'
+not false
+zebra % horse
+[true, false]
+\end{mylisting}
+
+% List literals
+\subsubsection{List Literals}
+\begin{verbatim}
+ <list> ::= "[" arg-list "]"
+\end{verbatim}
+
+\begin{mylisting}
+# int list
+[1, 2, 3, 4]
+
+# float list
+[1.2, 3.4, 5.6]
+
+# bool list
+[true, false, true]
+
+# str list
+['joyce', 'cummings', 'center']
+
+# empty list
+[]
+\end{mylisting}
+
+% Declarations
+\subsubsection{Declarations}
+
+\paragraph{Variable Declaration}
+
+\begin{verbatim}
+              <types> ::= "int" | "float" | "bool" | "str" | "void" |
+                          <identifier> | <types> "list"
+      <variable-decl> ::= <types> <identifier> ";"
+ <variable-decl-list> ::= "" | <variable-decl-list> <variable-decl>
+\end{verbatim}
+
+\paragraph{Function Declaration}
+
+\begin{verbatim}
+     <formal-list> ::= <types> <identifier>
+                     | <formal-list> "," <types> <identifier>
+ <formal-list-opt> ::= "" | <formal-list>
+   <function-decl> ::= "fn" <identifier> "(" <formal-list-opt> ")" "->"
+                       <types> "{" <variable-decl-list>
+                       <statement-list> "}"
+\end{verbatim}
+
+\paragraph{Object Type Declaration}
+
+\begin{verbatim}
+          <obj-def> ::= "objdef" <identifier> "{" <variable-decl-list> "}"
+ <external-obj-def> ::= "external" <obj-def>
+\end{verbatim}
+
+\begin{mylisting}
+# defining an object type "Patient"
+objdef Patient
+{
+  str   name;
+  int   age;
+  float height;
+  float weight;
+}
+# an external object type
+external objdef ExternObj
+{
+  str name;
+  int value;
+}
+# declaring a variable of type Patient
+Patient p;
+
+# declaring variables of other types
+int x;
+str name;
+float pi;
+bool is_ready?;
+float list color;
+
+# a minimal function that does nothing
+fn do_nothing() -> void
+{
+  return;
+}
+\end{mylisting}
+
+% Statements
+\subsubsection{Statements}
+
+% Sequencing
+\paragraph{Sequencing}
+
+\begin{verbatim}
+ <statement-list>  ::= "" | <statement-list> <statement>
+ <statememt-block> ::= "{" <statement-list> "}"
+\end{verbatim}
+
+% Control Flow
+\paragraph{Control Flow}
+
+\begin{itemize}
+\item Branching
+\begin{verbatim}
+    <if-statement> ::= "if" <expression> <statement-block>
+                       <elif-statements> <else-clause>
+ <elif-statements> ::= {"elif" <expression> <statement-block>}
+     <else-clause> ::= "" | "else" <statement-block>
+\end{verbatim}
+Else clauses are attached to the closest unmatched if clause before it.
+
+\item Loops
+\begin{verbatim}
+   <for-statement> ::= "for" <identifier> "from" <expression>
+                       "to" <expression> <statement-block>
+ <while-statement> ::= "while" <expression> <statement-block>
+\end{verbatim}
+
+\item Jumps
+\begin{verbatim}
+    <break-statement> ::= "break" ";"
+ <continue-statement> ::= "continue" ";"
+   <return-statement> ::= "return" ("" | <expression>) ";"
+\end{verbatim}
+\end{itemize}
+
+% Special Statements
+\paragraph{Special Statements}
+Built-in functions \texttt{bind} and \texttt{unbind} have special syntactical rules and semantics,
+but can be viewed by the user as regular functions.
+
+\begin{verbatim}
+   <bind-statement> ::= "bind" "(" <identifier> "." <identifier> ","
+                        <identifier> ")" ";"
+ <unbind-statement> ::= "unbind" "(" <identifier> "." <identifier> ","
+                        <identifier> ")" ";"
+\end{verbatim}
+
+\paragraph{All Statements}
+
+\begin{verbatim}
+ <statement> ::= <expression> ";"
+               | <if-statement>
+               | <for-statement>
+               | <while-statement>
+               | <break-statement>
+               | <continue-statement>
+               | <return-statement>
+               | <bind-statement>
+               | <unbind-statement>
+\end{verbatim}
+
+\begin{mylisting}
+# example for statements
+if x > 0
+{
+  prints('Positive');
+}
+elif x == 0
+{
+  prints('Zero');
+}
+else
+{
+  prints('Negative');
+}
+
+while x < 10
+{
+  prints('Less than 10')
+  x = x + 1;
+}
+
+sum = 0;
+for ii from 1 to 1000000
+{
+  sum = sum + ii;
+  if sum < 0
+  {
+    break;
+  }
+}
+\end{mylisting}

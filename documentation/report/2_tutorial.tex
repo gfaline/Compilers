@@ -1,0 +1,84 @@
+\section{Quick Tutorial} 
+
+% Minimal program
+For those who have programmed in C-like languages, Propeller will feel familiar in
+an instant. Here's an example of a minimal Propeller program:
+
+\begin{mylisting}
+fn init() -> int
+{
+  prints('Hello World!\n');
+  return 0;
+}
+\end{mylisting}
+
+% Statement grouping
+\noindent
+Like C, Propeller uses curly braces to group statements. However, unlike C,
+these braces are mandatory even if the block only consists of only one statement.
+
+\begin{mylisting}
+fn foo(int n) -> int
+{
+  if n % 3 == 0
+  { return 9; }
+  else
+  { return 42; }
+}
+\end{mylisting}
+
+\noindent
+Propeller doesn't have scoped local variables -- all locals must be declared at the beginning of a function.
+
+\begin{mylisting}
+fn foo() -> void
+{
+  int i;
+  i = 0;
+  # int invalid_a;     invalid because decalaration appeared after a statement
+  while i < 10
+  {
+    # int invalid_b;   invalid because this is block is not the beginning of a function
+    print(i);
+    i = i + 1;
+  }
+}
+\end{mylisting}
+
+\noindent
+Defining a custom object is much like defining a struct in C:
+\begin{mylisting}
+objdef Jumbo
+{
+  str name;
+  int age;
+  float gpa;
+}
+\end{mylisting}
+
+\noindent
+Similarly, accessing and assigning to properties of objects is just like accessing and assigning to fields of a struct in C:
+
+\begin{mylisting}
+Jumbo jim;
+
+jim.name = 'Jim';
+jim.age  = 24;
+jim.gpa  = 3.73;
+\end{mylisting}
+
+\noindent
+Functions can be bound to properties, such that these functions are called whenever
+a new value is assigned to the property. Binding functions must take two arguments
+whose types match the type of the property.
+
+\begin{mylisting}
+fn celebrate(int old, int new) -> void
+{
+  print(new);
+}
+
+...
+
+  bind(jim.age, celebrate);
+\end{mylisting}

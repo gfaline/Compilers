@@ -1,0 +1,225 @@
+\section{Appendix B: Example Programs}
+
+\subsection{Binding Demo}
+
+\subsubsection{Propeller source code (\texttt{binding.pr})}
+
+\begin{mylisting}
+objdef Jumbo
+{
+  str name;
+  int age;
+  float gpa;
+}
+
+fn celebrate(int old, int new) -> void
+{
+  print(new);
+}
+
+fn init () -> int
+{
+  Jumbo jim;
+
+  jim.name = 'Jim';
+  jim.age  = 24;
+  jim.gpa  = 3.73;
+
+  bind(jim.age, celebrate);
+
+  jim.age = 25;
+
+  unbind(jim.age, celebrate);
+
+  jim.age = 26;
+
+  return 0;
+}
+\end{mylisting}
+
+\subsubsection{Generated LLVM IR (\texttt{binding.ll})}
+
+\begin{lstlisting}[language=llvm,backgroundcolor=\color{backgroundcolor}]
+; ModuleID = 'Propeller'
+source_filename = "Propeller"
+
+@fmt = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@fmt.1 = private unnamed_addr constant [3 x i8] c"%s\00", align 1
+@fmt.2 = private unnamed_addr constant [4 x i8] c"%f\0A\00", align 1
+@str = private unnamed_addr constant [4 x i8] c"Jim\00", align 1
+@fmt.3 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@fmt.4 = private unnamed_addr constant [3 x i8] c"%s\00", align 1
+@fmt.5 = private unnamed_addr constant [4 x i8] c"%f\0A\00", align 1
+
+declare i32 @printf(i8*, ...)
+
+define i32 @init() {
+entry:
+  %jim = alloca { i8*, i32, double }, align 8
+  %jim__name = getelementptr inbounds { i8*, i32, double }, { i8*, i32, double }* %jim, i32 0, i32 0
+  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str, i32 0, i32 0), i8** %jim__name, align 8
+  %jim__age = getelementptr inbounds { i8*, i32, double }, { i8*, i32, double }* %jim, i32 0, i32 1
+  store i32 24, i32* %jim__age, align 4
+  %jim__gpa = getelementptr inbounds { i8*, i32, double }, { i8*, i32, double }* %jim, i32 0, i32 2
+  store double 3.730000e+00, double* %jim__gpa, align 8
+  %jim__age1 = getelementptr inbounds { i8*, i32, double }, { i8*, i32, double }* %jim, i32 0, i32 1
+  store i32 25, i32* %jim__age1, align 4
+  call void @celebrate(i32 25, i32 25)
+  %jim__age2 = getelementptr inbounds { i8*, i32, double }, { i8*, i32, double }* %jim, i32 0, i32 1
+  store i32 26, i32* %jim__age2, align 4
+  ret i32 0
+}
+
+define void @celebrate(i32 %old, i32 %new) {
+entry:
+  %old1 = alloca i32, align 4
+  store i32 %old, i32* %old1, align 4
+  %new2 = alloca i32, align 4
+  store i32 %new, i32* %new2, align 4
+  %new3 = load i32, i32* %new2, align 4
+  %print = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt.3, i32 0, i32 0), i32 %new3)
+  ret void
+}
+\end{lstlisting}
+
+\subsubsection{Sensor Demo}
+
+\subsubsection{Propeller source code (\texttt{sensor.pr})}
+
+\begin{mylisting}
+# compile with ./prc.sh -r sensor_linux sensor.pr
+
+external objdef Sensor
+{
+  int temperature;
+}
+
+fn print_warning(int oldt, int t) -> void
+{
+  if (t > 60000) and (t != oldt)
+  {
+    prints('thermal zone sensor readout too high: ');
+    print(t / 1000);
+  }
+}
+
+fn init() -> int
+{
+  Sensor sensor;
+  bind(sensor.temperature, print_warning);
+  return 0;
+}
+\end{mylisting}
+
+\subsubsection{Generated LLVM IR (\texttt{sensor.ll})}
+
+\begin{lstlisting}[language=llvm,backgroundcolor=\color{backgroundcolor}]
+; ModuleID = 'Propeller'
+source_filename = "Propeller"
+
+@fmt = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@fmt.1 = private unnamed_addr constant [3 x i8] c"%s\00", align 1
+@fmt.2 = private unnamed_addr constant [4 x i8] c"%f\0A\00", align 1
+@fmt.3 = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+@fmt.4 = private unnamed_addr constant [3 x i8] c"%s\00", align 1
+@fmt.5 = private unnamed_addr constant [4 x i8] c"%f\0A\00", align 1
+@str = private unnamed_addr constant [39 x i8] c"thermal zone sensor readout too high: \00", align 1
+
+declare i32 @printf(i8*, ...)
+
+define i32 @init() {
+entry:
+  %sensor = alloca i32, align 4
+  %created = call i32 @object_new_Sensor()
+  store i32 %created, i32* %sensor, align 4
+  %sensor1 = load i32, i32* %sensor, align 4
+  call void @object_prop_bind_Sensor_temperature(i32 %sensor1, void (i32, i32)* @print_warning)
+  ret i32 0
+}
+
+define void @print_warning(i32 %oldt, i32 %t) {
+entry:
+  %oldt1 = alloca i32, align 4
+  store i32 %oldt, i32* %oldt1, align 4
+  %t2 = alloca i32, align 4
+  store i32 %t, i32* %t2, align 4
+  %t3 = load i32, i32* %t2, align 4
+  %tmp = icmp sgt i32 %t3, 60000
+  %t4 = load i32, i32* %t2, align 4
+  %oldt5 = load i32, i32* %oldt1, align 4
+  %tmp6 = icmp ne i32 %t4, %oldt5
+  %tmp7 = and i1 %tmp, %tmp6
+  br i1 %tmp7, label %if, label %else
+
+merge:                                            ; preds = %else, %if
+  ret void
+
+if:                                               ; preds = %entry
+  %print = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @fmt.4, i32 0, i32 0), i8* getelementptr inbounds ([39 x i8], [39 x i8]* @str, i32 0, i32 0))
+  %t8 = load i32, i32* %t2, align 4
+  %tmp9 = sdiv i32 %t8, 1000
+  %print10 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @fmt.3, i32 0, i32 0), i32 %tmp9)
+  br label %merge
+
+else:                                             ; preds = %entry
+  br label %merge
+}
+
+declare i32 @object_new_Sensor()
+
+declare void @object_prop_bind_Sensor_temperature(i32, void (i32, i32)*)
+\end{lstlisting}
+
+\subsubsection{C Runtime source code (\texttt{sensor\_linux.c})}
+
+\begin{lstlisting}[language=C,backgroundcolor=\color{backgroundcolor}]
+#include <stdio.h>
+#include <unistd.h>
+
+extern int init();
+
+void(*boundf)(int,int) = NULL;
+int oldt = 0;
+
+int object_new_Sensor()
+{
+	return 0;
+}
+
+int object_prop_bind_Sensor_temperature(int oid, void(*f)(int,int))
+{
+	if (oid == 0)
+		boundf = f;
+}
+
+int object_prop_unbind_Sensor_temperature(int oid, void(*f)(int,int))
+{
+	if (oid == 0 && boundf == f)
+		boundf = NULL;
+}
+
+int object_prop_get_Sensor_temperature(int oid)
+{
+	if (oid == 0)
+	{
+		return oldt;
+	}
+	return 0;
+}
+
+int main()
+{
+	int ret = init();
+	while (1)
+	{
+		FILE *f = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
+		int t;
+		fscanf(f, "%d", &t);
+		if (boundf) boundf(oldt, t);
+		oldt = t;
+		fclose(f);
+		sleep(1);
+	}
+	return ret;
+}
+\end{lstlisting}

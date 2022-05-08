@@ -1,0 +1,231 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}[cm]
+% \usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{newclude}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{upquote}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usepackage{lipsum}
+\usepackage{hyperref}
+\tcbuselibrary{listings}
+
+\definecolor{backgroundcolor}{HTML}{293134}
+\definecolor{foregroundcolor}{HTML}{E0E2E4}
+\definecolor{keywordcolor}{HTML}{93C763}
+\definecolor{typecolor}{HTML}{A082BD}
+\definecolor{commentcolor}{HTML}{7D8C93}
+\definecolor{stringcolor}{HTML}{EC7600}
+\definecolor{numbercolor}{HTML}{FFCD22}
+\definecolor{boolcolor}{HTML}{678CB1}
+\definecolor{builtincolor}{HTML}{678CB1}
+\definecolor{operatorcolor}{HTML}{E8E2B7}
+
+\lstdefinestyle{mystyle}{
+    %backgroundcolor=\color{backgroundcolor},   
+    commentstyle=\color{commentcolor},
+    % keywords
+    keywords={from, to, fn, if, else, elif, while, for, type, return, external, and, or, not, xor, objdef, break, continue},
+    % types
+    morekeywords=[2]{int, float, bool, str, list, void},
+    % boolean literals
+    morekeywords=[3]{true, false},
+    % operators
+    morekeywords=[4]{+, -, /, *, \%, (, )},
+    % build-in functions
+    morekeywords=[5]{print, exit, bind, unbind},
+    % colors
+    keywordstyle=\color{keywordcolor},
+    keywordstyle=[2]{\color{typecolor}},
+    keywordstyle=[3]{\color{boolcolor}},
+    keywordstyle=[4]{\color{operatorcolor}},
+    keywordstyle=[5]{\color{builtincolor}},
+    %comments
+    comment=[l]{\#},
+    % numbers
+    numberstyle=\color{backgroundcolor},
+    %strings
+    stringstyle=\color{stringcolor},
+    string=[b]{'},
+    basicstyle=\color{foregroundcolor}\ttfamily\scriptsize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\newtcblisting{mylisting}{
+      arc=0pt,
+      top=0mm,
+      bottom=0mm,
+      left=0mm,
+      right=0mm,
+      boxrule=0pt,
+      colback=backgroundcolor,
+      listing only,
+      listing options={style=mystyle},
+      enlarge top by=5mm,
+      enlarge bottom by=5mm
+}
+
+\lstdefinestyle{ocamlstyle}{
+    %backgroundcolor=\color{backgroundcolor},   
+    commentstyle=\color{commentcolor},
+    % keywords
+    keywords={let, in, and, if, then, else},
+    % types
+    morekeywords=[2]{string, int, float},
+    % boolean literals
+    morekeywords=[3]{StringMap},
+    % operators
+    morekeywords=[4]{+, -, /, *, \%, (, ), <>},
+    % build-in functions
+    morekeywords=[5]{print, exit, bind, unbind},
+    % colors
+    keywordstyle=\color{keywordcolor},
+    keywordstyle=[2]{\color{typecolor}},
+    keywordstyle=[3]{\color{boolcolor}},
+    keywordstyle=[4]{\color{operatorcolor}},
+    keywordstyle=[5]{\color{builtincolor}},
+    %comments
+    comment=[l]{\#},
+    % numbers
+    numberstyle=\color{backgroundcolor},
+    %strings
+    stringstyle=\color{stringcolor},
+    string=[b]{'},
+    basicstyle=\color{foregroundcolor}\ttfamily\scriptsize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=ocamlstyle}
+
+\newtcblisting{ocamllisting}{
+      arc=0pt,
+      top=0mm,
+      bottom=0mm,
+      left=0mm,
+      right=0mm,
+      boxrule=0pt,
+      colback=backgroundcolor,
+      listing only,
+      listing options={style=ocamlstyle},
+      enlarge top by=5mm,
+      enlarge bottom by=5mm
+}
+
+\title{Propeller\\\Large A Property Manipulation Language\\\large Final Report}
+\author{
+  Isra Ali\\
+  \textit{``Tester"}\\
+  \texttt{isra.hamid\_ali@tufts.edu}
+  \and
+  Gwendolyn Edgar\\
+  \textit{``Manager"}\\
+  \texttt{gwendolyn.edgar@tufts.edu}
+  \and
+  Randy Price\\
+  \textit{``Language Guru"}\\
+  \texttt{edward.price@tufts.edu}
+  \and
+  Chris Xiong\\
+  \textit{``System Architect"}\\
+  \texttt{lxiong01@tufts.edu}
+}
+
+% taken from https://github.com/mewmew/lstlangs/blob/master/llvm/lang.sty
+\lstdefinelanguage{llvm}{
+	sensitive=true,
+	alsoletter={\%},
+	% comments.
+	%    ; line comment
+	comment=[l]{;},
+	% strings.
+	%    "foo"
+	string=[b]{"},
+	% instructions.
+	%    ref: http://llvm.org/docs/LangRef.html#instruction-reference
+	keywords=[1]{
+add, addrspacecast, alloca, and, ashr, atomicrmw, bitcast, br, call, cmpxchg,
+extractelement, extractvalue, fadd, fcmp, fdiv, fence, fmul, fpext, fptosi,
+fptoui, fptrunc, frem, fsub, getelementptr, icmp, indirectbr, insertelement,
+insertvalue, inttoptr, invoke, landingpad, load, lshr, mul, or, phi, ptrtoint,
+resume, ret, sdiv, select, sext, shl, shufflevector, sitofp, srem, store, sub,
+switch, to, trunc, udiv, uitofp, unreachable, urem, va_arg, xor, zext
+	},
+	% directives.
+	%    ref: http://llvm.org/docs/LangRef.html
+	keywords=[2]{
+acq_rel, acquire, addrspace, alias, align, alignstack, alwaysinline, any,
+anyregcc, appending, arcp, arm_aapcs_vfpcc, arm_aapcscc, arm_apcscc, asm,
+atomic, attributes, available_externally, blockaddress, builtin, byval, c,
+catch, cc, ccc, cleanup, cold, coldcc, comdat, common, constant, datalayout,
+declare, default, define, dereferenceable, dllexport, dllimport, eq, exact,
+exactmatch, extern_weak, external, externally_initialized, false, fast, fastcc,
+filter, gc, ghccc, global, hidden, inalloca, inbounds, initialexec, inlinehint,
+inreg, intel_ocl_bicc, inteldialect, internal, jumptable, largest, linkonce,
+linkonce_odr, localdynamic, localexec, max, min, minsize, module, monotonic,
+msp430_intrcc, musttail, naked, nand, ne, nest, ninf, nnan, noalias, nobuiltin,
+nocapture, noduplicate, noduplicates, noimplicitfloat, noinline, nonlazybind,
+nonnull, noredzone, noreturn, nounwind, nsw, nsz, null, nuw, oeq, oge, ogt, ole,
+olt, one, opaque, optnone, optsize, ord, personality, prefix, preserve_allcc,
+preserve_mostcc, private, prologue, protected, ptx_device, ptx_kernel, readnone,
+readonly, release, returned, returns_twice, samesize, sanitize_address,
+sanitize_memory, sanitize_thread, section, seq_cst, sge, sgt, sideeffect,
+signext, singlethread, sle, slt, spir_func, spir_kernel, sret, ssp, sspreq,
+sspstrong, tail, target, thread_local, triple, true, type, ueq, uge, ugt, ule,
+ult, umax, umin, undef, une, unnamed_addr, uno, unordered, unwind, uselistorder,
+uselistorder_bb, uwtable, volatile, weak, weak_odr, webkit_jscc, x,
+x86_64_sysvcc, x86_64_win64cc, x86_fastcallcc, x86_stdcallcc, x86_thiscallcc,
+x86_vectorcallcc, xchg, zeroext, zeroinitializer
+	},
+	% types.
+	%    ref: http://llvm.org/docs/LangRef.html#type-system
+	keywords=[3]{
+i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15, i16, i17, i18,
+i19, i20, i21, i22, i23, i24, i25, i26, i27, i28, i29, i30, i31, i32, i33, i34,
+i35, i36, i37, i38, i39, i40, i41, i42, i43, i44, i45, i46, i47, i48, i49, i50,
+i51, i52, i53, i54, i55, i56, i57, i58, i59, i60, i61, i62, i63, i64, i80, i512,
+void, half, float, double, fp128, x86_fp80, ppc_fp128, x86_mmx, label, metadata
+	},
+}
+
+\begin{document}
+\maketitle
+
+\include*{1_overview}
+\include{2_tutorial}
+\include{3.1_lexical}
+\include{3.2_syntax}
+\include*{3.3_semantics}
+\include*{3.4_builtins}
+\include{3.5_example}
+\include{4_projplan}
+\include{5_arch}
+\include{6_tests}
+\include{7_lessons}
+\include{appendix_a}
+\include{appendix_b}
+\include{appendix_c}
+\include{appendix_d}
+\include{appendix_e}
+\end{document}

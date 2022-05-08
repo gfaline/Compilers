@@ -1,0 +1,118 @@
+\section{Language Manual}
+
+\subsubsection{Notion used in this Manual}
+
+This document uses a variation of Backus-Naur form to describe the syntax of the language. The most
+significant additions are the character range notation (\verb|"a"-"d"| rather than
+\verb:"a"|"b"|"c"|"d":), and the notation for items repeated zero or more times
+(\verb|{<characters>}| means \verb|<characters>| repeated zero or more times).
+
+\subsubsection{Significant changes compared to the tentative version}
+\begin{itemize}
+\item Escape sequences are now well-defined. Single quotes cannot be escaped.
+\item Strings are no longer syntactic sugar for int lists.
+\item Semantics of bindings have changed. For non-\texttt{external} objects, bindings are managed
+at compile time.
+\item Function binding only works for local object variables. Functions bound to internal objects receive two copies
+      of the new value as their arguments.
+\end{itemize}
+
+% Lexical
+\subsection{Lexical Conventions}
+
+% Comments
+\subsubsection{Comments}
+Propeller supports single-line comments. Any sequence of characters following a hash (\verb|#|)
+that is not part of a string literal will be treated as a comment. Comments automatically terminate
+at the end of a line.
+
+\begin{mylisting}
+# This is a comment.
+
+# valid identifiers
+x
+ready?
+aBc123
+o_o
+AsDfG_1234_5?
+
+# invalid identifiers
+8eight
+two__underscores
+propeller_
+too?early
+huh_?
+\end{mylisting}
+
+% Identifiers
+\subsubsection{Identifiers}
+
+\begin{verbatim}
+    <letter> ::= "A"-"Z" | "a"-"z"
+    <digit>  ::= "0"-"9"
+  <alphnum>  ::= <letter> | <digit>
+<identifier> ::= <letter> ("?" | "")
+               | <letter> ("_" | "") {<alphnum> | <alphnum> "_"}
+                 <alphnum> ("?" | "")
+\end{verbatim}
+
+\noindent
+An identifier in Propeller is a character sequence consisting of letters, digits, underscores, and one
+optional question mark. Identifiers must begin with letters, cannot contain consecutive underscores,
+and cannot end with an underscore. Additionally, identifiers may end with a single question mark,
+but may not end with an underscore followed by a question mark.
+
+% Keywords
+\subsubsection{Keywords}
+Propeller has 24 reserved keywords:
+\begin{mylisting}
+and     bind     break  continue elif
+else    external float  fn       for
+from    if       int    list     not
+objdef  or       return str      to
+unbind  void     while  xor                     
+\end{mylisting}
+
+% Separators
+\subsubsection{Separators}
+Propeller has 10 separators used to construct literals, define functions, separate statements, and
+more:
+\begin{mylisting}
+( ) [ ] { }
+, . ;   ->
+\end{mylisting}
+
+% Operators
+\subsubsection{Operators}
+Propeller has 15 operators for comparison, logic, and arithmetic.
+\begin{mylisting}
+# comparison  logic  arithmetic
+  =           and    +
+  !=          or     -
+  >           not    *
+  <           xor    /
+  >=                 %
+  <=
+\end{mylisting}
+
+% Literals
+\subsubsection{Literals}
+\begin{verbatim}
+      <int-literal> ::= {<digit>}
+    <float-literal> ::= {<digit>} "." {<digit>}
+     <bool-literal> ::= "true" | "false"
+<string-characters> ::= character or escape sequence
+   <string-literal> ::= "'" {<string-characters>} "'"
+\end{verbatim}
+
+\noindent
+Supported escape sequences include \verb|\n| for linefeed, \verb|\r| for carriage return,
+\verb|\t| for horizontal tabulation.
+
+\begin{mylisting}
+# int literals     float literals     boolean literals       string literals
+1                  3.14               true                   'hello'
+23                 0.78               false                  'h0wdy!'
+0                  12.345                                    'Hello World!\n'
+5839407430         0.999
+\end{mylisting}

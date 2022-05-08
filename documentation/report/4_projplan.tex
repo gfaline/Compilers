@@ -1,0 +1,200 @@
+\section{Project Plan} 
+
+\subsection{Process used}
+
+Our team used git for source code version control. In general, team members worked on
+their tasks individually. All team members have basic knowledge of git, and had
+direct access to the main repository (\url{https://github.com/gfaline/Compilers}).
+
+The team held irregular meetings to coordinate strategies for completing each
+deliverable. Initially, we used GitHub issues to delegate and assign tasks, but as the
+semester progressed, we moved most activity to a Discord server. Our advisor, Mert, has
+access to a special channel in this server, where we fielded several questions about
+design and implementation throughout the semester.
+
+Specification documents are can also be found in the git repository. Early drafts were created using
+the \LaTeX \ collaboration platform Overleaf.
+
+% Style guide
+\subsection{Style guide}
+
+As the members worked on their own, there is no explicit style guideline. The untold rule is to
+follow the style of existing code. Most observed rules are:
+
+\begin{itemize}
+\item Indent with two spaces.
+\item Each line should not exceed 100 characters (not strictly enforced).
+\item Name variables descriptively, unless it's only used by a few expressions that follow it.
+\item Test as soon as the code is working.
+\item Put the "in" of a let statement at the end of the line if it's a variable, and on a new
+      line if it's a function
+\end{itemize}
+
+% Timeline
+\subsection{Project timeline}
+
+Weekly commit history (generated with \verb|git-bars|):
+{\small
+\begin{verbatim}
+281 commits over 10 week(s)
+2022/18  39   **********************
+2022/17  1    
+2022/16  59   **********************************
+2022/15  11   ******
+2022/14  6    ***
+2022/12  33   *******************
+2022/09  12   *******
+2022/08  85   **************************************************
+2022/07  34   ********************
+2022/06  1    
+\end{verbatim}
+}
+
+The project is very clearly deadline-driven. Regular project check-ins
+helped push the project forward, as evidenced by the spike in activity around each one.
+
+The task list that laid out by the team at the beginning of the semester is listed below:
+
+\begin{verbatim}
+[ ] Hello World (print an integer)
+ [ ]   SAST for expressions with only integer literals
+ [ ]   dummy function call semantics & SAST (no type checking)
+ [ ]   dummy semantics for return
+ [ ]   stubs for statement sequencing and statement blocks (without typing etc)
+ [ ]   code generation for function call and return
+ [ ]   built-in function print_int
+ [ ]   script for linkage and other shenanigans (generating the executable)
+
+[ ] SAST for expressions
+ [ ]   arithmetic operations between integers
+ [ ]   arithmetic operations between floats
+ [ ]   arithmetic operations between floats and integers (promotion)
+ [ ]   comparison between integers and floats (promotion, can be split like above)
+ [ ]   boolean operations
+ [ ]   boolean comparison
+ [ ]   type checking for all invalid cases
+
+[ ] Expression & code generation (without variables)
+ [ ]   code generation for integral arithmetic operators
+ [ ]   code generation for float operators
+ [ ]   code generation for boolean operators
+ [ ]   code generation for comparison operators
+ [ ]   assignment to variables: code generation
+ [ ]   built-in function print_bool and print_float
+ [ ]   tests & test scripts
+
+[ ] Variables
+ [ ]   declaration and allocation
+ [ ]   typing variable access expressions
+ [ ]   typing assignment to variable expressions
+ [ ]   code generation
+ [ ]   tests
+
+[ ] If statements
+ [ ]   type checking & SAST
+ [ ]   code generation
+ [ ]   tests
+
+[ ] For loops
+ [ ]   formal semantics
+ [ ]   type checking & SAST
+ [ ]   code generation
+ [ ]   tests
+
+[ ] While loops
+ [ ]   type checking & SAST
+ [ ]   code generation
+ [ ]   tests
+
+[ ] Jumps
+ [ ]   break semantics & code generation
+ [ ]   continue semantics & code generation
+ [ ]   return semantics & type checking
+ [ ]   return SAST & code generation
+ [ ]   tests
+
+[ ] Functions
+ [ ]   arguments type checking
+ [ ]   return value type checking
+ [ ]   SAST
+ [ ]   code generation
+ [ ]   tests
+
+
+**Tentative below**
+(Tasks with an asterisk are deemed "optional")
+
+
+[ ] Lists
+ [ ]   typing expressions with lists
+ [ ]   internal representation, declaration and allocation
+ [ ]   built-in functions for lists (part 1, empty?, add)
+ [ ]   built-in functions for lists (part 2, first, rest)
+ [ ]   strings
+ [ ]   built-in functions for strings (print_str)
+[ ]   tests
+
+[ ] Objects
+ [ ]   declaration & in-memory presentation
+ [ ]   assignment to objects (value assignment only, no calling of bound functions)
+ [ ]   accessing properties
+ [ ]   objects as formal arguments (all pass by reference)
+[ ]   tests
+
+[ ] Bindings
+ [ ]   extra internal structures for storing the list of bound functions
+[ ]   code generation for bind
+[ ]   code generation for unbind
+[ ]   additional code generation for assignment to property of objects
+[ ]*  cycle binding detection
+[ ]   tests
+
+[ ]*External objects
+[ ]*  alternative code generation for assignment to property of external objects
+[ ]   tests
+
+[ ] Runtime environment
+[ ]   other built-in functions (math etc)
+[ ]   standard libraries
+[ ]   basic text-mode runtime
+[ ]*  qt based GUI runtime
+[ ]*  runtime for the sensor example
+[ ]   testing example code & additional tests
+\end{verbatim}
+
+Tasks were split among the team members according to this list, but were not
+strictly enforced or adhered to.
+
+\subsection{Member roles}
+
+As shown in the authors list, we assigned a role to each member of the team:
+
+\begin{itemize}
+\item Tester: Isra Ali
+\item Manager: Gwendolyn Edgar
+\item Language Guru: Randy Price
+\item System Architect: Chris Xiong
+\end{itemize}
+
+The roles assigned came from the recommendation of the instructor and were assigned
+according to each member's preference. However, these assignments ended up being
+rather arbitrary - team members ended up working on their own modules individually,
+and became responsible for the modules' design and implementation. Important design
+choices were discussed in the Discord server before any final decisions were made.
+
+\subsection{Development environment}
+
+The project is developed and tested on:
+
+\begin{itemize}
+\item Gentoo Linux ~amd64, OCaml 4.14.0, LLVM 14.0.1 with OCaml binding installed with system package manager
+\item Ubuntu 20.04 LTS on Windows Subsystem for Linux, Windows 10, OCaml 4.13.1, opam 2.1.0, LLVM 10.0.0
+\item MacOS Monterey, M1 chip, ocaml 4.13.1, opam 2.1.2, llvm 13.0.1
+\item Kali GNU/Linux 2021.4, 5.10.16.3-microsoft-standard-WSL2 , Windows 10, OCaml 4.13.1, opam 2.1.2, LLVM 13.01
+\end{itemize}
+
+Git is the source code version control used. All documentation is typeset with \LaTeX .
+
+\subsection{Project log}
+
+See Appendix A for the full git log.

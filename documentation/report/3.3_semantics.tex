@@ -1,0 +1,186 @@
+\subsection{Semantics}
+
+Propeller's operational semantics is heavily inspired by C-like languages. For the sake of
+brevity, commonplace semantics found in other widely-used languages are omitted in
+favor of the semantics guiding Propeller's most prominent features.
+
+% Data Types
+\subsubsection{Data Types}
+
+% Primitives
+\paragraph{Primitive Types}
+Primitive types use the following internal representations:
+\begin{center}
+\begin{tabular}{| c | c | p{8cm} | }
+\hline
+ \textbf{Type} & \textbf{Size (bytes)} & \textbf{Description} \\
+ \hline
+ \texttt{int} & 4 & Integer \\
+ \hline
+ \texttt{float} & 8 & IEEE 754 floating point \\
+ \hline
+ \texttt{bool} & 1 & Boolean \\
+ \hline
+ \texttt{str} & varies & Stores UTF-8 encoded characters of a
+ string \\
+ \hline
+ \texttt{void} & N/A & Only used as return type for functions that return nothing \\
+\hline
+\end{tabular}
+\end{center}
+
+% Lists
+\paragraph{Lists}
+\texttt{list}s contain one or more elements of the same type; the elements are immutable, and can be
+indexed with separators \textbf{[ ]}. Elements of a list are stored sequentially in memory.
+For example, a \texttt{bool list} of length 5 takes up 5 bytes in memory, with the first element
+stored in the first byte, the second element in the second byte, and so on. Attempting to index
+a list outside of its bounds results in undefined behavior. Although the elements of a list are
+immutable, a list variable may be overwritten by assigning another list to it.
+
+% Objects
+\paragraph{Objects}
+Propeller allows users to define custom types called objects. An object has one or
+more properties, which are variables of primitive types. Additionally, functions may be bound
+to these properties and executed upon a change in the property's value. A runtime can have
+several predefined objects from an external library, but these objects must be defined
+and prefixed with the \texttt{external} keyword. Object variables may not be passed
+to functions.
+
+% Operations
+\subsubsection{Operations}
+\paragraph{\texttt{int} and \texttt{float} Operations}
+Comparison and arithmetic operators are overloaded in Propeller. Comparing an \texttt{int} to a
+\texttt{float} will result in the promotion of the \texttt{int} expression to a \texttt{float} expression;
+similarly, combining an \texttt{int} and a \texttt{float} with a binary arithmetic operator will result
+in the promotion of the \texttt{int} expression to a \texttt{float} expression, and the result of the
+arithmetic operation will be a \texttt{float}. Additionally, the modulus \texttt{\%}
+operator, only takes \texttt{int} operands, and the divison of an \texttt{int} by a \texttt{int} returns
+a \texttt{float}.
+
+The modulo operator follows the "truncate" definition.
+
+\begin{mylisting}
+# comparison
+2.3 == 1;   # false
+4 != 5;     # true
+8.34 > 3;   # true
+9 < 10;     # true
+5.5 >= 5.6; # false
+100 <= 100; # true
+
+# arithmetic
+4 + 3;    # 7
+2.0 - 1;  # 1.0
+-3.3 * 3; # -9.9
+5 / 2;    # 2
+5.0 / 2;  # 2.5
+6 % 4;    # 2
+
+# boolean comparison
+true != false; # true
+false == true; # false
+
+# boolean operations
+not false;      # true
+true and false; # false
+true or false;  # true
+true xor true;  # false
+\end{mylisting}
+
+\noindent Lists can be indexed using the \verb|[]| operator.
+
+\begin{mylisting}
+# list indexing
+int list l = [1, 2, 3];
+l[1];           # 2
+\end{mylisting}
+
+% Control Flow
+\subsubsection{Control Flow}
+Propeller uses \texttt{if/elif/else} clauses, \texttt{for} loops, and \texttt{while} loops.
+Each control flow method in its entirety is a statement, and the body of an
+\texttt{if/elif/else} clause or loop is comprised of a list of statements. Control flow
+semantics are C-like, with the following differences:
+\begin{itemize}
+    \item \texttt{if/elif/while} expressions need not be enclosed in parentheses.
+    \item Statements following \texttt{if/elif/else}, \texttt{for}, and \texttt{while} must
+          be enclosed in curly braces \texttt{\{ \}}.
+    \item There is no such thing as a "block" - each control flow method is followed by a list
+          of one or more statements enclosed in curly braces.
+    \item \texttt{for} loops have a unique syntax, and are intended to execute a given number of
+          times. When writing a \texttt{for} loop, the name of the looping variable must be given, along
+          with integer expressions that evaluate to the looping variable's initial and final
+          value, respectively. When the looping variable is greater than the final value, the
+          loop terminates.
+   \item Keywords \texttt{break} and \texttt{continue} can be used to jump out of a loop or continue
+         to its next iteration, respectively.
+\end{itemize}
+
+% Binding
+\subsubsection{Binding}
+
+Functions can be bound to properties of objects such that whenever the property is assigned a value,
+the functions bound to that property are called.
+
+Let $\beta$ be the bindings that are currently established during execution of the program. $\beta$
+is one of the environment metavariable of Propeller's operational semantics.
+$\beta(o, p)$ is a set of functions bound to property $p$ of object $o$. Note that this way objects
+of the same custom type don't share bindings.
+
+A function bound to a property must accept two parameters: two values of the same type as the property
+itself, passing the old value of the property and new value of the property respectively.
+
+When multiple functions are bound to the same property of an object, their order of execution is defined by the order in which they were
+bound.
+
+Semi-formal operational semantics of syntactical forms related to binding will be given below.
+$\rho(o, p)$ retrieves the location where property $p$ of object $o$ is stored, and $\sigma(l)$ is
+the value at location $l$.
+
+$$
+\dfrac{\begin{gathered}
+\langle e,\rho,\sigma,\beta,\cdots \rangle \Downarrow
+\langle v,\rho,\sigma_0,\beta,\cdots \rangle\\
+\textrm{for each } f_i\in\beta(o, p), i=1\dots n\\
+\langle f_i(\sigma_0(\rho(o,p),v),\rho,\sigma_{i-1},\beta,\cdots \rangle \Downarrow
+\langle void,\rho,\sigma_i,\beta,\cdots \rangle
+\end{gathered}
+}
+{\langle \textsc{PropertyAssign}(o,p,e),\rho,\sigma,\beta,\cdots \rangle
+\Downarrow
+\langle v,\rho,\sigma_n\{\rho(o,p)\mapsto v\},\beta,\cdots \rangle
+} \qquad \textsc{PropertyAssign}
+$$
+
+$$
+\dfrac{}
+{\langle \textsc{bind}(o,p,f),\rho,\sigma,\beta,\cdots \rangle
+\Downarrow
+\langle void,\rho,\sigma,\beta\{(o,p)\mapsto \beta(o,p)\cup \{f\}\},\cdots \rangle
+} \qquad \textsc{Bind}
+$$
+
+$$
+\dfrac{}
+{\langle \textsc{unbind}(o,p,f),\rho,\sigma,\beta,\cdots \rangle
+\Downarrow
+\langle void,\rho,\sigma,\beta\{(o,p)\mapsto \beta(o,p)\setminus \{f\}\},\cdots \rangle
+} \qquad \textsc{Unbind}
+$$
+
+The semantics above only applies if the object in \textsc{PropertyAssign} is defined as
+\texttt{external}. For non-\texttt{external} objects, bindings are managed statically at compile
+time -- they are effective for all statements that are parsed in between the \verb|bind| statement
+and its corresponding \verb|unbind| statement.
+
+Due to limitations of the implementation, bindings only work for local variables. In addition,
+functions bound to non-\texttt{external} objects do not recieve the property's previous value when called. Finally, external
+objects cannot have values assigned to their properties.
+
+% Program Execution
+\subsubsection{Program Execution}
+
+When a program written in Propeller is executed, it begins from a function called \verb|init()|.
+After \verb|init()| returns, it enters an event loop defined by the runtime library. For the
+most basic text-mode only runtime, the event loop simply terminates the program.

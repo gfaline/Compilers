@@ -1,0 +1,67 @@
+\subsection{Examples}
+\subsubsection{Minimal test driving program}
+This is a basic text-mode program. It should print ``25," then terminate.
+It uses the basic text-mode runtime environment.
+
+\vspace{-0.5cm}
+\begin{mylisting}
+objdef Jumbo
+{
+  str name;
+  int age;
+  float gpa;
+}
+
+fn celebrate(int old, int new) -> void
+{
+  print(new);
+}
+
+fn init () -> int
+{
+  Jumbo jim;
+
+  jim.name = 'Jim';
+  jim.age  = 24;
+  jim.gpa  = 3.73;
+
+  bind(jim.age, celebrate);
+
+  jim.age = 25;
+
+  unbind(jim.age, celebrate);
+
+  jim.age = 26;
+
+  return 0;
+}
+\end{mylisting}
+
+\subsubsection{Temperature Monitor}
+This program models a simple temperature monitor that prints a message when the temperature
+reading exceeds a threshold. This program will require the correct runtime environment\\
+(\verb|sensor_linux|).
+
+\vspace{-0.5cm}
+\begin{mylisting}
+external objdef Sensor
+{
+  int temperature;
+}
+
+fn print_warning(int oldt, int t) -> void
+{
+  if (t > 60000) and (t != oldt)
+  {
+    prints('thermal zone sensor readout too high: ');
+    print(t / 1000);
+  }
+}
+
+fn init() -> int
+{
+  Sensor sensor;
+  bind(sensor.temperature, print_warning);
+  return 0;
+}
+\end{mylisting}

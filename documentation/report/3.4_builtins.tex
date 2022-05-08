@@ -1,0 +1,33 @@
+\subsection{Built-in Functions and Runtimes}
+
+Propeller has a minimal set of built-in functions for printing to the standard output:
+
+\begin{tabular}{|l|l|}
+\hline
+\verb|print(int a)| & Prints an integer value to the console and starts a new line \\\hline
+\verb|printb(bool a)| & Prints a boolean value to the console and starts a new line \\\hline
+\verb|printf(float a)| & Prints a float value to the console and starts a new line \\\hline
+\verb|prints(str a)| & Prints a string to the console\\
+\hline
+\end{tabular}
+
+Propeller comes with two different runtimes: A default one that just runs the entry function
+and does nothing interesting, and one that monitors the ACPI thermal zone of a computer.
+
+The sensor library provides the following object definition:
+
+\begin{mylisting}
+external objdef Sensor
+{
+  int temperature;
+}
+\end{mylisting}
+
+The value stored in \verb|temperature| is the value read from the temperature sensor in
+1/1000 of a degree Celsius. Because a Sensor is an external object, its temperature
+field cannot be programatically assigned a value. Instead, its value is updated every second
+in the runtime environment. Due to the limitation of the implementation, only one function
+can be bound to this property.
+
+The sensor runtime only works on Linux with ACPI thermal zone support (the file \\
+\texttt{/sys/class/thermal/thermal\_zone0/temp} must exist on the system).

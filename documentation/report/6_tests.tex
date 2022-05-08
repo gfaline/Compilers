@@ -1,0 +1,32 @@
+\section{Testing}
+
+All testing facility is located in the \texttt{tests} directory of the compiler source code.
+
+\subsection{Example source code and generated LLVM IR}
+
+See Appendix B.
+
+\subsection{Test scripts}
+
+See Appendix C. Each function is documented in the comment above it.
+
+\subsection{Test Automation}
+
+A 105-style testing interface (notably the name ``CheckExpect") was used. The testing interface
+as well as all test scripts are written in Bash. Three different aspects
+of execution result can be checked against a given standard: standard output, standard error and
+return code. The first two can be ignored if needed. Since the compiler exits with non zero return
+code if an invalid program is fed to it, it can be used to verify test cases in which the
+compilation is expected to fail.
+
+There are convenience wrapper functions of \verb|CheckExpectWReturnCode| provided for different
+tasks to simplify the process to make a test suite.
+
+For each test suite, a test script is created. Running these test scripts will run all the tests
+in that test suite.
+
+\subsection{Testing task split}
+
+The current testing framework is written by Chris. Parser unit tests are provided by Gwendolyn
+and Isra. All team members contributed to the extended test suite. Previously the project used
+a testing script written by Gwendolyn that was based on the test script of MicroC.
