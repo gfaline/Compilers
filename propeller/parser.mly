@@ -1,3 +1,4 @@
+/* Authors: Isra Ali, Gwendolyn Edgar, Randy Price, Chris Xiong */
 /* Ocamlyacc parser for Propeller */
 
 %{ open Ast %}
@@ -79,7 +80,7 @@ typ:
 vdecl_list:
     /* nothing */ { [] }
   | vdecl_list vdecl { $2 :: $1 }
-  
+
 vdecl:
     typ ID SEMI { ($1, $2) }
   | ID ID SEMI { (Custom($1), $2) }
@@ -111,7 +112,7 @@ expr_stmt:
 
 return_stmt:
   | RETURN expr_opt SEMI { Return($2) }
-  
+
 if_stmt:
     IF expr LBRACE stmt_list RBRACE elif_stmts else_stmt { If($2, List.rev $4, $6, $7) }
 

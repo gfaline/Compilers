@@ -1,3 +1,4 @@
+(* Authors: Isra Ali, Gwendolyn Edgar, Randy Price, Chris Xiong *)
 (* scanner for Propeller language *)
 
 { open Parser }

@@ -1,3 +1,4 @@
+(* Authors: Isra Ali, Gwendolyn Edgar, Randy Price, Chris Xiong *)
 let fst_trpl (a, _, _) = a
 let snd_trpl (_, b, _) = b
 let trd_trpl (_, _, c) = c

@@ -1,3 +1,4 @@
+(* Authors: Isra Ali, Gwendolyn Edgar, Randy Price, Chris Xiong *)
 module L = Llvm
 module A = Ast
 open Sast
